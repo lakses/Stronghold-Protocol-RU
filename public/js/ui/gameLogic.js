@@ -4,8 +4,8 @@
 // light legal tiles while dragging; the server stays authoritative and may still refuse a move.
 //
 //   Board = own normal field (GEO.FIELD rows 9–12, cols 2–10). Melee chess stand on `melee` deploy tiles
-//   (LOW, buildable ALL/MELEE) — elite 歌蕾蒂娅 carrying HOK-Y (shared/highGround.js, the player's loadout) on any
-//   deploy tile, the 高台 included (piecePosition 'ALL'); ranged chess on `melee ∪ rangedOnly` (stages.json → deployTiles.normal,
+//   (LOW, buildable ALL/MELEE) — a 钩索师 / 推击手 ("可以放置于远程位", chess.json `placement` 'all') on any deploy
+//   tile, the 高台 included (piecePosition 'ALL'); ranged chess on `melee ∪ rangedOnly` (stages.json → deployTiles.normal,
 //   derived from the tile legend when missing — the legend's `buildable` is the effective type: 深水区 tile_deepsea
 //   refuses deployment, PRTS 深水区 地形信息 "拒绝部署（待补充）", player report #3 after 0.1.0). Tokens follow their
 //   own `position`; a summon whose text reads "只能部署在召唤者攻击范围内" (tokens.json `ownerRange`: 伺夜's 狼群,
@@ -24,7 +24,6 @@
 import { GEO, PHASE, UF } from '../../../shared/constants.js';
 import { resolveLoadout, loadoutOptions, MODULE_NONE } from '../../../shared/protocol.js';
 import { resolveRecordLoadout, loadoutRecord, attackRangeGrid } from '../../../shared/loadoutRecord.js';
-import { meleeOnHighGround } from '../../../shared/highGround.js';
 import { rangeTiles, pieceDir } from './facing.js';
 import { layoutPen } from '../render/pen.js';
 import { BOSS_ROW_SHIFT, MAX_COL } from '../render/prepfield.js';
@@ -95,7 +94,7 @@ export function prepCamera(pub, myId) {
 
 /**
  * The own prep board's camera request with the shop bar's state (public issue #5 "准备阶段，收起商店界面时，界面并不会进行
- * 缩放"): `prepCamera` plus `shop: !folded` — a folded shop (收起) takes the official shop-collapsed camera
+ * 缩放"): `prepCamera` plus `shop: !folded` — a folded shop (Свернуть) takes the official shop-collapsed camera
  * (configBlackBoard left_prepare_camera_param / *_boss_prepare_*, render/projection.js presetCamera `shop: false`) and
  * the folded shop's HUD band (ui/fieldHost.js hudBands), an open one the shop camera. `folded` = the shop bar is shown
  * and folded (an eliminated player's board, which shows no bar, keeps the shop camera).
@@ -154,18 +153,18 @@ export function boardTileOf(field, r, c) {
 export function phaseBanner(phase, pub) {
   const r = int(pub?.round, 0);
   switch (phase) {
-    case PHASE.BATTLE_CHECK: return { title: '协议启动', micro: 'PROTOCOL START', tone: 'mint', sub: '模拟即将开始', duration: 2600 };
-    case PHASE.ROUND_START: return { title: `第 ${r} 回合`, micro: `ROUND ${String(r).padStart(2, '0')}`, tone: 'mint', sub: '资金已到账' };
-    case PHASE.SP_DRAFT: return { title: '机变阶段', micro: 'CONTINGENCY', tone: 'gold', sub: '依次选择机变' };
-    case PHASE.PREP: return { title: '休整期', micro: `ROUND ${String(r).padStart(2, '0')} // REST`, tone: 'mint', sub: '部署干员，准备迎敌' };
-    case PHASE.COMBAT: return { title: '作战开始', micro: 'COMBAT', tone: 'orange', sub: '各自行动阶段' };
+    case PHASE.BATTLE_CHECK: return { title: 'Запуск протокола', micro: 'PROTOCOL START', tone: 'mint', sub: 'Симуляция скоро начнётся', duration: 2600 };
+    case PHASE.ROUND_START: return { title: `Раунд ${r}`, micro: `ROUND ${String(r).padStart(2, '0')}`, tone: 'mint', sub: 'Средства поступили' };
+    case PHASE.SP_DRAFT: return { title: 'Фаза планирования', micro: 'CONTINGENCY', tone: 'gold', sub: 'Выбирайте по очереди' };
+    case PHASE.PREP: return { title: 'отдых', micro: `ROUND ${String(r).padStart(2, '0')} // REST`, tone: 'mint', sub: 'Разместите операторов и готовьтесь к бою' };
+    case PHASE.COMBAT: return { title: 'Начало боя', micro: 'COMBAT', tone: 'orange', sub: 'Каждый действует сам' };
     case PHASE.UNITE: {
-      const names = new Map(sortedPlayers(pub).map((p) => [p.playerId, p.name || '博士']));
+      const names = new Map(sortedPlayers(pub).map((p) => [p.playerId, p.name || 'Доктор']));
       const helpers = Array.isArray(pub?.unite?.helpers) ? pub.unite.helpers.map((id) => names.get(id)).filter(Boolean) : [];
-      return { title: '联防阶段', micro: 'JOINT DEFENSE', tone: 'orange', sub: helpers.length ? `联防：${helpers.join('、')}` : '完美作战的博士迎战突破防线的敌人' };
+      return { title: 'Фаза совместной обороны', micro: 'JOINT DEFENSE', tone: 'orange', sub: helpers.length ? `В обороне: ${helpers.join(', ')}` : 'Доктор безупречной обороны встречает прорвавшихся врагов' };
     }
-    case PHASE.FINAL_ASSAULT: return { title: '最终攻势', micro: 'FINAL ASSAULT', tone: 'red', sub: '击败敌方领袖' };
-    case PHASE.HIDDEN_CORE: return { title: '隐秘核心', micro: 'HIDDEN CORE', tone: 'red', sub: '被源石侵蚀的假想敌' };
+    case PHASE.FINAL_ASSAULT: return { title: 'Финальный штурм', micro: 'FINAL ASSAULT', tone: 'red', sub: 'Победите вражеского лидера' };
+    case PHASE.HIDDEN_CORE: return { title: 'Скрытое ядро', micro: 'HIDDEN CORE', tone: 'red', sub: 'Псевдовраг, разъеденный ориджиниумом' };
     case PHASE.SETTLE: return null;
     default: return null;
   }
@@ -173,11 +172,11 @@ export function phaseBanner(phase, pub) {
 
 /** Label of the prep capsule ("休息一下" in the original). */
 export function prepCapsuleLabel(phase) {
-  if (phase === PHASE.SP_DRAFT) return '机变阶段';
-  if (phase === PHASE.ROUND_START) return '回合开始';
-  if (phase === PHASE.BATTLE_CHECK) return '协议启动';
-  if (phase === PHASE.SETTLE) return '回合结算';
-  return '休息一下';
+  if (phase === PHASE.SP_DRAFT) return 'Фаза манёвра';
+  if (phase === PHASE.ROUND_START) return 'Начало раунда';
+  if (phase === PHASE.BATTLE_CHECK) return 'Запуск протокола';
+  if (phase === PHASE.SETTLE) return 'Расчёт раунда';
+  return 'отдых';
 }
 
 // ---- countdown -------------------------------------------------------------------------------------
@@ -236,14 +235,14 @@ export function phaseTotalSeconds(pub, config, myId = null) {
 
 /** Status → glyph + text (research 06 §11.1). */
 export const STATUS_META = Object.freeze({
-  acting: { glyph: 'dots', text: '行动中', tone: 'lo' },
-  ready: { glyph: 'check', text: '已就绪', tone: 'mint' },
-  deciding: { glyph: 'hourglass', text: '决策中', tone: 'gold' },
-  combat: { glyph: 'sword', text: '作战中', tone: 'orange' },
-  done: { glyph: 'check', text: '作战结束', tone: 'mint' },
-  helping: { glyph: 'shield', text: '联防中', tone: 'orange' },
-  left: { glyph: 'exit', text: '已离开', tone: 'red' },
-  dead: { glyph: 'close', text: '已淘汰', tone: 'red' },
+  acting: { glyph: 'dots', text: 'В действии', tone: 'lo' },
+  ready: { glyph: 'check', text: 'Готов', tone: 'mint' },
+  deciding: { glyph: 'hourglass', text: 'Выбирает', tone: 'gold' },
+  combat: { glyph: 'sword', text: 'В бою', tone: 'orange' },
+  done: { glyph: 'check', text: 'Бой окончен', tone: 'mint' },
+  helping: { glyph: 'shield', text: 'В обороне', tone: 'orange' },
+  left: { glyph: 'exit', text: 'Покинул', tone: 'red' },
+  dead: { glyph: 'close', text: 'Выбыл', tone: 'red' },
 });
 
 /** Players sorted by seat (nulls dropped). */
@@ -295,8 +294,8 @@ export function cycleField(fields, current, dir = 1) {
  * @returns {{ fieldId: string } | { reason: string }}
  */
 export function watchTarget(p, pub, myId) {
-  if (!isObj(p)) return { reason: '无效的目标' };
-  if (p.alive === false) return { reason: '该队友已被淘汰，无法查看其阵地' };
+  if (!isObj(p)) return { reason: 'Недопустимая цель' };
+  if (p.alive === false) return { reason: 'Этот союзник выбыл, его позицию нельзя просмотреть' };
   const combat = isCombatPhase(pub?.phase);
   const fieldId = (combat && typeof p.fieldId === 'string' && p.fieldId) || ownFieldId(p.playerId);
   if (combat) {
@@ -305,7 +304,7 @@ export function watchTarget(p, pub, myId) {
     const me = sortedPlayers(pub).find((x) => x.playerId === myId);
     const mine = fields.find((x) => Array.isArray(x.players) && x.players.includes(myId));
     if (f && (f.kind === 'boss' || f.kind === 'hidden') && me?.alive !== false && mine && mine.fieldId !== f.fieldId) {
-      return { reason: '无法查看另一组队友的战场' };
+      return { reason: 'Нельзя просмотреть поле другой пары союзников' };
     }
   }
   return { fieldId };
@@ -313,7 +312,7 @@ export function watchTarget(p, pub, myId) {
 
 /**
  * Label of the ‹ › view switcher: the watched field (also one whose battle already ended), else the own field —
- * or, for an eliminated spectator (no own field), the watched player / 观战.
+ * or, for an eliminated spectator (no own field), the watched player / Наблюдение.
  * @param {any} pub
  * @param {string|null} watching fieldId on screen
  * @param {string} myId
@@ -324,9 +323,9 @@ export function switcherLabel(pub, watching, myId, spectating = false) {
   const cur = fields.find((f) => f.fieldId === watching);
   if (cur) return fieldLabel(cur, pub, myId);
   if (typeof watching === 'string' && watching.startsWith('n:') && watching !== ownFieldId(myId)) {
-    return sortedPlayers(pub).find((p) => p.playerId === watching.slice(2))?.name || '队友';
+    return sortedPlayers(pub).find((p) => p.playerId === watching.slice(2))?.name || 'Союзник';
   }
-  return spectating ? '观战' : '自己';
+  return spectating ? 'Наблюдение' : 'Свой';
 }
 
 /**
@@ -337,16 +336,16 @@ export function switcherLabel(pub, watching, myId, spectating = false) {
  */
 export function fieldLabel(field, pub, myId) {
   if (!isObj(field)) return '—';
-  const names = new Map(sortedPlayers(pub).map((p) => [p.playerId, p.name || '博士']));
+  const names = new Map(sortedPlayers(pub).map((p) => [p.playerId, p.name || 'Доктор']));
   const ps = Array.isArray(field.players) ? field.players : [];
-  if (field.kind === 'unite') return ps.includes(myId) ? '联防（自己）' : '联防阵地';
+  if (field.kind === 'unite') return ps.includes(myId) ? 'Совместная оборона (свой)' : 'Позиция совместной обороны';
   if (field.kind === 'boss' || field.kind === 'hidden') {
-    if (ps.includes(myId)) return ps.length > 1 ? '全景' : '自己';
-    return ps.map((id) => names.get(id) || '博士').join(' · ') || '领袖战场';
+    if (ps.includes(myId)) return ps.length > 1 ? 'Общий обзор' : 'Свой';
+    return ps.map((id) => names.get(id) || 'Доктор').join(' · ') || 'Поле лидера';
   }
-  if (ps.includes(myId) || field.fieldId === ownFieldId(myId)) return '自己';
+  if (ps.includes(myId) || field.fieldId === ownFieldId(myId)) return 'Свой';
   const id = ps[0] ?? String(field.fieldId || '').replace(/^n:/, '');
-  return names.get(id) || '队友';
+  return names.get(id) || 'Союзник';
 }
 
 /**
@@ -368,10 +367,8 @@ export function activeBubbles(emotes, now, ttl = 3000) {
 // ---- bonds -------------------------------------------------------------------------------------------
 
 /**
- * Sort bonds for the strip: active first, then layers desc, count desc, tier desc, core first, id; the mode-off bonds
- * (`off`: the server's entries for the bonds this mode never activates that the player has members of —
- * server/match/bondsMeta.js offBondCounts) after all the others.
- * @template {{bondId:string, active?:boolean, layers?:number, count?:number, tier?:number, off?:boolean}} B
+ * Sort bonds for the strip: active first, then layers desc, count desc, tier desc, core first, id.
+ * @template {{bondId:string, active?:boolean, layers?:number, count?:number, tier?:number}} B
  * @param {B[]} bonds
  * @param {(id:string)=>any} [getBond]
  * @returns {B[]}
@@ -380,8 +377,7 @@ export function sortBonds(bonds, getBond = () => null) {
   const list = (Array.isArray(bonds) ? bonds : []).filter((b) => isObj(b) && typeof b.bondId === 'string');
   const n = (v) => (Number.isFinite(v) ? v : 0);
   return [...list].sort((a, b) => (
-    (a.off ? 1 : 0) - (b.off ? 1 : 0)
-    || (b.active ? 1 : 0) - (a.active ? 1 : 0)
+    (b.active ? 1 : 0) - (a.active ? 1 : 0)
     || n(b.layers) - n(a.layers)
     || n(b.count) - n(a.count)
     || n(b.tier) - n(a.tier)
@@ -513,11 +509,10 @@ export function harmonyMembers(priv, getChess = () => null) {
 }
 
 /**
- * Member rows of a bond popup: every visible member with owned / on-board / in-hand / banned state, plus the player's
- * operators that are members through 变形同构体 (grantedBonds; `granted: true` and `items`: the item ids of the copy that
- * wears the pair — the card the row opens shows them; one row per operator — normal and elite copies are one member,
- * like the count's distinct members), so "成员 x/y" agrees with the count the server reports (在场; memberHeadCount).
- * `inHand`: in the 整备区 (hand), not the 5 temporary slots — what BOARD_AND_DECK bonds (投资人 远见 奇迹) count.
+ * Member rows of a bond popup: every visible member with owned / on-board / banned state, plus the player's operators
+ * that are members through 变形同构体 (grantedBonds; `granted: true` and `items`: the item ids of the copy that wears the
+ * pair — the card the row opens shows them; one row per operator — normal and elite copies are one member, like the
+ * count's distinct members), so "成员 x/y" agrees with the count the server reports (在场).
  * @param {any} bond bonds.json record
  * @param {any} priv m.private (hand/board/temp) — or a teammate's field operators (ui/watchBonds.js ownerBoard)
  * @param {Set<string>|string[]} [banned] banned base chess ids
@@ -530,9 +525,8 @@ export function bondMembers(bond, priv, banned = [], getChess = () => null, getI
   const baseOf = (id) => getChess(id)?.baseId || (typeof id === 'string' ? id.replace(/_b$/, '_a') : id);
   const onBoard = new Set();
   const owned = new Set();
-  const inHand = new Set();
   const memberSet = new Set(members);
-  /** base id → { on: on the board?, hand: in the hand?, items: the wearer's item ids } — operators of the player that join this bond through 变形同构体 */
+  /** base id → { on: on the board?, items: the wearer's item ids } — operators of the player that join this bond through 变形同构体 */
   const granted = new Map();
   const grants = (p) => typeof bond?.bondId === 'string' && grantedBonds(p.items, getItem).includes(bond.bondId);
   const itemIds = (p) => p.items.map((it) => (typeof it === 'string' ? it : it?.id)).filter((x) => typeof x === 'string');
@@ -540,43 +534,23 @@ export function bondMembers(bond, priv, banned = [], getChess = () => null, getI
     if (p?.kind !== 'chess') continue;
     const base = baseOf(p.id);
     onBoard.add(base); owned.add(base);
-    if (!memberSet.has(base) && !granted.has(base) && grants(p)) granted.set(base, { on: true, hand: false, items: itemIds(p) });
+    if (!memberSet.has(base) && !granted.has(base) && grants(p)) granted.set(base, { on: true, items: itemIds(p) });
   }
-  for (const [list, hand] of [[priv?.hand, true], [priv?.temp, false]]) {
-    for (const p of Array.isArray(list) ? list : []) {
-      if (p?.kind !== 'chess') continue;
-      const base = baseOf(p.id);
-      owned.add(base);
-      if (hand) inHand.add(base);
-      if (memberSet.has(base) || !grants(p)) continue;
-      const g = granted.get(base);
-      if (!g) granted.set(base, { on: false, hand, items: itemIds(p) });
-      else if (hand) g.hand = true;
-    }
+  for (const p of [...(Array.isArray(priv?.hand) ? priv.hand : []), ...(Array.isArray(priv?.temp) ? priv.temp : [])]) {
+    if (p?.kind !== 'chess') continue;
+    const base = baseOf(p.id);
+    owned.add(base);
+    if (!memberSet.has(base) && !granted.has(base) && grants(p)) granted.set(base, { on: false, items: itemIds(p) });
   }
   const rows = members.map((id) => {
     const c = getChess(id);
-    return { id, tier: c?.tier ?? 0, name: c?.name ?? id, onBoard: onBoard.has(id), owned: owned.has(id), inHand: inHand.has(id), banned: bannedSet.has(id) };
+    return { id, tier: c?.tier ?? 0, name: c?.name ?? id, onBoard: onBoard.has(id), owned: owned.has(id), banned: bannedSet.has(id) };
   });
   for (const [id, g] of granted) {
     const c = getChess(id);
-    rows.push({ id, tier: c?.tier ?? 0, name: c?.name ?? id, onBoard: g.on, owned: true, inHand: g.hand, banned: false, granted: true, items: g.items });
+    rows.push({ id, tier: c?.tier ?? 0, name: c?.name ?? id, onBoard: g.on, owned: true, banned: false, granted: true, items: g.items });
   }
   return rows.sort((a, b) => (b.onBoard - a.onBoard) || (b.owned - a.owned) || (a.tier - b.tier) || (a.id < b.id ? -1 : 1));
-}
-
-/**
- * The member count of a bond popup's 成员 header: the rows on the board — and, for a bond that counts the hand
- * (`countsHand`: BOARD_AND_DECK — 投资人 远见 奇迹; the server's 在场 says （含整备区）), those in the hand too (the 5
- * temporary slots never count), so the header agrees with 在场 (community report 「投资人等在休整区就能生效的盟约不生效」:
- * the header said 0/n with the members in the hand while 在场 said 3/3).
- * @param {Array<{ onBoard?: boolean, inHand?: boolean }>} rows bondMembers rows @param {boolean} [countsHand]
- * @returns {number}
- */
-export function memberHeadCount(rows, countsHand = false) {
-  let n = 0;
-  for (const r of Array.isArray(rows) ? rows : []) if (r && (r.onBoard || (countsHand && r.inHand))) n++;
-  return n;
 }
 
 /**
@@ -620,8 +594,8 @@ export function disabledBondSets(pub, staticInactive = []) {
  * @param {number} bannedN banned operators of the bond
  */
 export function briefingBondTip(name, state, bannedN = 0) {
-  if (state === 'off') return `${name}：本局禁用（该盟约不会激活）`;
-  if (state === 'drawn' || bannedN > 0) return `${name}：部分盟约所含干员阵容不完整${bannedN ? `（${bannedN} 名干员无法出现）` : ''}`;
+  if (state === 'off') return `${name}: отключён в этом матче (альянс не активируется)`;
+  if (state === 'drawn' || bannedN > 0) return `${name}: состав операторов части альянса неполон${bannedN ? ` (${bannedN} операторов не появятся)` : ''}`;
   return name;
 }
 
@@ -629,10 +603,9 @@ export function briefingBondTip(name, state, bannedN = 0) {
  * The bonds a mode never activates (config.json modes[modeId].inactiveBondIds = the official modeDataDict
  * inactiveBondIdList: 标准模拟 leaves 拉特兰 阿戈尔 卡西米尔 灵巧 奥术 奇迹 投资人 突袭 独行 绝技 off). Operators that also carry an
  * enabled bond stay in the pool (server pool.js drawDisabledBonds) — 标准's 深靛 洛洛 阿罗玛 夕 圣聆初雪 still show 奥术 — and
- * the server left such a bond out of m.private.bonds, so without a mark a card read "奥术 0/2 未激活" with three 奥术
+ * the server leaves such a bond out of m.private.bonds, so without a mark a card read "奥术 0/2 未激活" with three 奥术
  * operators deployed (player report after 0.1.0: "奥术盟约不生效"). The shop / reward cards, the detail card's bond chips
- * and the bond popup mark these 本局禁用 (briefingBondTip 'off'); since 0.1.3 the server also lists such a bond the player
- * has members of (`off: true`, server/match/bondsMeta.js offBondCounts) and the strip shows it as a grey 本局禁用 disc.
+ * and the bond popup mark these 本局禁用 (briefingBondTip 'off').
  * @param {any} mode config.json modes[modeId] (data.js getMode), or null
  * @returns {Set<string>}
  */
@@ -659,7 +632,7 @@ export function bandOffBonds(band, off) {
  */
 export function bandOffLine(names) {
   const list = (Array.isArray(names) ? names : []).filter((n) => typeof n === 'string' && n);
-  return list.length ? `本局禁用${list.map((n) => `【${n}】`).join('')}盟约，此策略效果可能无法发挥` : '';
+  return list.length ? `В этом матче отключён альянс ${list.map((n) => `«${n}»`).join('')} — эффект стратегии может не сработать` : '';
 }
 
 // ---- shop ---------------------------------------------------------------------------------------------
@@ -703,8 +676,7 @@ export function mergeProgress(priv, chessId, getChess = () => null) {
 /**
  * Where the elite appears when gaining one more normal copy of `chessId` completes a merge now (PRTS 卫戍协议/帮助
  * "若消耗已部署至作战区的干员，则发送至作战区对应位置"; mirror of server board.js mergeTile / PlayerState._mergeChess): the
- * board tile of the deployed copy that deploys first (col asc, then row desc: by column from the left, top to bottom —
- * Battle.start) — `{ row, col, dir }` — or null (no
+ * board tile of the deployed copy that deploys first (row desc, then col asc) — `{ row, col, dir }` — or null (no
  * merge — an elite card never merges, see mergeProgress — or no copy is deployed: the elite goes to the hand). The
  * copies stand on legal tiles, and the elite is the same operator, so the tile needs no legality check here.
  * @param {any} priv
@@ -720,7 +692,7 @@ export function mergeTarget(priv, chessId, getChess = () => null) {
   const board = (Array.isArray(priv?.board) ? priv.board : []).filter((p) => p?.kind === 'chess' && !p.golden && Number.isInteger(p.row) && Number.isInteger(p.col)
     && !String(p.id).endsWith('_b') && (p.id === base || getChess(p.id)?.baseId === base));
   if (!board.length) return null;
-  board.sort((a, b) => a.col - b.col || b.row - a.row);
+  board.sort((a, b) => b.row - a.row || a.col - b.col);
   return { row: board[0].row, col: board[0].col, dir: board[0].dir || 'RIGHT' };
 }
 
@@ -777,12 +749,12 @@ export function offerHeader(offer) {
   const items = slots.some((s) => isObj(s) && s.kind === 'item');
   const label = isObj(offer) && typeof offer.label === 'string' && offer.label ? offer.label : null;
   const queued = isObj(offer) && Number.isInteger(offer.queued) && offer.queued > 0 ? offer.queued : 0;
-  const tail = { queued, more: queued ? `之后还有 ${queued} 项` : null };
+  const tail = { queued, more: queued ? `После ещё ${queued}` : null };
   if (!items && (!isObj(offer) || offer.source === 'merge' || offer.source == null) && !label) {
-    return { title: '晋升奖励', micro: 'PROMOTION', sub: '免费选择 1 名', icon: 'crown', items: false, pill: '晋升奖励待选择', ...tail };
+    return { title: 'Награда', micro: 'PROMOTION', sub: 'Бесплатный выбор', icon: 'crown', items: false, pill: 'Награда за повышение ожидает выбора', ...tail };
   }
-  const title = label || (items ? '装备补给' : '特殊招募');
-  return { title, micro: 'SPECIAL', sub: items ? '免费选择 1 件' : '免费选择 1 名', icon: 'refresh', items, pill: `${title}待选择`, ...tail };
+  const title = label || (items ? 'Поставка снаряжения' : 'Особый набор');
+  return { title, micro: 'SPECIAL', sub: items ? 'Бесплатный выбор' : 'Бесплатный выбор', icon: 'refresh', items, pill: `${title} ожидает выбора`, ...tail };
 }
 
 /**
@@ -792,50 +764,27 @@ export function offerHeader(offer) {
  * @returns {string|null} Chinese reason
  */
 export function shopBlockReason(kind, { priv, editable, slot, getChess, getItem } = {}) {
-  if (!priv) return '尚未就绪';
-  if (priv.alive === false) return '你已被淘汰';
-  if (kind === 'ready') return priv.canReady === false ? '临时整备区不为空，请先处理溢出的资源' : null;
+  if (!priv) return 'Ещё не готово';
+  if (priv.alive === false) return 'Вы выбыли';
+  if (kind === 'ready') return priv.canReady === false ? 'Временная зона подготовки не пуста: сначала уберите лишние ресурсы' : null;
   if (!editable) {
-    if (kind === 'reward') return '当前无法选择';
-    return priv.ready ? '已准备就绪，取消准备后才能操作' : '当前阶段无法进行该操作';
+    if (kind === 'reward') return 'Сейчас нельзя выбрать';
+    return priv.ready ? 'Вы готовы: отмените готовность, чтобы действовать' : 'В текущей фазе это действие недоступно';
   }
   const funds = Number(priv.funds) || 0;
   const shop = priv.shop || {};
   if (kind === 'buy' || kind === 'reward') {
-    if (!isObj(slot) || slot.sold) return kind === 'reward' ? '已选择' : '已售出';
-    if ((Number(slot.price) || 0) > funds) return '资金不足';
-    if (handFull(priv) && !completesMerge(priv, slot, { getChess, getItem })) return '整备区已满';
+    if (!isObj(slot) || slot.sold) return kind === 'reward' ? 'Уже выбрано' : 'Продано';
+    if ((Number(slot.price) || 0) > funds) return 'Недостаточно средств';
+    if (handFull(priv) && !completesMerge(priv, slot, { getChess, getItem })) return 'Зона подготовки заполнена';
     return null;
   }
-  if (kind === 'refresh') return (Number(shop.refreshPrice) || 0) > funds ? '资金不足' : null;
+  if (kind === 'refresh') return (Number(shop.refreshPrice) || 0) > funds ? 'Недостаточно средств' : null;
   if (kind === 'levelUp') {
-    if ((Number(shop.level) || 1) >= (Number(shop.maxLevel) || 6)) return '调度中心已达最高等级';
-    return (Number(shop.upgradePrice) || 0) > funds ? '资金不足' : null;
+    if ((Number(shop.level) || 1) >= (Number(shop.maxLevel) || 6)) return 'Диспетчерский центр достиг максимального уровня';
+    return (Number(shop.upgradePrice) || 0) > funds ? 'Недостаточно средств' : null;
   }
   return null;
-}
-
-/**
- * The 准备 confirmation (community report #4 after 0.1.2): readying with funds left asks first — the prep's end wipes
- * them (PRTS 卫戍协议/帮助 「本回合的剩余资金将清零」; the server still does: PlayerState.endPrep). act2autochess constData
- * `noMoneyTipsBand` — data/config.json economy.leftoverFundsKeptByBands, ["band_cannot"] — names the strategies whose
- * funds carry over and that get no such tip (坎诺特 利滚利). No prompt for an un-ready, with 0 funds, when already ready
- * or out, or under AI 托管 (the server plays the seat). The dialog's wording is the remake's own [ASSUMED]: neither the
- * tables nor PRTS hold the official one.
- * @param {any} priv m.private
- * @param {{ ready?: boolean, keptBands?: string[]|null, autoplay?: boolean }} [opts] `ready`: the state asked for
- * @returns {{ title: string, text: string, okText: string, cancelText: string, micro: string } | null}
- */
-export function readyFundsPrompt(priv, { ready = true, keptBands = null, autoplay = false } = {}) {
-  if (!ready || autoplay || !isObj(priv) || priv.alive === false || priv.ready) return null;
-  const funds = Math.trunc(Number(priv.funds) || 0);
-  if (!(funds > 0)) return null;
-  const kept = Array.isArray(keptBands) ? keptBands : ['band_cannot'];
-  if (typeof priv.bandId === 'string' && kept.includes(priv.bandId)) return null;
-  return {
-    title: '剩余资金', micro: 'FUNDS LEFT', okText: '准备就绪', cancelText: '继续整备',
-    text: `还有 ${funds} 资金未使用。休整期结束时，本回合的剩余资金将清零。确定准备就绪吗？`,
-  };
 }
 
 // ---- placement (canPlace mirror) ------------------------------------------------------------------------
@@ -1042,17 +991,15 @@ export function placementContext({ priv, stage, editable, field = 'normal', getC
 }
 
 /**
- * Deploy position ('MELEE'|'RANGED'|'ALL') of a chess/token piece, or null for items. Elite 歌蕾蒂娅 carrying HOK-Y
- * (the viewer's loadout, shared/highGround.js) is 'ALL': any deployable tile, the 高台 included
- * (server/match/board.js placeClass; owner's decision 2026-10-04). Every other MELEE chess is ground-only.
+ * Deploy position ('MELEE'|'RANGED'|'ALL') of a chess/token piece, or null for items. A MELEE operator whose branch
+ * trait reads "可以放置于远程位" (钩索师, 推击手: chess.json `placement` 'all') is 'ALL': any deployable tile, the 高台
+ * included (server/match/board.js positionClass; GitHub issue #32 item 4, DESIGN §22.6 [ASSUMED]).
  */
 export function piecePosition(ctx, piece) {
   if (!isObj(piece)) return null;
   if (piece.kind === 'chess') {
     const rec = ctx.getChess(piece.id);
-    let moduleId = null;
-    try { moduleId = resolveLoadout(ctx.priv?.loadout ?? null, rec, ctx.getChess)?.moduleId ?? null; } catch { moduleId = null; }
-    if (meleeOnHighGround(rec, moduleId)) return 'ALL';
+    if (rec?.placement === 'all') return 'ALL';
     return rec?.position === 'MELEE' ? 'MELEE' : 'RANGED';
   }
   // tokens: MELEE → ground only; RANGED / ALL → any deployable tile
@@ -1112,81 +1059,81 @@ function unitAllowed(ctx, piece, row, col, owner = null) {
  */
 export function canPlace(ctx, uid, target) {
   const no = (code, reason) => ({ ok: false, code, reason });
-  if (!ctx || !ctx.editable) return no('WRONG_PHASE', '当前阶段无法进行该操作');
+  if (!ctx || !ctx.editable) return no('WRONG_PHASE', 'В текущей фазе это действие недоступно');
   const src = ctx.pieces.get(uid);
-  if (!src) return no('BAD_TARGET', '找不到该单位');
-  if (!isObj(target)) return no('BAD_TILE', '无法部署在该位置');
+  if (!src) return no('BAD_TARGET', 'Юнит не найден');
+  if (!isObj(target)) return no('BAD_TILE', 'Нельзя разместить здесь');
   const piece = src.piece;
   const isMagic = piece.kind === 'item' && ctx.getItem(piece.id)?.itemType === 'MAGIC';
 
   if (target.area === 'hand') {
     const idx = target.idx;
-    if (!Number.isInteger(idx) || idx < 0 || idx >= GEO.HAND_SIZE) return no('BAD_TILE', '无法放置在该位置');
-    if (src.area === 'hand' && src.idx === idx) return no('ALREADY', '位置未变化');
+    if (!Number.isInteger(idx) || idx < 0 || idx >= GEO.HAND_SIZE) return no('BAD_TILE', 'Нельзя положить сюда');
+    if (src.area === 'hand' && src.idx === idx) return no('ALREADY', 'Позиция не изменилась');
     const occ = ctx.handAt.get(idx);
     if (!occ) return { ok: true, action: 'move' };
     if (piece.kind === 'item') {
-      if (occ.piece.kind === 'chess') return isMagic ? no('BAD_TARGET', '该道具需要放置在战场上使用') : equipCheck(ctx, piece, occ.piece);
+      if (occ.piece.kind === 'chess') return isMagic ? no('BAD_TARGET', 'Этот предмет используется на поле боя') : equipCheck(ctx, piece, occ.piece);
       return { ok: true, action: 'swap' };
     }
     if (src.area === 'board') {
       if (piece.kind === 'token') return { ok: true, action: 'move' }; // back onto its stack
       if (occ.piece.kind === 'chess') {
-        if (!tileAllows(ctx, occ.piece, src.row, src.col)) return no('BAD_TILE', '交换后的单位无法部署在原位置');
+        if (!tileAllows(ctx, occ.piece, src.row, src.col)) return no('BAD_TILE', 'Обменянный юнит не может встать на исходную позицию');
         return { ok: true, action: 'swap' };
       }
       // the withdrawn operator goes to another free slot
       const free = [...Array(GEO.HAND_SIZE).keys()].some((i) => !ctx.handAt.has(i));
-      return free ? { ok: true, action: 'move' } : no('HAND_FULL', '整备区已满');
+      return free ? { ok: true, action: 'move' } : no('HAND_FULL', 'Зона подготовки заполнена');
     }
     return { ok: true, action: 'swap' };
   }
 
   if (target.area === 'board') {
     const { row, col } = target;
-    if (!Number.isInteger(row) || !Number.isInteger(col)) return no('BAD_TILE', '无法部署在该位置');
+    if (!Number.isInteger(row) || !Number.isInteger(col)) return no('BAD_TILE', 'Нельзя разместить здесь');
     const inField = row >= GEO.FIELD.r0 && row <= GEO.FIELD.r1 && col >= GEO.FIELD.c0 && col <= GEO.FIELD.c1;
-    if (!inField) return no('BAD_TILE', '无法部署在该位置');
+    if (!inField) return no('BAD_TILE', 'Нельзя разместить здесь');
     const occ = ctx.boardAt.get(tileKey(row, col));
     if (piece.kind === 'item') {
       if (isMagic) return { ok: true, action: 'art' };
-      if (!occ) return no('BAD_TARGET', '请将装备拖拽至干员身上');
+      if (!occ) return no('BAD_TARGET', 'Перетащите снаряжение на оператора');
       return equipCheck(ctx, piece, occ.piece);
     }
     // its own tile: re-orient in place through the direction wheel (research 09 §1.2)
     if (src.area === 'board' && src.row === row && src.col === col) return { ok: true, action: 'orient' };
     if (!tileAllows(ctx, piece, row, col)) {
       const deployable = ctx.deploy.ranged.has(tileKey(row, col));
-      return no('BAD_TILE', deployable && piecePosition(ctx, piece) === 'MELEE' ? '近战单位只能部署在地面' : '无法部署在该位置');
+      return no('BAD_TILE', deployable && piecePosition(ctx, piece) === 'MELEE' ? 'Ближний юнит размещается только на земле' : 'Нельзя разместить здесь');
     }
     // a range-bound summon (战术点): inside its owner's attack range — seen from the summon's old tile when it is
     // dropped onto its own owner (the two swap)
     const ownerSwap = src.area === 'board' && occ && occ.piece.uid === piece.ownerUid ? { row: src.row, col: src.col, piece: occ.piece } : null;
     const range = summonRange(ctx, piece, ownerSwap);
-    if (range && !range.has(tileKey(row, col))) return no('BAD_TILE', '只能部署在召唤者攻击范围内');
+    if (range && !range.has(tileKey(row, col))) return no('BAD_TILE', 'Размещается только в радиусе атаки призывателя');
     if (src.area === 'board') {
       // board → board: move or swap (the occupant must be legal on the source tile — the mover's own summon excepted:
       // a moved operator's summons go back to the hand anyway)
       const ownSummon = occ && occ.piece.kind === 'token' && occ.piece.ownerUid === piece.uid;
-      if (occ && !ownSummon && !unitAllowed(ctx, occ.piece, src.row, src.col)) return no('BAD_TILE', '交换后的单位无法部署在原位置');
+      if (occ && !ownSummon && !unitAllowed(ctx, occ.piece, src.row, src.col)) return no('BAD_TILE', 'Обменянный юнит не может встать на исходную позицию');
       return { ok: true, action: occ ? 'swap' : 'move' };
     }
     if (piece.kind === 'token') {
-      if (occ) return no('BAD_TILE', '该位置已有单位');
+      if (occ) return no('BAD_TILE', 'Здесь уже стоит юнит');
       const ownerDeployed = [...ctx.boardAt.values()].some((e) => e.piece.uid === piece.ownerUid);
-      if (Number.isInteger(piece.ownerUid) && !ownerDeployed) return no('BAD_TARGET', '召唤者尚未部署');
+      if (Number.isInteger(piece.ownerUid) && !ownerDeployed) return no('BAD_TARGET', 'Призыватель ещё не размещён');
       return { ok: true, action: 'move' };
     }
-    if ((!occ || occ.piece.kind !== 'chess') && ctx.count >= ctx.cap) return no('BOARD_FULL', '已达到部署上限');
+    if ((!occ || occ.piece.kind !== 'chess') && ctx.count >= ctx.cap) return no('BOARD_FULL', 'Достигнут предел размещения');
     return { ok: true, action: occ ? 'swap' : 'move' };
   }
-  return no('BAD_TILE', '无法放置在该位置');
+  return no('BAD_TILE', 'Нельзя положить сюда');
 }
 
 function equipCheck(ctx, itemPiece, targetPiece) {
   const item = ctx.getItem(itemPiece.id);
-  if (item?.itemType === 'MAGIC') return { ok: false, code: 'BAD_TARGET', reason: '该道具需要放置在战场上使用' };
-  if (!isObj(targetPiece) || targetPiece.kind !== 'chess') return { ok: false, code: 'BAD_TARGET', reason: '装备只能配发给干员' };
+  if (item?.itemType === 'MAGIC') return { ok: false, code: 'BAD_TARGET', reason: 'Этот предмет используется на поле боя' };
+  if (!isObj(targetPiece) || targetPiece.kind !== 'chess') return { ok: false, code: 'BAD_TARGET', reason: 'Снаряжение можно выдать только оператору' };
   return { ok: true, action: 'equip' };
 }
 
@@ -1276,12 +1223,12 @@ export function dropFailureReason(ctx, uid, tile) {
   let target = null;
   if (tile.area === 'board') target = { area: 'board', row: tile.row, col: tile.col };
   else if (tile.area === 'hand') target = { area: 'hand', idx: Number.isInteger(tile.idx) ? tile.idx : tile.col };
-  else if (tile.area === 'temp') return ctx.pieces.get(uid).area === 'temp' ? null : '临时整备区无法放入单位';
-  else if (Number.isInteger(tile.row) && tile.row >= GEO.FIELD.r0 && tile.row <= GEO.FIELD.r1) return '无法部署在该位置';
+  else if (tile.area === 'temp') return ctx.pieces.get(uid).area === 'temp' ? null : 'Во временную зону подготовки нельзя поместить юнита';
+  else if (Number.isInteger(tile.row) && tile.row >= GEO.FIELD.r0 && tile.row <= GEO.FIELD.r1) return 'Нельзя разместить здесь';
   else return null;
   const res = canPlace(ctx, uid, target);
   if (res.ok || res.code === 'ALREADY') return null;
-  return res.reason || '无法放置在该位置';
+  return res.reason || 'Нельзя положить сюда';
 }
 
 // ---- 机变 / band draft normalisation ----------------------------------------------------------------------
@@ -1498,14 +1445,15 @@ export function attackInterval(bat, aspd = 100) {
 }
 
 /** Compact number: 12345 → '12,345'; 1.5e6 → '150万'. */
+/** Компактное число: 12345 → '12 345'; 1.5e6 → '1,5 млн'; 1.5e9 → '1,5 млрд'. */
 export function fmtNum(v) {
   const n = Number(v);
   if (!Number.isFinite(n)) return '—';
-  if (Math.abs(n) >= 1e8) return `${(n / 1e8).toFixed(n >= 1e9 ? 0 : 1)}亿`;
-  if (Math.abs(n) >= 1e5) return `${(n / 1e4).toFixed(n >= 1e6 ? 0 : 1)}万`;
-  return Math.round(n).toLocaleString('en-US');
+  if (Math.abs(n) >= 1e9) return `${(n / 1e9).toFixed(Math.abs(n) >= 1e10 ? 0 : 1).replace('.', ',')} млрд`;
+  if (Math.abs(n) >= 1e6) return `${(n / 1e6).toFixed(Math.abs(n) >= 1e7 ? 0 : 1).replace('.', ',')} млн`;
+  if (Math.abs(n) >= 1e4) return `${(n / 1e3).toFixed(Math.abs(n) >= 1e5 ? 0 : 1).replace('.', ',')} тыс.`;
+  return Math.round(n).toLocaleString('ru-RU');
 }
-
 /**
  * Bounding box + cell set of a range grid (always including the own tile [0,0]); `mirror` flips columns.
  * @param {Array<[number, number]>} grid [[dRow, dCol], …]
@@ -1528,11 +1476,11 @@ export function rangeGridBox(grid, mirror = false) {
 // ---- keyboard ---------------------------------------------------------------------------------------------------
 
 /**
- * Map a keydown to a game shortcut (R refresh, F freeze, D level-up, Q retreat, X sell, Space ready, Esc close).
+ * Map a keydown to a game shortcut (R refresh, F freeze, D level-up, Space ready, Esc close).
  * Space means ready even while a HUD button has focus (a mouse click leaves the shop card / 刷新 focused, and
  * Space must not re-trigger it); the caller prevents the button's own activation. Enter still activates buttons.
  * @param {{ key?: string, code?: string, ctrlKey?: boolean, metaKey?: boolean, altKey?: boolean, repeat?: boolean, target?: any }} e
- * @returns {'refresh'|'freeze'|'levelUp'|'retreat'|'sell'|'ready'|'escape'|null}
+ * @returns {'refresh'|'freeze'|'levelUp'|'ready'|'escape'|null}
  */
 export function shortcutFor(e) {
   if (!e || e.ctrlKey || e.metaKey || e.altKey) return null;
@@ -1546,8 +1494,6 @@ export function shortcutFor(e) {
   if (code === 'KeyR' || key === 'r') return 'refresh';
   if (code === 'KeyF' || key === 'f') return 'freeze';
   if (code === 'KeyD' || key === 'd') return 'levelUp';
-  if (code === 'KeyQ' || key === 'q') return 'retreat';
-  if (code === 'KeyX' || key === 'x') return 'sell';
   if (code === 'Space' || key === ' ') return 'ready';
   return null;
 }
@@ -1563,7 +1509,7 @@ export const closesOnFieldPress = (detail) => detail?.kind === 'piece' || detail
  * Whether an open overlay swallows a game shortcut: a modal / the guide own the keyboard (Esc included — they close
  * themselves); the 本局信息 / 敌方情报 drawer is a dialog too — only Esc (it closes the drawer) passes, R / F / D / Space
  * never act behind it.
- * @param {'refresh'|'freeze'|'levelUp'|'retreat'|'sell'|'ready'|'escape'|null} act shortcutFor
+ * @param {'refresh'|'freeze'|'levelUp'|'ready'|'escape'|null} act shortcutFor
  * @param {{ modal?: boolean, drawer?: boolean }} open
  */
 export function shortcutBlocked(act, { modal = false, drawer = false } = {}) {
@@ -1615,7 +1561,7 @@ export function normalizeResult(res, pub) {
     return {
       playerId: p.playerId,
       seat: int(p.seat, int(pp.seat, 0)),
-      name: p.name || pp.name || '博士',
+      name: p.name || pp.name || 'Доктор',
       isBot: !!(p.isBot ?? pp.isBot),
       alive,
       lp: teamLp != null ? (alive === false ? 0 : Math.max(0, teamLp)) : ownLp,
@@ -1677,7 +1623,7 @@ export function chessLoadout(chess, loadout, getChess = () => null) {
   let defaultModule = true;
   if (chess.isGolden) {
     const id = r.moduleId ?? (chess.module?.active ? chess.module.id : MODULE_NONE);
-    if (id === MODULE_NONE) module = { id: MODULE_NONE, name: '未装备模组', typeName: '', none: true };
+    if (id === MODULE_NONE) module = { id: MODULE_NONE, name: 'Модуль не установлен', typeName: '', none: true };
     else {
       const rec = (Array.isArray(chess.modules) ? chess.modules : []).find((m) => isObj(m) && m.uniEquipId === id)
         || (isObj(chess.module) && chess.module.id === id ? { uniEquipId: id, name: chess.module.name, typeName: chess.module.type } : null);

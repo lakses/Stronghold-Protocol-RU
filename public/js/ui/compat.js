@@ -26,7 +26,7 @@ export function installCompat(g = globalThis) {
   };
   const O = g.Object || Object;
   def(O, 'hasOwn', function hasOwn(obj, key) {
-    if (obj == null) throw new TypeError('Cannot convert undefined or null to object');
+    if (obj == null) throw new TypeError('Нельзя преобразовать undefined или null в объект');
     return Object.prototype.hasOwnProperty.call(Object(obj), key);
   });
   function at(i) {
@@ -56,7 +56,7 @@ export function installCompat(g = globalThis) {
 /** Deep clone of plain data (objects, arrays, Map, Set, Date, RegExp, typed arrays), cycles preserved. */
 function cloneValue(v, seen) {
   if (v === null || typeof v !== 'object') {
-    if (typeof v === 'function' || typeof v === 'symbol') throw new TypeError('structuredClone: value could not be cloned');
+    if (typeof v === 'function' || typeof v === 'symbol') throw new TypeError('structuredClone: значение не может быть клонировано');
     return v;
   }
   if (seen.has(v)) return seen.get(v);

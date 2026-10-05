@@ -1,12 +1,12 @@
-// Title screen: season-style backdrop, big title 卫戍协议：盟约, remembered nickname, 开始.
+// Титульный экран: фон в стиле сезона, крупный заголовок 卫戍协议：盟约, запомненный никнейм, 开始.
 //
-// Pressing 开始 validates the nickname (1..NAME_MAX_LEN chars, no control characters), stores it,
-// marks this tab as "entered" (so reloads skip the title) and hands the name to net.js, which
-// sends `hello` (now, or as soon as the socket is open). The router then shows the lobby.
+// Нажатие 开始 проверяет никнейм (1..NAME_MAX_LEN символов, без управляющих символов), сохраняет его,
+// помечает эту вкладку как «вошедшую» (так перезагрузки пропускают титул) и передаёт имя в net.js, который
+// отправляет `hello` (сразу или как только сокет откроется). Затем роутер показывает лобби.
 //
-// Backdrop art: if data/assets.json lists a UI backdrop (`ui.titleBackdrop`, or one of the
-// entry/loading illustration names) it is layered under the CSS art; otherwise the screen is
-// pure CSS/SVG (radar, ridgelines, glow), so it never issues a request that can 404.
+// Фоновый арт: если data/assets.json содержит UI-фон (`ui.titleBackdrop`, или одно из имён
+// иллюстраций entry/loading), он накладывается под CSS-арт; иначе экран — чистый CSS/SVG (радар,
+// хребты, свечение), поэтому он никогда не делает запрос, который может дать 404.
 
 import { useMemo, useState } from '../../vendor/hooks.module.js';
 import { NAME_MAX_LEN, APP_VERSION } from '../../../shared/constants.js';
@@ -18,11 +18,11 @@ import { store, useStore, shallowEqual } from '../store.js';
 import { data, useData } from '../data.js';
 import { FullscreenButton, detectFeatures } from '../ui/device.js';
 
-// Same character classes as server/net.js sanitizeName (control, zero-width, bidi, BOM), so a name
-// the client accepts is never rejected by the server's hello validation.
+// Те же классы символов, что и в server/net.js sanitizeName (управляющие, нулевой ширины, bidi, BOM), поэтому имя,
+// которое принимает клиент, никогда не будет отклонено валидацией hello на сервере.
 const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f\u00ad\u200b-\u200f\u2028-\u202e\u2060-\u206f\ufeff]/g;
-// Lone surrogates are removed by a scan, not a regex: the lookbehind such a regex needs is a *syntax error* in Safari
-// < 16.4, which would stop the whole client from loading there.
+// Одиночные суррогаты удаляются сканом, а не регулярным выражением: lookbehind, нужный такому regex, — это *синтаксическая ошибка* в Safari
+// < 16.4, что остановило бы загрузку всего клиента там.
 export function stripLoneSurrogates(str) {
   let out = '';
   for (let i = 0; i < str.length; i++) {
@@ -39,19 +39,19 @@ export function stripLoneSurrogates(str) {
 }
 
 /**
- * Normalise a nickname like the server does (NFC, strip lone surrogates / control / invisible /
- * bidi characters, collapse whitespace, trim), then clamp to NAME_MAX_LEN UTF-16 code units — the
- * protocol's `hello.name` limit — without splitting a surrogate pair.
+ * Приводит никнейм к виду, как это делает сервер (NFC, удаление одиночных суррогатов / управляющих / невидимых /
+ * bidi-символов, схлопывание пробелов, trim), затем обрезает до NAME_MAX_LEN UTF-16 code units — лимита
+ * протокола `hello.name` — не разрывая суррогатную пару.
  * @param {any} raw
  * @returns {string}
  */
 export function sanitizeName(raw) {
   let s = String(raw ?? '');
-  try { s = s.normalize('NFC'); } catch { /* keep as is */ }
+  try { s = s.normalize('NFC'); } catch { /* оставляем как есть */ }
   s = stripLoneSurrogates(s).replace(/\s+/g, ' ').replace(CONTROL_CHARS, '').replace(/ {2,}/g, ' ').trim();
   if (s.length > NAME_MAX_LEN) {
     s = s.slice(0, NAME_MAX_LEN);
-    // Don't leave half a surrogate pair at the end.
+    // Не оставляем половину суррогатной пары в конце.
     if (/[\ud800-\udbff]$/.test(s)) s = s.slice(0, -1);
     s = s.trim();
   }
@@ -62,9 +62,9 @@ export function sanitizeName(raw) {
 export const isValidName = (raw) => sanitizeName(raw).length > 0;
 
 /**
- * Enter the game shell with a nickname (title → lobby).
+ * Войти в оболочку игры с никнеймом (титул → лобби).
  * @param {string} rawName
- * @returns {boolean} false when the name is invalid
+ * @returns {boolean} false, когда имя недействительно
  */
 export function enterSession(rawName) {
   const name = sanitizeName(rawName);
@@ -76,12 +76,12 @@ export function enterSession(rawName) {
   return true;
 }
 
-// data/assets.json `ui` keys are 'group/key' (docs/ASSETS.md).
+// Ключи data/assets.json `ui` — это 'group/key' (docs/ASSETS.md).
 const BACKDROP_KEYS = ['titleBackdrop', 'entry/bkg_01', 'entry/bkg_02'];
 const RIDGE_KEYS = ['titleRidges', 'entry/bg_mountains_tiled'];
 
 /**
- * Find a UI image URL in data/assets.json (tolerant of a few plausible shapes).
+ * Находит URL UI-изображения в data/assets.json (терпимо к нескольким правдоподобным формам).
  * @param {any} assets
  * @param {string[]} names
  * @returns {string|null}
@@ -110,7 +110,7 @@ export function findUiAsset(assets, names) {
   return null;
 }
 
-// Dot-matrix watchtower emblem (13×14 bitmap; dots grow toward the base for depth).
+// Точечная эмблема сторожевой башни (растр 13×14; точки растут к основанию для глубины).
 const EMBLEM = [
   'XXX..XXX..XXX',
   'XXX..XXX..XXX',
@@ -174,11 +174,11 @@ function Ridges() {
 }
 
 const STATUS_TEXT = {
-  idle: '准备连接', connecting: '正在连接服务器', connected: '已连接服务器', handshaking: '正在验证身份',
-  online: '已连接服务器', reconnecting: '连接中断，正在重连', closed: '连接已关闭',
+  idle: 'Готов к подключению', connecting: 'Подключение к серверу', connected: 'Сервер подключён', handshaking: 'Проверка личности',
+  online: 'Сервер подключён', reconnecting: 'Связь прервана, переподключение', closed: 'Соединение закрыто',
 };
 
-/** Title screen component. */
+/** Компонент титульного экрана. */
 export function TitleScreen() {
   const conn = useStore((s) => s.connection, shallowEqual);
   const pendingJoin = useStore((s) => s.ui.pendingJoin);
@@ -187,26 +187,26 @@ export function TitleScreen() {
   const assets = data.get('assets');
   const backdrop = findUiAsset(assets, BACKDROP_KEYS);
   const ridges = findUiAsset(assets, RIDGE_KEYS);
-  // Track load/fail per URL (not as booleans reset in effects: an image can load before an effect runs).
+  // Отслеживаем загрузку/ошибку по URL (не булевыми значениями, сбрасываемыми в эффектах: изображение может загрузиться до запуска эффекта).
   const [bgLoadedUrl, setBgLoadedUrl] = useState(null);
   const [ridgesLoadedUrl, setRidgesLoadedUrl] = useState(null);
   const [ridgesFailedUrl, setRidgesFailedUrl] = useState(null);
   const bgLoaded = !!backdrop && bgLoadedUrl === backdrop;
   const ridgesLoaded = !!ridges && ridgesLoadedUrl === ridges;
   const ridgesFailed = !!ridges && ridgesFailedUrl === ridges;
-  // CSS ridgelines only when there is no ridge art (avoids a swap flash when the art arrives).
+  // CSS-хребты только когда арт хребтов недоступен (избегаем вспышки подмены, когда арт приходит).
   const cssRidges = assetsSettled && (!ridges || ridgesFailed);
 
   const valid = isValidName(name);
   const start = () => {
-    if (!valid) { toast('请输入博士代号', 'warn'); return; }
+    if (!valid) { toast('Введите позывной Доктора', 'warn'); return; }
     enterSession(name);
   };
 
   const online = conn.status === 'online' || conn.status === 'connected';
   const dotClass = online ? 'is-on' : conn.status === 'reconnecting' || conn.status === 'connecting' || conn.status === 'handshaking' ? 'is-warn' : 'is-bad';
 
-  // touch screens: no autofocus (it would pop the on-screen keyboard over a landscape phone's whole view)
+  // сенсорные экраны: без автофокуса (он вызвал бы экранную клавиатуру поверх всего вида ландшафтного телефона)
   const touchUi = useMemo(() => detectFeatures().coarse, []);
   return html`<div class="screen title-screen">
     <div class=${`title-bg${bgLoaded ? ' has-art' : ''}${ridgesLoaded ? ' has-ridges' : ''}`} aria-hidden="true">
@@ -241,18 +241,18 @@ export function TitleScreen() {
         <span class="title-en__a">STRONGHOLD PROTOCOL</span>
         <span class="title-en__b">ALLIANCE</span>
       </div>
-      <h1 class="title-cn">卫戍协议<span class="title-cn__colon">：</span><em>盟约</em></h1>
-      <p class="title-tag">调配资金与干员，与同伴协同布防，抵御多波次进攻，直至击败敌方领袖。</p>
+      <h1 class="title-cn">STRONGHOLD PROTOCOL<span class="title-cn__colon">：</span><em>ALLIANCE</em></h1>
+      <p class="title-tag">Распределяйте средства и оперативников, вместе с союзниками организуйте оборону и отражайте волны атак, пока не одолеете вражеского лидера.</p>
 
       <div class="title-login">
         ${pendingJoin ? html`<div class="title-invite">
           <${Icon} name="key" />
-          <span>收到同盟邀请</span><b class="num">${pendingJoin}</b><span class="t-lo">· 输入代号后将自动加入</span>
+          <span>Получено приглашение в альянс</span><b class="num">${pendingJoin}</b><span class="t-lo">· После ввода позывного присоединение произойдёт автоматически</span>
         </div>` : null}
-        <${TextField} label="博士代号" micro="CALLSIGN" size="lg" icon="user" value=${name} maxLength=${NAME_MAX_LEN}
-          placeholder="输入你的代号（最多 ${NAME_MAX_LEN} 字）" autoFocus=${!touchUi}
+        <${TextField} label="Позывной Доктора" micro="CALLSIGN" size="lg" icon="user" value=${name} maxLength=${NAME_MAX_LEN}
+          placeholder="Введите позывной (не более ${NAME_MAX_LEN} символов)" autoFocus=${!touchUi}
           onInput=${setName} onEnter=${start} />
-        <${Button} variant="primary" size="xl" block=${true} iconRight="chevrons" disabled=${!valid} onClick=${start}>开始<//>
+        <${Button} variant="primary" size="xl" block=${true} iconRight="chevrons" disabled=${!valid} onClick=${start}>Начать<//>
         <div class="title-conn">
           <span class=${`status-dot ${dotClass}`}></span>
           <span>${STATUS_TEXT[conn.status] || conn.status}</span>
@@ -264,7 +264,7 @@ export function TitleScreen() {
     </main>
 
     <footer class="title-foot">
-      <span>非官方同人复刻 · 游戏素材版权归 上海鹰角网络 / Yostar 所有</span>
+      <span>Неофициальная фанатская реплика · Права на игровые материалы принадлежат Shanghai Hypergryph / Yostar</span>
       <${MicroLabel}>v${APP_VERSION} · WEB SIMULATION<//>
     </footer>
   </div>`;

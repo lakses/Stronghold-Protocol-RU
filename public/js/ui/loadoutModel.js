@@ -18,20 +18,18 @@ export const LOADOUT_PREF = 'loadout';
 export const LOADOUT_VERSION = 1;
 
 export const PROF_ORDER = ['PIONEER', 'WARRIOR', 'TANK', 'SNIPER', 'CASTER', 'MEDIC', 'SUPPORT', 'SPECIAL'];
-export const PROF_NAME = Object.freeze({ PIONEER: '先锋', WARRIOR: '近卫', TANK: '重装', SNIPER: '狙击', CASTER: '术师', MEDIC: '医疗', SUPPORT: '辅助', SPECIAL: '特种' });
-export const SP_TYPE = Object.freeze({ INCREASE_WITH_TIME: '自动回复', INCREASE_WHEN_ATTACK: '攻击回复', INCREASE_WHEN_TAKEN_DAMAGE: '受击回复', ON_DEPLOY: '被动', 8: '被动' });
+export const PROF_NAME = Object.freeze({ PIONEER: 'Авангард', WARRIOR: 'Боец', TANK: 'Защитник', SNIPER: 'Снайпер', CASTER: 'Кастер', MEDIC: 'Медик', SUPPORT: 'Поддержка', SPECIAL: 'Специалист' });
+export const SP_TYPE = Object.freeze({ INCREASE_WITH_TIME: 'Автовосстановление', INCREASE_WHEN_ATTACK: 'За атаку', INCREASE_WHEN_TAKEN_DAMAGE: 'За урон', ON_DEPLOY: 'Пассивно', 8: 'Пассивно' });
 /** Module attribute keys (ModuleRecord.attr / battle_equip attributeBlackboard) → label + unit. */
 export const ATTR_LABEL = Object.freeze({
-  maxHp: ['生命上限', ''], max_hp: ['生命上限', ''], atk: ['攻击力', ''], def: ['防御力', ''], res: ['法术抗性', ''],
-  magic_resistance: ['法术抗性', ''], aspd: ['攻击速度', ''], attack_speed: ['攻击速度', ''], cost: ['部署费用', ''],
-  blockCnt: ['阻挡数', ''], block_cnt: ['阻挡数', ''], respawnTime: ['再部署时间', '秒'], respawn_time: ['再部署时间', '秒'],
-  baseAttackTime: ['攻击间隔', '秒'], base_attack_time: ['攻击间隔', '秒'], moveSpeed: ['移动速度', ''], hpRecoveryPerSec: ['每秒回复', ''],
+  maxHp: ['Макс. здоровье', ''], max_hp: ['Макс. здоровье', ''], atk: ['Атака', ''], def: ['Защита', ''], res: ['Сопр. искусствам', ''],
+  magic_resistance: ['Сопр. искусствам', ''], aspd: ['Скорость атаки', ''], attack_speed: ['Скорость атаки', ''], cost: ['Стоимость размещения', ''], blockCnt: ['Блок', ''],
+  block_cnt: ['Блок', ''], respawnTime: ['Время переразмещения', ' сек.'], respawn_time: ['Время переразмещения', ' сек.'],
+  baseAttackTime: ['Интервал атаки', ' сек.'], base_attack_time: ['Интервал атаки', ' сек.'], moveSpeed: ['Скорость передвижения', ''], hpRecoveryPerSec: ['Восстановление в сек.', ''],
 });
 
 const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
 const isInt = (v) => Number.isInteger(v);
-/** id keys a parsed payload must never inject into an entry map: `{ "__proto__": … }` would rewrite the prototype. */
-const UNSAFE_IDS = new Set(['__proto__', 'constructor', 'prototype']);
 
 // ---- storage -----------------------------------------------------------------------------------------------------
 
@@ -46,7 +44,7 @@ export function parseStored(raw) {
   if (!src) return out;
   for (const [id, e] of Object.entries(src)) {
     if (Object.keys(out).length >= LOADOUT_LIMITS.entries) break;
-    if (UNSAFE_IDS.has(id) || !/^[A-Za-z0-9_\-.:]{1,64}$/.test(id) || !isObj(e)) continue;
+    if (!/^[A-Za-z0-9_\-.:]{1,64}$/.test(id) || !isObj(e)) continue;
     const x = {};
     if (isInt(e.skill) && e.skill >= 0 && e.skill <= LOADOUT_LIMITS.skillIndex) x.skill = e.skill;
     if (typeof e.module === 'string' && /^[A-Za-z0-9_\-.:]{1,64}$/.test(e.module)) x.module = e.module;
@@ -57,66 +55,6 @@ export function parseStored(raw) {
 
 /** Serialised form for localStorage. */
 export const toStored = (entries) => ({ v: LOADOUT_VERSION, entries: entries || {} });
-
-// ---- export / import ----------------------------------------------------------------------------------------------
-
-/**
- * `kind` of an exported loadout envelope: what a downloaded file / a copied payload carries. `entries` is exactly
- * `room.loadout.entries`, i.e. what `setEntries` + the sync already accept.
- */
-export const LOADOUT_EXPORT_KIND = 'stronghold.loadout';
-
-/** A picked file / pasted payload longer than this is refused before parsing (a real payload is a few KB). */
-export const LOADOUT_IMPORT_MAX_BYTES = 256 * 1024;
-
-/**
- * Portable payload of a loadout, as downloaded / copied by 导出.
- * @param {Record<string, any>} entries `room.loadout.entries`
- * @param {{ now?: number }} [o]
- */
-export function exportPayload(entries, { now = Date.now() } = {}) {
-  const clean = {};
-  for (const [id, e] of Object.entries(entries || {})) if (isObj(e)) clean[id] = { ...e };
-  return {
-    kind: LOADOUT_EXPORT_KIND,
-    v: LOADOUT_VERSION,
-    exportedAt: new Date(Number.isFinite(now) ? now : Date.now()).toISOString(),
-    count: Object.keys(clean).length,
-    entries: clean,
-  };
-}
-
-/** Pretty JSON of `exportPayload` — one preset per file / clipboard payload. */
-export function serializeExport(entries, opts) {
-  return JSON.stringify(exportPayload(entries, opts), null, 2);
-}
-
-/**
- * Parse an imported loadout. Tolerant by design: the envelope, the stored `{ v, entries }` form and a bare
- * `{ [chessId]: { skill, module } }` map all work, as does the serialised text of any of them. Parsing is STRUCTURAL
- * only — the caller still runs `sanitizeEntries` against the loaded data, because a preset from another season may name
- * chess / skills / modules this build does not have. `__proto__` / `constructor` keys are skipped (see parseStored).
- * @param {any} input payload object or serialised text
- * @returns {{ ok: true, entries: Record<string, any> } | { ok: false, error: string }}
- */
-export function parseImport(input) {
-  let raw = input;
-  if (typeof raw === 'string') {
-    if (raw.length > LOADOUT_IMPORT_MAX_BYTES) return { ok: false, error: '内容过长，无法导入' };
-    const text = raw.trim();
-    if (!text) return { ok: false, error: '没有可导入的内容' };
-    try { raw = JSON.parse(text); } catch { return { ok: false, error: '无法识别的内容' }; }
-  }
-  if (!isObj(raw)) return { ok: false, error: '无法识别的格式' };
-  const v = isInt(raw.v) ? raw.v : null;
-  // a newer envelope may reshuffle fields — refuse instead of silently reading it as something else
-  if (v != null && v > LOADOUT_VERSION) return { ok: false, error: `这份调配来自更新的版本（v${v}），请先更新游戏` };
-  const kind = typeof raw.kind === 'string' ? raw.kind : null;
-  if (kind && kind !== LOADOUT_EXPORT_KIND) return { ok: false, error: '这不是干员调配的数据' };
-  const entries = parseStored(raw);
-  if (!Object.keys(entries).length) return { ok: false, error: '里面没有有效的调配条目' };
-  return { ok: true, entries };
-}
 
 // ---- options & choices ---------------------------------------------------------------------------------------------
 
@@ -207,7 +145,7 @@ export function setChoice(entries, base, golden, patch) {
   return out;
 }
 
-/** Remove one chess's entry (恢复默认). */
+/** Remove one chess's entry (сброс к значениям по умолчанию). */
 export function resetChoice(entries, baseId) {
   if (!entries || !Object.hasOwn(entries, baseId)) return entries;
   const out = { ...entries };
@@ -350,10 +288,10 @@ export function skillTags(rec) {
   const passive = rec.skillType === 'PASSIVE' || rec.spType === 'ON_DEPLOY' || rec.spType === 8;
   const spKind = passive ? 'passive' : rec.spType === 'INCREASE_WHEN_ATTACK' ? 'atk' : rec.spType === 'INCREASE_WHEN_TAKEN_DAMAGE' ? 'def' : 'time';
   let duration = null;
-  if (rec.durationType === 'AMMO') duration = '弹药';
-  else if (Number(rec.duration) > 0) duration = `${Number(rec.duration)}秒`;
+  if (rec.durationType === 'AMMO') duration = 'Боеприпасы';
+  else if (Number(rec.duration) > 0) duration = `${Number(rec.duration)} сек.`;
   return {
-    sp: SP_TYPE[rec.spType] || (passive ? '被动' : '技力'),
+    sp: SP_TYPE[rec.spType] || (passive ? 'Пассивно' : 'СП'),
     spKind,
     init: passive ? null : Number.isFinite(rec.initSp) ? rec.initSp : 0,
     cost: passive ? null : Number.isFinite(rec.spCost) ? rec.spCost : 0,

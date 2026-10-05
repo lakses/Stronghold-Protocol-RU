@@ -9,8 +9,8 @@
 // half of the Final Assault prep a screen direction maps to its board direction through `boardDir(dir, mirror)`.
 //
 // Also here: which drops enter the direction step, which range grid previews, and the underframe (selection diamond)
-// actions of a tapped piece — 撤退 / 出售 +N on a board operator, 撤退 on a board summon, 出售 +N on a bench operator,
-// 销毁 on items and Arts (research 09 §5 / §6.5).
+// actions of a tapped piece — Отступить / Продать +N on a board operator, Отступить on a board summon, Продать +N on a
+// bench operator, Уничтожить on items and Arts (research 09 §5 / §6.5).
 
 import { GEO } from '../../../shared/constants.js';
 import { attackRangeGrid } from '../../../shared/loadoutRecord.js';
@@ -28,8 +28,8 @@ export const DIR_VEC = Object.freeze({
   LEFT: Object.freeze({ dr: 0, dc: -1 }),
 });
 
-/** Chinese label (for aria / tooltips). */
-export const DIR_LABEL = Object.freeze({ UP: '上', RIGHT: '右', DOWN: '下', LEFT: '左' });
+/** Localised label (for aria / tooltips). */
+export const DIR_LABEL = Object.freeze({ UP: 'Вверх', RIGHT: 'Вправо', DOWN: 'Вниз', LEFT: 'Влево' });
 
 /** Normalise any direction spelling ('up', 'Right', 1/−1 facing) to UP|RIGHT|DOWN|LEFT; unknown → `fallback`. */
 export function normDir(d, fallback = DEFAULT_DIR) {
@@ -188,8 +188,8 @@ export function facingIntent(piece, target, dir) {
 }
 
 /**
- * Whether 销毁 may be offered for item `uid`: a loose item in the hand or the temp slots. Items equipped on an operator
- * (a piece's `items`, or an entry some other index marks `equipped`) are locked — g.destroy would be refused.
+ * Whether Уничтожить may be offered for item `uid`: a loose item in the hand or the temp slots. Items equipped on an
+ * operator (a piece's `items`, or an entry some other index marks `equipped`) are locked — g.destroy would be refused.
  * @param {{ pieces: Map<number, any> }} ctx placementContext / indexPieces view
  * @param {number} uid
  */
@@ -205,8 +205,8 @@ export function itemDestroyable(ctx, uid) {
 
 /**
  * Underframe (selection diamond) of a tapped own piece (research 09 §1.2 / §5): the buttons it offers.
- *   board operator → 撤退 (to the bench) + 出售 +N · board summon → 撤退 · bench / temp operator → 出售 +N ·
- *   item or Art (bench / temp) → 销毁 · bench summon → nothing.
+ *   board operator → Отступить (to the bench) + Продать +N · board summon → Отступить · bench / temp operator →
+ *   Продать +N · item or Art (bench / temp) → Уничтожить · bench summon → nothing.
  * @param {{ pieces: Map<number, any>, getChess?: (id:string)=>any }} ctx
  * @returns {{ retreat: boolean, sell: number|null, destroy: boolean } | null} sell = the price shown ("+N")
  */
@@ -225,7 +225,7 @@ export function underframeActions(ctx, uid) {
 }
 
 /**
- * Where 撤退 puts a board piece: the first free bench slot (a summon goes back onto its stack — any slot works; an
+ * Where Отступить puts a board piece: the first free bench slot (a summon goes back onto its stack — any slot works; an
  * operator whose own summon stacks sit on the bench frees them). Null when the bench is full.
  * @param {{ pieces: Map<number, any>, handAt: Map<number, any> }} ctx
  */

@@ -5,14 +5,14 @@
 // MatchScreen = full-screen field view (render engine per DESIGN §9, DOM fallback when it can't load)
 // with the DOM HUD layered on top: top bar, bond strip + popup, team panel (click = g.watch), effects,
 // shop bar (prep), merge-reward and 机变 overlays, detail panel, enemy / match-info drawer, combat HUD
-// (DP, "作战结束，等待队友完成作战" + teammates' progress, observing pill, 联防 / 最终攻势 ‹ › camera halves),
+// (DP, «Бой окончен, ждём завершения боя союзниками» + teammates' progress, observing pill, 联防 / 最终攻势 ‹ › camera halves),
 // phase banners, ticker, emote wheel + bubbles,
 // settings, exit flow. Drag & drop from the view: pieceDrop on a board tile (also the piece's own tile) opens the
 // direction wheel (ui/facingWheel.js, research 09 §1.2) and its release sends g.move {uid, to, dir} (g.art {…, dir}
 // for 画卷); pieceDrop on a bench slot → g.move; items → g.equip (confirm when replacing) / g.art. Equipment
 // released over an operator's sprite equips that operator even when the tile under the pointer is the one behind
 // it; a refused drop toasts the reason (gameLogic dropFailureReason / canPlace). Tapping an own piece selects it:
-// its underframe (ui/underframe.js: 撤退 / 出售 +N / 销毁), its rotated range tiles and its detail card; right-click /
+// its underframe (ui/underframe.js: «Отступить» / «Продать +N» / «Уничтожить»), its rotated range tiles and its detail card; right-click /
 // long-press opens the detail card only. There is no drag-to-sell. The own board is drawn and checked with the
 // player's stage overrides (terrain 机变 cards: gameLogic stageOverrides / effectiveStage); in a boss round's prep the
 // legality reads the player's half of the boss field (gameLogic deployFieldOf, user playtest #5 item 7).
@@ -21,29 +21,29 @@
 // Client-side combat (DESIGN §14, m.public.combatMode 'client'): battles are simulated in this browser by
 // battle/runner.js, which publishes the battle's field meta into store.match.field and feeds the view the same b.snap /
 // b.ev frames the server used to stream. Observing follows research 09 §3.1 (battle/observe.js): no looking elsewhere
-// while the own normal battle runs; afterwards a teammate row → 前往查看 → a local replica, 返回战场 goes back; in
-// 联防 / 最终攻势 the ‹ › pill switches the camera between the field's halves and 全景.
+// while the own normal battle runs; afterwards a teammate row → «Перейти к просмотру» → a local replica, «Вернуться в бой» goes back; in
+// 联防 / 最终攻势 the ‹ › pill switches the camera between the field's halves and «Общий обзор».
 // Enemy preview pen (research 09 §2 / §6.2 item 3): in 休整期 the right HUD 🔍▶▶ pans the camera to the pen
 // (view.setCamera('pen')); the left button turns into 🔍◀◀ and returns to the camera in use before (the grey right
 // button, Esc or any camera change of the game flow return too). The shop bar folds away while the pen is shown and
 // comes back as it was. Tapping an enemy in the pen (view pieceClick with `enemyKey` / a `preview` enemy unit) opens its
-// detail card; the old enemy list lives on as the 敌方情报 tab of the 本局信息 dialog (left 🔍).
+// detail card; the old enemy list lives on as the «Разведданные о противнике» tab of the «Информация о матче» dialog (left 🔍).
 // Every camera request of this screen goes through setCam (it remembers the camera the pen returns to);
-// `.gm[data-camera]` mirrors the current camera kind (E2E / styling). Folding the shop bar (收起) on the own prep board
+// `.gm[data-camera]` mirrors the current camera kind (E2E / styling). Folding the shop bar («Свернуть») on the own prep board
 // flies the camera to the official shop-collapsed framing and unfolding back to the shop camera (public issue #5:
 // gameLogic prepCameraFor / foldCamera — never over the pen, a teammate's board or a battle; deferred while a piece is
 // dragged or its direction is chosen).
 // Equipment dropped on an operator whose two slots are used opens the equip-replace dialog (ui/equipReplace.js): the
-// player picks the equipped item to destroy → g.equip {itemUid, targetUid, replaceUid}; 取消 sends nothing. 销毁 is only
+// player picks the equipped item to destroy → g.equip {itemUid, targetUid, replaceUid}; «Отмена» sends nothing. «Уничтожить» is only
 // offered for loose items (equipped ones are locked, ui/facing.js itemDestroyable).
 // Solo battles (ui/matchStatus.js pauseAvailable): the top bar's pause button / Space send g.pause {on}; m.public.paused
-// shows the paused overlay (继续作战 / 放弃模拟) and freezes the HUD clocks. Boss rounds: the top bar shows the level's
+// shows the paused overlay («Продолжить бой» / «Отказаться от симуляции») and freezes the HUD clocks. Boss rounds: the top bar shows the level's
 // 120 s countdown and the red DOT overtime warning (m.public.overtimeAt).
 // User playtest #3: the own LP drops live while the own battle's enemies enter the blue gate (item 2: the runner's
 // state().leaks → ui/hud.js liveLp → top bar + own team row; teammates' rows from m.public players[].pendingLp; in 联防 a
 // leaker's enemies still standing — runner state().uniteLeft / m.public players[].uniteLeft, the ×N tag — user
-// playtest #6 item 7); while the temp overflow row (临时整备区) holds pieces it is framed and labelled on the board
-// (ui/underframe.js TempRowNotice) and 准备就绪 / Space say why they are refused (item 3).
+// playtest #6 item 7); while the temp overflow row (Временная зона подготовки) holds pieces it is framed and labelled on the board
+// (ui/underframe.js TempRowNotice) and «Готов» / Space say why they are refused (item 3).
 // User playtest #4: the detail card shows live stats (item 7) — in battle the local sim's unit (battle/runner.js
 // unitStats), in prep an own board unit's start-of-battle stats (g.unitStats → m.unitStats); 机变 cards take two taps
 // (item 2, ui/choiceOverlay.js).
@@ -53,20 +53,16 @@
 // the elite then appears there with the promotion cue (render/app.js setPrep → fx.promote).
 // The bond strip, its popup and a unit card's bond chips follow the player on screen (DESIGN §20.15, ui/watchBonds.js):
 // a scouted / watched / auto-observed teammate's field → that teammate's bonds (m.public players[].bonds, tagged
-// "👁 name"); 联防 / 最终攻势 → the player on the ‹ › half (全景: yours when you fight there, else the teammate picked
-// with 前往查看 — `watchWho` — or the field's first player, never the viewer's own); in battle with the live layers of
+// "👁 name"); 联防 / 最终攻势 → the player on the ‹ › half («Общий обзор»: yours when you fight there, else the teammate picked
+// with «Перейти к просмотру» — `watchWho` — or the field's first player, never the viewer's own); in battle with the live layers of
 // the battle on screen (battle/runner.js state().bondLayers). Picking a teammate on such a field (a 联防 leaker, an
-// eliminated spectator) frames their half and keeps the ‹ › pill (with 返回战场); an open bond popup closes when the
+// eliminated spectator) frames their half and keeps the ‹ › pill (with «Вернуться в бой»); an open bond popup closes when the
 // strip changes hands.
-// Spectator seats (community report #26, a remake feature): a spectator has no m.private and plays like an ELIMINATED
-// player — no shop, no ready, no emotes (▸ [ASSUMED] off), the server auto-observes the first field of every battle, a
-// team row → 前往查看 any player; in 休整期 / 机变 / round start it is shown the first player's board by itself (once per
-// phase). Its pill reads 观战中, never "你已被淘汰"; its exit only leaves the seat (ui/matchChrome.js ExitModal).
 
 import { useCallback, useEffect, useMemo, useRef, useState } from '../../vendor/hooks.module.js';
 import { PHASE, GEO } from '../../../shared/constants.js';
 import { fxForm } from '../../../shared/protocol.js';
-import { html, Spinner, PhaseBanner, Icon, Button, MicroLabel, confirmDialog, closeAllDialogs, useTicker } from '../ui/components.js';
+import { html, Spinner, PhaseBanner, Icon, Button, MicroLabel, confirmDialog, useTicker } from '../ui/components.js';
 import { useGameData, GIcon } from '../ui/gameComponents.js';
 import { useFieldView } from '../ui/fieldHost.js';
 import { TopBar, liveLp, ownLeaks, uniteRemaining, tempInfo, tempReadyReason } from '../ui/hud.js';
@@ -96,14 +92,14 @@ import {
   snapHud, activeBubbles, shortcutFor, shortcutBlocked, closesOnFieldPress, phaseTotalSeconds, homeFieldId, ownFieldId, normalizeSp, sortedPlayers,
   countdownState, shopBlockReason, stageOverrides, effectiveStage, watchTarget, dropFailureReason,
   previewEnemyKey, prepCamera, prepCameraFor, foldCamera, deployFieldOf, panelSide, panelSlots, bondPopupPlace, chessLoadout, unitLoadout,
-  mergeTarget, modeOffBonds, readyFundsPrompt,
+  mergeTarget, modeOffBonds,
 } from '../ui/gameLogic.js';
 import { toast } from '../ui/toasts.js';
 import { BriefingScreen } from './briefing.js';
 import { BandDraftScreen } from './bandDraft.js';
 import { ResultScreen } from './result.js';
 import { net } from '../net.js';
-import { store, useStore, shallowEqual, serverNow, emptyMatch, isSpectating } from '../store.js';
+import { store, useStore, shallowEqual, serverNow, emptyMatch } from '../store.js';
 import { battleRunner } from '../battle/runner.js';
 import { isClientCombat, observeTarget, teammateProgress, cameraLayers, layerCamera, sidesOf, resumedWatch } from '../battle/observe.js';
 import { screenStrip, playerBonds, playerLayer, detailBondOwner, toggleBond, popupView } from '../ui/watchBonds.js';
@@ -133,7 +129,7 @@ export function GameScreen() {
   if (!pub || !gd.ready) {
     return html`<div class="screen gload">
       <${Spinner} size="lg" label=${pub ? 'LOADING DATA' : 'ENTERING SIMULATION'} />
-      <p class="t-lo">${pub ? '正在载入模拟数据…' : '正在进入模拟…'}</p>
+      <p class="t-lo">${pub ? 'Загрузка данных симуляции…' : 'Вход в симуляцию…'}</p>
     </div>`;
   }
   const mode = phaseMode(pub.phase);
@@ -149,29 +145,29 @@ export function GameScreen() {
 
 /** The room went back to its lobby without a result (match aborted): offer the way back. */
 function MatchEnded() {
-  return html`<div class="awayov" role="dialog" aria-label="模拟已结束">
+  return html`<div class="awayov" role="dialog" aria-label="Симуляция завершена">
     <div class="awayov__box brackets">
       <${MicroLabel} tone="mint">SIMULATION CLOSED</${MicroLabel}>
-      <h2>本局模拟已结束</h2>
-      <p class="t-lo">同盟已返回等待室</p>
-      <${Button} variant="primary" size="lg" icon="chevronLeft" onClick=${() => store.set({ match: emptyMatch() })}>返回同盟<//>
+      <h2>Эта симуляция завершена</h2>
+      <p class="t-lo">Альянс вернулся в зал ожидания</p>
+      <${Button} variant="primary" size="lg" icon="chevronLeft" onClick=${() => store.set({ match: emptyMatch() })}>Вернуться в альянс<//>
     </div>
   </div>`;
 }
 
-/** Solo pause (m.public.paused): the field dims under the 暂停中 plate; 继续作战 resumes (g.pause off). */
+/** Solo pause (m.public.paused): the field dims under the «Пауза» plate; «Продолжить бой» resumes (g.pause off). */
 function PausedOverlay({ canResume, busy, onResume, onExit }) {
   const plate = localAsset('ui/battle', 'matte_pause');
-  return html`<div class="pauseov" role="dialog" aria-label="暂停中" data-testid="paused">
+  return html`<div class="pauseov" role="dialog" aria-label="Пауза" data-testid="paused">
     <div class="pauseov__box">
       <div class="pauseov__plate" style=${plate ? `--pause-plate:url("${plate}")` : ''}>
         <span class="pauseov__micro">PAUSED</span>
-        <h2>暂停中</h2>
+        <h2>Пауза</h2>
       </div>
-      <p class="pauseov__note">作战已暂停，计时与敌人行动均已停止</p>
+      <p class="pauseov__note">Бой приостановлен: отсчёт и действия врагов остановлены</p>
       <div class="pauseov__btns">
-        ${onExit ? html`<${Button} variant="secondary" size="lg" icon="exit" onClick=${onExit}>放弃模拟<//>` : null}
-        ${canResume ? html`<${Button} variant="primary" size="lg" icon="play" loading=${busy} onClick=${onResume} data-autofocus>继续作战<//>` : null}
+        ${onExit ? html`<${Button} variant="secondary" size="lg" icon="exit" onClick=${onExit}>Отказаться от симуляции<//>` : null}
+        ${canResume ? html`<${Button} variant="primary" size="lg" icon="play" loading=${busy} onClick=${onResume} data-autofocus>Продолжить бой<//>` : null}
       </div>
     </div>
   </div>`;
@@ -188,7 +184,6 @@ function MatchScreen() {
   const conn = useStore((s) => s.connection, shallowEqual);
   const emotes = useStore((s) => s.emotes);
   const roomSolo = useStore((s) => s.room?.mode === 'solo');
-  const spectator = useStore((s) => isSpectating(s.room, s.me.playerId));
   const gd = useGameData();
 
   const hostRef = useRef(null);
@@ -197,7 +192,7 @@ function MatchScreen() {
   const { view, kind: viewKind } = useFieldView(hostRef);
 
   const [watching, setWatching] = useState(null);        // fieldId the player chose to watch (null = home)
-  const [watchWho, setWatchWho] = useState(null);        // { fieldId, playerId }: the teammate picked with 前往查看
+  const [watchWho, setWatchWho] = useState(null);        // { fieldId, playerId }: the teammate picked with «Перейти к просмотру»
   const [drawer, setDrawer] = useState(null);            // 'enemies' | 'info' | null
   const [bondOpen, setBondOpen] = useState(null);        // { id, ownerId, from }: the bond popup and whose bond it shows
   const [detail, setDetail] = useState(null);            // detail target
@@ -230,8 +225,7 @@ function MatchScreen() {
   const solo = roomSolo || String(pub?.modeId || '').includes('single');
   const players = sortedPlayers(pub);
   const meP = players.find((p) => p.playerId === myId) || null;
-  // a spectator seat watches like an eliminated player (it has no m.private and no row in m.public)
-  const alive = spectator ? false : priv ? priv.alive !== false : meP?.alive !== false;
+  const alive = priv ? priv.alive !== false : meP?.alive !== false;
   const home = homeFieldId(pub, myId);
   const watchingOther = !!watching && watching !== home && watching !== ownFieldId(myId);
   const editable = phase === PHASE.PREP && !!priv && alive && !priv.ready && !watchingOther;
@@ -273,7 +267,7 @@ function MatchScreen() {
     priv, stage: gd.stage(pub?.stageId), editable, field: deployField,
     getChess: gd.chess, getToken: gd.token, getItem: gd.item, getEffect: gd.effect,
   }), [priv, pub?.stageId, editable, gd.ready, deployField]);
-  live.current = { pub, priv, field, editable, placeCtx, watching, watchWho, home, myId, detail, drawer, bondOpen, emoteOpen, settingsOpen, exitOpen, drag, facing, sel, selBusy, pen, collapsedNow: collapsed, localDone: false, canPause: false, paused };
+  live.current = { pub, priv, field, editable, placeCtx, watching, watchWho, home, myId, detail, drawer, bondOpen, emoteOpen, settingsOpen, exitOpen, drag, facing, sel, pen, collapsedNow: collapsed, localDone: false, canPause: false, paused };
 
   // ---- camera: every request goes through setCam, which remembers it for the pen's way back -----------------------
   // the own prep board: the normal board, or — in the prep of a boss round — the player's half of the boss field
@@ -285,7 +279,7 @@ function MatchScreen() {
   const prepCamSeen = useRef(prepCamKey);                // the prep camera last requested
   const camRef = useRef({ kind: 'prep', opts: { rect: { ...GEO.NORMAL_RECT }, side: 'L' } });
   const penRef = useRef({ on: false, collapsed: false });
-  // the shop bar is shown folded (收起; the pen folds it for itself: the player's own state is the one it returns to) —
+  // the shop bar is shown folded («Свернуть»; the pen folds it for itself: the player's own state is the one it returns to) —
   // the own prep board then takes the official shop-collapsed camera (public issue #5, gameLogic prepCameraFor)
   const shopFolded = showShop && (pen ? penRef.current.collapsed : collapsed);
   const cancelFacingRef = useRef(() => {});
@@ -413,7 +407,7 @@ function MatchScreen() {
     view.raw?.setLocalFeed?.({ on: !!field.local, speed: field.speed });
     setLayer('ALL');
     // a lone player's boss field (solo modes, the odd player of a co-op Final Assault: the `_s` templates route every
-    // enemy to the left objective) is framed on its own half like the ‹ › half view; pairs start on 全景
+    // enemy to the left objective) is framed on its own half like the ‹ › half view; pairs start on «Общий обзор»
     const lone = kind === 'boss' && members.length === 1;
     setCam(kind, lone ? { rect: field.rect, side, half: true } : { rect: field.rect, side });
     audio.setFieldUnits(field.units);
@@ -422,9 +416,8 @@ function MatchScreen() {
       view.pushEvents(early);
       audio.handleBattleEvents(early.filter((e) => e[0] === 'spawn'));
     }
-    if (!earlySnap && (field.prep || !combat) && Array.isArray(field.units)) {
-      // prep scouting: no battle snapshots follow. A later m.field for this board (the teammate moved) re-enters
-      // above and places the units again, including an empty board (GitHub #87).
+    if (!earlySnap && (field.prep || !combat) && Array.isArray(field.units) && field.units.length) {
+      // prep scouting (read-only teammate board): no snapshots follow, so place the units once
       view.pushSnapshot({
         fieldId: field.fieldId, gt: 0,
         units: field.units.filter((u) => u && u.id != null).map((u) => [u.id, Number(u.x) || 0, Number(u.y) || 0, u.maxHp || 1, u.maxHp || 1, 0, 0, 0, 0]),
@@ -503,7 +496,7 @@ function MatchScreen() {
     setCam(pc.kind, pc.opts);
   }, [view, prepCamKey, showPrep]);
 
-  // the shop bar folded (收起) or unfolded on the own prep board (public issue #5: the board did not grow, while the
+  // the shop bar folded («Свернуть») or unfolded on the own prep board (public issue #5: the board did not grow, while the
   // battle and scouting views had no bar to make room for): the official shop-collapsed camera or the shop camera
   // again, flown like any camera change. Never over the pen or a teammate's board or in battle; deferred while a piece
   // is dragged or its direction is chosen (the drop target and the wheel sit on tiles of the camera in use) — this
@@ -516,7 +509,7 @@ function MatchScreen() {
     if (next) setCam(next.kind, next.opts);
   }, [view, shopFolded, showPrep, pen, !!drag, !!facing, prepCamKey]);
 
-  // 联防 / 最终攻势: the ‹ › pill moves the camera between the field's halves and 全景 (research 09 §3.1)
+  // 联防 / 最终攻势: the ‹ › pill moves the camera between the field's halves and «Общий обзор» (research 09 §3.1)
   useEffect(() => {
     if (!view || !field || !field.local || !isCombatPhase(phase)) return;
     if (!cameraLayers(field, pub, myId).length) return;
@@ -524,9 +517,9 @@ function MatchScreen() {
     setCam(kind, layerCamera(field, layer, sidesOf(field)[myId] || 'L'));
   }, [layer]);
 
-  // 前往查看 of a teammate on a two-half shared field (a 联防 leaker / an eliminated spectator tapping a helper or a pair
+  // «Перейти к просмотру» of a teammate on a two-half shared field (a 联防 leaker / an eliminated spectator tapping a helper or a pair
   // player): the camera goes to that player's half, so the ‹ › pill reads "👁 name" like the strip's tag (DESIGN §20.15;
-  // official observing targets a player, research 09 §3.1). Once per pick and per field entered (entering resets 全景).
+  // official observing targets a player, research 09 §3.1). Once per pick and per field entered (entering resets «Общий обзор»).
   const whoAppliedRef = useRef({ who: null, field: null });
   useEffect(() => {
     const who = watchWho;
@@ -547,7 +540,7 @@ function MatchScreen() {
     let asked = null;
     try { asked = new URLSearchParams(globalThis.location?.search || '').get('render'); } catch { asked = null; }
     if (asked === 'fallback' || globalThis.__SP_RENDER__ === 'fallback') return;
-    toast('当前设备无法启用 3D / WebGL 渲染，已切换为简化视图（功能不受影响）', 'info', { ttl: 5000 });
+    toast('Устройство не поддерживает 3D / WebGL — включён упрощённый вид (функциональность не пострадала)', 'info', { ttl: 5000 });
   }, [viewKind]);
 
   // phase changes: banners, sounds, resets
@@ -579,7 +572,7 @@ function MatchScreen() {
   }, [phaseKey]);
 
   // a reload / reconnect while watching a teammate's battle after the own one (client-side combat): the server resends
-  // the watched field, the fresh screen adopts it as watched once per battle — the observing pill, 返回战场 and the own
+  // the watched field, the fresh screen adopts it as watched once per battle — the observing pill, «Вернуться в бой» and the own
   // row work again, and the bond strip's "👁 name" matches the HUD (battle/observe.js resumedWatch)
   const seenBattleRef = useRef(null);
   useEffect(() => {
@@ -604,7 +597,7 @@ function MatchScreen() {
   const spMine = !!sp && !solo && sp.turnPid === myId && !sp.pickOf.has(myId);
   useEffect(() => { if (spMine) audio.sfx('yourTurn'); }, [spMine]);
 
-  // promotion (merge reward offered) and bond activation cues; a special refresh's offer (凯瑟琳 定向投放 …) plays the
+  // promotion (merge reward offered) and bond activation cues; a special refresh's offer (凯瑟琳 «направленная поставка» …) plays the
   // shop's refresh sound instead of the promotion cue
   const offerCue = priv?.shop?.rewardOffer ? (priv.shop.rewardOffer.source === 'special' ? 'refresh' : 'merge') : null;
   useEffect(() => { if (offerCue) audio.sfx(offerCue); }, [offerCue]);
@@ -635,37 +628,21 @@ function MatchScreen() {
 
   // ---- actions ----------------------------------------------------------------------------------------------
   const buy = useCallback((i) => actions.buy(i), []);
-  // 准备 with funds left asks first: the prep's end wipes them (community report #4; not 坎诺特, not at 0 funds, not
-  // under AI 托管 — gameLogic.readyFundsPrompt). The button and Space both come here.
-  const askingReady = useRef(false);
   const toggleReady = useCallback(async (r) => {
-    const L = live.current;
-    const me = Array.isArray(L.pub?.players) ? L.pub.players.find((p) => p && p.playerId === L.myId) : null;
-    const ask = r ? readyFundsPrompt(L.priv, { keptBands: data.get('config')?.economy?.leftoverFundsKeptByBands, autoplay: !!me?.autoplay }) : null;
-    if (ask) {
-      if (askingReady.current) return;
-      askingReady.current = true;
-      const ok = await confirmDialog(ask);
-      askingReady.current = false;
-      const now = live.current;
-      if (!ok || now.pub?.phase !== PHASE.PREP || now.priv?.ready) return;
-    }
     setReadyBusy(true);
     await actions.ready(r);
     setReadyBusy(false);
   }, []);
-  // the prep ended (timer) while the question was open: drop it — the funds are gone either way
-  useEffect(() => { if (phase !== PHASE.PREP && askingReady.current) closeAllDialogs(); }, [phase]);
 
-  /** 出售 (operators, underframe +N) / 销毁 (items and Arts, confirmed: they cannot be sold). */
+  /** «Продать» (operators, underframe +N) / «Уничтожить» (items and Arts, confirmed: they cannot be sold). */
   const sellPiece = useCallback(async (piece) => {
     if (!piece) return false;
     const closeIt = () => { setDetail((d) => (d?.kind === 'piece' && d.uid === piece.uid ? null : d)); setSel((x) => (x && x.uid === piece.uid ? null : x)); };
     if (piece.kind === 'item') {
       // an equipped item is locked (the server refuses g.destroy): replacing it is the equip-replace dialog's job
-      if (!itemDestroyable(live.current.placeCtx, piece.uid)) { toast('已配发的装备无法销毁', 'warn'); audio.sfx('error', { volume: 0.5 }); return false; }
+      if (!itemDestroyable(live.current.placeCtx, piece.uid)) { toast('Выданное снаряжение нельзя уничтожить', 'warn'); audio.sfx('error', { volume: 0.5 }); return false; }
       const it = data.lookup('items', piece.id);
-      const ok = await confirmDialog({ title: '销毁道具', text: `道具无法出售。确定要销毁「${it?.name || '道具'}」吗？`, okText: '销毁', danger: true });
+      const ok = await confirmDialog({ title: 'Уничтожить предмет', text: `Предметы нельзя продать. Уничтожить «${it?.name || 'предмет'}»?`, okText: 'Уничтожить', danger: true });
       if (ok && await actions.destroy(piece.uid)) { closeIt(); return true; }
       return false;
     }
@@ -691,7 +668,7 @@ function MatchScreen() {
     return ok;
   }, []);
 
-  /** Back to the own field (返回战场 / the own row). */
+  /** Back to the own field («Вернуться в бой» / the own row). */
   const backHome = useCallback(() => {
     const L = live.current;
     if (L.watching && L.watching !== L.home) {
@@ -728,18 +705,6 @@ function MatchScreen() {
   }, []);
 
   const watchField = useCallback((fid) => { requestWatch(fid); }, []);
-
-  // a spectator seat has no board of its own: in 休整期 / 机变 / round start it is shown the first player still in (as a
-  // tap on that row would — g.watch 'n:<pid>', the read-only board), once per phase; a row switches to another player
-  const scoutedRef = useRef(null);
-  useEffect(() => {
-    if (!spectator || watching || !pub || scoutedRef.current === phaseKey) return;
-    if (phase !== PHASE.PREP && phase !== PHASE.SP_DRAFT && phase !== PHASE.ROUND_START) return;
-    const first = players.find((p) => p.alive !== false && p.status !== 'left');
-    if (!first) return;
-    scoutedRef.current = phaseKey;
-    requestWatch(ownFieldId(first.playerId), first.playerId);
-  }, [spectator, phaseKey, watching]);
 
   // ---- view events (drag & drop, clicks) ----------------------------------------------------------------------
   useEffect(() => {
@@ -972,7 +937,6 @@ function MatchScreen() {
   }, [editable, placeCtx, facing]);
   // the selected piece: gone / not editable → deselect; on the board its range tiles show (rotated to its facing)
   const selEntry = sel ? placeCtx.pieces.get(sel.uid) || null : null;
-  live.current.showPrep = showPrep;
   useEffect(() => { if (sel && (!selEntry || !editable || !showPrep)) setSel(null); }, [sel, selEntry, editable, showPrep]);
   const selRangeKey = selEntry && selEntry.area === 'board' ? `${selEntry.piece.uid}:${selEntry.row},${selEntry.col}:${pieceDir(selEntry.piece)}` : '';
   useEffect(() => {
@@ -981,7 +945,7 @@ function MatchScreen() {
     return () => showRange(view, null, 0, 0, null, SEL_RANGE);
   }, [view, selRangeKey]);
   // the selected piece's underframe on screen: the detail card docks on the side away from it (user playtest #2
-  // item 8 — at some aspect ratios a bench unit's 出售 sat under the left card); the underframe is drawn above every
+  // item 8 — at some aspect ratios a bench unit's «Продать» sat under the left card); the underframe is drawn above every
   // panel anyway (css z-index), this keeps it visible too
   const ufTile = selEntry && editable && showPrep ? pieceTile(selEntry) : null;
   const ufGeo = useTileScreen(view, ufTile ? ufTile.row : null, ufTile ? ufTile.col : null);
@@ -992,7 +956,7 @@ function MatchScreen() {
     const L = live.current;
     const uid = L.sel?.uid;
     const to = uid != null ? retreatSlot(L.placeCtx, uid) : null;
-    if (!to) { toast('整备区已满', 'warn'); audio.sfx('error', { volume: 0.5 }); return; }
+    if (!to) { toast('Зона подготовки заполнена', 'warn'); audio.sfx('error', { volume: 0.5 }); return; }
     setSelBusy(true);
     if (await actions.move(uid, to)) {
       setSel(null);
@@ -1066,7 +1030,7 @@ function MatchScreen() {
     const onKey = async (e) => {
       const act = shortcutFor(e);
       const L = live.current;
-      // dialogs / the guide own the keyboard; behind the 本局信息 / 敌方情报 drawer only Esc (closing it) acts
+      // dialogs / the guide own the keyboard; behind the «Информация о матче» / «Разведданные о противнике» drawer only Esc (closing it) acts
       if (shortcutBlocked(act, { modal: !!document.querySelector('.modal, .guide'), drawer: !!L.drawer })) return;
       if (act === 'escape') {
         if (L.emoteOpen) setEmoteOpen(false);
@@ -1096,15 +1060,6 @@ function MatchScreen() {
         return;
       }
       if (!L.editable) return;
-      if (act === 'retreat' || act === 'sell') {
-        if (!L.showPrep || L.drag || L.facing || L.selBusy || !L.sel) return;
-        const selected = L.placeCtx.pieces.get(L.sel.uid);
-        if (selected?.piece.kind !== 'chess') return;
-        const available = underframeActions(L.placeCtx, L.sel.uid);
-        if (act === 'retreat' && available?.retreat) await retreatSel();
-        else if (act === 'sell' && available?.sell != null) await sellSel();
-        return;
-      }
       const reason = shopBlockReason(act, { priv: L.priv, editable: L.editable });
       if (reason) { audio.sfx('error', { volume: 0.5 }); return; }
       if (act === 'refresh') actions.refresh();
@@ -1129,12 +1084,12 @@ function MatchScreen() {
   // client-side combat: observing a teammate's battle (research 09 §3.1) and the 联防 / 最终攻势 camera halves
   // (an eliminated player auto-observes a teammate's normal field — research 09 "keep-watching" — without asking)
   const watchedFid = watchingOther ? watching : (cc && combat && !alive && battleState && battleState.watch && battleState.kind === 'normal' ? battleState.fieldId : null);
-  // the ‹ › pill: on the 联防 / 最终攻势 field on screen — also one watched with 前往查看 (a leaker, an eliminated spectator)
+  // the ‹ › pill: on the 联防 / 最终攻势 field on screen — also one watched with «Перейти к просмотру» (a leaker, an eliminated spectator)
   const layers = cc && combat && field && field.local && (!watchingOther || field.fieldId === watching) ? cameraLayers(field, pub, myId) : [];
   const progress = cc && phase === PHASE.COMBAT ? teammateProgress(pub, myId) : null;
-  // the bond strip follows the player on screen (DESIGN §20.15, ui/watchBonds.js): a teammate's board / battle (前往查看,
-  // an eliminated player's auto-observed field) → their bonds; a 联防 / 最终攻势 field → the player on the ‹ › half (全景:
-  // yours when you fight there, else the teammate picked with 前往查看 / the field's first player); in battle with the
+  // the bond strip follows the player on screen (DESIGN §20.15, ui/watchBonds.js): a teammate's board / battle («Перейти к просмотру»,
+  // an eliminated player's auto-observed field) → their bonds; a 联防 / 最终攻势 field → the player on the ‹ › half («Общий обзор»:
+  // yours when you fight there, else the teammate picked with «Перейти к просмотру» / the field's first player); in battle with the
   // live layers of the battle on screen (the runner's bondLayers)
   const settleMode = mode === 'settle';
   const strip = screenStrip({
@@ -1145,9 +1100,9 @@ function MatchScreen() {
   const stripFid = strip.fieldId;
   const liveLayers = (combat || settleMode) && battleState?.bondLayers ? battleState.bondLayers : null;
   // the observing pill names the player whose bonds the strip shows (the same teammate as the strip's "👁 name" tag)
-  const observingName = cc && combat && watchedFid ? (!strip.self && stripFid === watchedFid ? strip.name : (players.find((p) => p.fieldId === watchedFid || ownFieldId(p.playerId) === watchedFid)?.name || '队友')) : null;
+  const observingName = cc && combat && watchedFid ? (!strip.self && stripFid === watchedFid ? strip.name : (players.find((p) => p.fieldId === watchedFid || ownFieldId(p.playerId) === watchedFid)?.name || 'Союзник')) : null;
   const watchedP = watchingOther ? (players.find((p) => p.playerId !== myId && (watching === ownFieldId(p.playerId) || (watching === p.fieldId && String(watching).startsWith('n:')))) || null) : null;
-  const watchedName = watchingOther ? (watchedP?.name || players.find((p) => watching === p.fieldId)?.name || '队友') : null;
+  const watchedName = watchingOther ? (watchedP?.name || players.find((p) => watching === p.fieldId)?.name || 'Союзник') : null;
   const stripBonds = strip.bonds;
   // a popup opened from the strip closes when the strip changes hands (another teammate scouted / a ‹ › half / back to
   // the own bonds); one opened from a card's chip keeps its unit owner (it carries its own player either way)
@@ -1201,7 +1156,7 @@ function MatchScreen() {
     return bondPopupPlace(ufShown ? underframeRect(ufGeo, rem) : null, vp, rem, resolved ? dSide : null);
   })();
   // the player's own operators (and the shop / bond member cards) show the loadout's skill / module (DESIGN §16);
-  // a teammate's unit (前往查看 in prep, 联防 / 最终攻势 fields, an observed battle) shows ITS owner's choice, carried by
+  // a teammate's unit («Перейти к просмотру» in prep, 联防 / 最终攻势 fields, an observed battle) shows ITS owner's choice, carried by
   // the unit (UnitInfo skillIndex / moduleId: the sim's, or Match.prepFieldMeta's) — never the viewer's loadout
   const detailLoadout = (() => {
     if (!resolved || resolved.type !== 'chess') return null;
@@ -1218,7 +1173,7 @@ function MatchScreen() {
   // cards read the strip's (ui/watchBonds.js detailBondOwner)
   const detailOwner = detailBondOwner(detailTarget, { pub, myId, stripOwnerId: strip.ownerId });
   const detailBonds = detailOwner === strip.ownerId ? stripBonds : playerBonds({ pub, priv, myId, ownerId: detailOwner, live: liveLayers });
-  // bonds this mode never activates (标准: 10 of 23, 奥术 among them) — shown 本局禁用 on cards, chips and the popup
+  // bonds this mode never activates (标准: 10 of 23, 奥术 among them) — shown «Отключено в этом матче» on cards, chips and the popup
   const offBonds = modeOffBonds(getMode(pub?.modeId));
 
   return html`<div class=${cx('screen', 'gm', `gm--${mode}`, drag && 'is-dragging', collapsed && 'is-collapsed', sp && 'has-sp', pen && 'is-pen', readyWhy && 'has-readywhy')}
@@ -1235,7 +1190,7 @@ function MatchScreen() {
         readyBusy=${readyBusy} readyCount=${readyCount} playerCount=${solo ? 1 : aliveCount}
         pen=${pen} penAvail=${penAvail} onPen=${togglePen} config=${gd.config} frozenAt=${frozenAt}
         pause=${canPause || paused ? { show: canPause, paused, busy: pauseBusy, onToggle: () => togglePause(!paused) } : null}
-        live=${liveLpNow} spectator=${spectator} />
+        live=${liveLpNow} />
 
       <div class="gm__bonds">
         <${BondStrip} bonds=${stripBonds} layersDisabled=${layersDisabled} openId=${bondPop && bondPop.ownerId === strip.ownerId ? bondPop.bondId : null}
@@ -1249,8 +1204,8 @@ function MatchScreen() {
       <div class="gm__effects"><${EffectsList} effects=${priv?.effects} /></div>
 
       ${watchingOther && !combat ? html`<div class="gm__watching" role="status">
-        <${GIcon} name="eye" /><span>正在查看 <b>${watchedName}</b> 的阵地（只读）</span>
-        ${spectator ? null : html`<${Button} size="sm" variant="primary" icon="back" onClick=${() => watchPlayer({ playerId: myId })}>返回自己<//>`}
+        <${GIcon} name="eye" /><span>Просмотр позиции <b>${watchedName}</b> (только чтение)</span>
+        <${Button} size="sm" variant="primary" icon="back" onClick=${() => watchPlayer({ playerId: myId })}>Вернуться к себе<//>
       </div>` : null}
 
       ${showShop ? html`<${ShopBar} priv=${priv} editable=${editable} collapsed=${collapsed} onCollapse=${setCollapsed}
@@ -1266,19 +1221,17 @@ function MatchScreen() {
         onMinimize=${(m) => { setRewardMin(m); if (!m) setCollapsed(false); }} />` : null}
 
       ${combat || mode === 'settle' ? html`<${CombatHud} pub=${pub} myId=${myId} watching=${watchingNow} hud=${hud} myDone=${!!myDone && alive}
-        spectating=${!alive} spectator=${spectator} onWatch=${watchField}
+        spectating=${!alive} onWatch=${watchField}
         client=${cc ? { progress, observing: observingName ? { name: observingName } : null, onBack: alive ? backHome : null, layers, layer, onLayer: setLayer } : null} />` : null}
 
-      ${showDeadPill(alive, phase) ? (spectator
-        ? html`<div class="gm__dead gm__dead--spectator" role="status"><${GIcon} name="eye" />观战中 · 点击左侧成员头像切换查看</div>`
-        : html`<div class="gm__dead" role="status"><${Icon} name="close" />你已被淘汰 · 可继续观战队友</div>`) : null}
+      ${showDeadPill(alive, phase) ? html`<div class="gm__dead" role="status"><${Icon} name="close" />Вы выбыли · можно продолжить наблюдение за союзниками</div>` : null}
 
       <${Ticker} />
 
       <div class="gm__corner">
-        ${spectator ? null : html`<${EmoteWheel} open=${emoteOpen} onToggle=${setEmoteOpen} onSend=${(id) => actions.emote(id)} disabled=${conn.status !== 'online'} />`}
-        <button type="button" class="gm__gear" aria-label="设置" title="设置" onClick=${() => setSettingsOpen(true)}><${GIcon} name="gear" /></button>
-        <button type="button" class="gm__gear gm__guide" aria-label="玩法说明" title="玩法说明" onClick=${() => openGuide(0)}><${Icon} name="book" /></button>
+        <${EmoteWheel} open=${emoteOpen} onToggle=${setEmoteOpen} onSend=${(id) => actions.emote(id)} disabled=${conn.status !== 'online'} />
+        <button type="button" class="gm__gear" aria-label="Настройки" title="Настройки" onClick=${() => setSettingsOpen(true)}><${GIcon} name="gear" /></button>
+        <button type="button" class="gm__gear gm__guide" aria-label="Как играть" title="Как играть" onClick=${() => openGuide(0)}><${Icon} name="book" /></button>
         <${FullscreenButton} class="gm__gear gm__fs" />
       </div>
 
@@ -1318,4 +1271,3 @@ function MatchScreen() {
     <${ExitModal} open=${exitOpen} onClose=${() => setExitOpen(false)} solo=${solo} />
   </div>`;
 }
-

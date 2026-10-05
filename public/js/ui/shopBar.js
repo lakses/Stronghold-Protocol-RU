@@ -1,22 +1,22 @@
-// Bottom shop bar (research 06 §11.2 / D3): LEVEL card (upgrade price hex, 升级), 3–5 operator cards
+// Bottom shop bar (research 06 §11.2 / D3): LEVEL card (upgrade price hex, «Улучшить»), 3–5 operator cards
 // (tier chip, price hex with discount/markup colours, portrait, bonds — a bond the mode never activates struck through,
-// 本局禁用 — class, frozen overlay, sold state,
-// merge progress), the item card, the funds card with ✕ 收起; above it 剩余可放置角色, 冻结/解冻 and 刷新.
+// «Отключено в этом матче» — class, frozen overlay, sold state,
+// merge progress), the item card, the funds card with ✕ «Свернуть»; above it «Осталось мест для размещения», «Заморозить/Разморозить» and «Обновить».
 // Buying and upgrading take two taps (research 09 §5 / §6.5, official `EventOnFirstClick` → `EventOnConfirm` /
-// `EventOnUpgrade`): the first tap selects a card — it lifts and enlarges, its detail opens and it shows 确认购买
-// (无法购买 + the reason when it cannot be bought) — and a second tap on the same card buys it; the LEVEL card's first
-// tap arms 确认升级 and the second upgrades (已满级 at level 6). A tap anywhere else, a shop change or the end of the
-// editable phase disarms. A tap anywhere on a card is the card's tap — its 确认购买 strip included (it takes no
+// `EventOnUpgrade`): the first tap selects a card — it lifts and enlarges, its detail opens and it shows «Подтвердить покупку»
+// («Купить нельзя» + the reason when it cannot be bought) — and a second tap on the same card buys it; the LEVEL card's first
+// tap arms «Подтвердить улучшение» and the second upgrades («Максимальный уровень» at level 6). A tap anywhere else, a shop change or the end of the
+// editable phase disarms. A tap anywhere on a card is the card's tap — its «Подтвердить покупку» strip included (it takes no
 // pointer): there is no ⓘ corner (the official cards have none; user playtest #6 item 10 — on phones its invisible
 // 44 px touch area covered the card's bottom-right quarter, half the strip, and a second tap there only re-opened the
 // detail); a card that cannot be bought right now (the bar is not editable: ready, round start) opens its detail. The
-// D / R / F keys stay one-press shortcuts. There is no drag-to-sell zone: selling is the 出售 +N button of a tapped
+// D / R / F keys stay one-press shortcuts. There is no drag-to-sell zone: selling is the «Продать +N» button of a tapped
 // unit's underframe (ui/underframe.js). After a promotion the operator cards are replaced by
-// the 晋升奖励 cards (3 free operators, pick 1 — also two taps) until picked or put off (稍后 → rewardOverlay.js pill);
-// a special refresh (凯瑟琳 定向投放's 3 items, 娜仁图亚, 寻呼模块, 信标, 松果) takes the same place under its own name, an
+// the «Награда за повышение» cards (3 free operators, pick 1 — also two taps) until picked or put off («Позже» → rewardOverlay.js pill);
+// a special refresh (凯瑟琳 «Направленная поставка»'s 3 items, 娜仁图亚, 寻呼模块, 信标, 松果) takes the same place under its own name, an
 // item slot drawn as an item card (player report #6 after 0.1.0).
-// Every operator card shows the skill it will fight with — the player's 干员调配 loadout (m.private.loadout, DESIGN
-// §16): the skill icon above the name, mint-framed with 已调配 in its title when it is not the default skill (and the
+// Every operator card shows the skill it will fight with — the player's «Настройка операторов» loadout (m.private.loadout, DESIGN
+// §16): the skill icon above the name, mint-framed with «Настроено» in its title when it is not the default skill (and the
 // module type of an elite card, with its official type icon when the local-client art has it).
 
 import { useEffect, useState } from '../../vendor/hooks.module.js';
@@ -34,26 +34,26 @@ function PriceHex({ slot, free, poor = false }) {
   if (free || price === 0) return html`<span class="scard__free">FREE</span>`;
   // like the original (img_bg_price_not_enough) the price turns grey while the funds don't cover it
   return html`<${HexBadge} value=${price} tone=${poor ? 'dark' : tone} size="md" class=${cx('scard__price', poor && 'is-poor')}
-    title=${poor ? '资金不足' : tone === 'discount' ? `折扣价（原价 ${slot.basePrice}）` : tone === 'premium' ? `加价（原价 ${slot.basePrice}）` : '价格'} />`;
+    title=${poor ? 'Недостаточно средств' : tone === 'discount' ? `Со скидкой (обычная цена ${slot.basePrice})` : tone === 'premium' ? `С наценкой (обычная цена ${slot.basePrice})` : 'Цена'} />`;
 }
 
 /** Data lookups for shopBlockReason (full-hand purchases that complete a merge stay allowed). */
 const LOOKUPS = { getChess: (id) => data.lookup('chess', id), getItem: (id) => data.lookup('items', id) };
 
 /**
- * Where a merge-completing buy sends the elite (DESIGN §20.11), null when the card completes no merge: the 可晋升 tag's
+ * Where a merge-completing buy sends the elite (DESIGN §20.11), null when the card completes no merge: the «Можно повысить» tag's
  * title, and a line of the detail card the first tap opens — a touch screen never shows a title (QA 6b).
  */
 export function mergeHint(priv, chessId) {
   const prog = mergeProgress(priv, chessId, LOOKUPS.getChess);
   if (!(prog.copies > 0 && prog.copies + 1 >= prog.need)) return null;
-  return mergeTarget(priv, chessId, LOOKUPS.getChess) ? '精锐干员将出现在作战区原位置' : '精锐干员将进入整备区';
+  return mergeTarget(priv, chessId, LOOKUPS.getChess) ? 'Элитный оператор появится на прежнем месте в зоне боя' : 'Элитный оператор отправится в зону подготовки';
 }
 
-/** The armed (first-tapped) card's confirm strip: 确认购买 / 确认选择, or 无法购买 + why. */
+/** The armed (first-tapped) card's confirm strip: «Подтвердить покупку» / «Подтвердить выбор», or «Купить нельзя» + why. */
 function ArmedTag({ reason, free }) {
-  if (reason) return html`<span class="scard__confirm is-no" role="status"><b>无法购买</b><small>${reason}</small></span>`;
-  return html`<span class="scard__confirm" role="status"><b>${free ? '确认选择' : '确认购买'}</b><small>再次点击</small></span>`;
+  if (reason) return html`<span class="scard__confirm is-no" role="status"><b>Купить нельзя</b><small>${reason}</small></span>`;
+  return html`<span class="scard__confirm" role="status"><b>${free ? 'Подтвердить выбор' : 'Подтвердить покупку'}</b><small>Нажмите ещё раз</small></span>`;
 }
 
 /**
@@ -74,14 +74,14 @@ export function ChessCard({ slot, idx, priv, frozen = false, reason = null, free
   const tap = () => { if (onTap) onTap(idx); else if (!disabled) onBuy(idx); else onDetail(slot.id, 'chess', hint); };
   const card = html`<button type="button" class=${cx('scard', `scard--t${tier}`, frozen && 'is-frozen', disabled && 'is-disabled', willMerge && 'is-merge', armed && 'is-armed')}
       onClick=${tap} onContextMenu=${(e) => { e.preventDefault(); onDetail(slot.id, 'chess', hint); }}
-      aria-label=${`${c?.name || '干员'}，价格 ${slot.price}${armed ? (disabled ? '，无法购买' : '，再次点击确认') : ''}`} aria-pressed=${onTap ? String(!!armed) : undefined}>
+      aria-label=${`${c?.name || 'Оператор'}, цена ${slot.price}${armed ? (disabled ? ', покупка невозможна' : ', нажмите ещё раз для подтверждения') : ''}`} aria-pressed=${onTap ? String(!!armed) : undefined}>
     <span class="scard__bg" aria-hidden="true"></span>
     <span class="scard__water" aria-hidden="true">${bonds[0] ? html`<${BondGlyph} bondId=${bonds[0]} />` : null}</span>
     <${Img} src=${chessPortraitUrl(m, c)} class="scard__art" />
     <span class="scard__top">
       <${TierChip} tier=${tier} size="md" />
       <${PriceHex} slot=${slot} free=${free} poor=${reason === '资金不足'} />
-      ${prog.copies > 0 ? html`<span class="scard__pips" title=${`已拥有 ${prog.copies}/${prog.need}`}>
+      ${prog.copies > 0 ? html`<span class="scard__pips" title=${`Уже есть ${prog.copies}/${prog.need}`}>
         ${Array.from({ length: prog.need }, (_, i) => html`<i key=${i} class=${i < prog.copies ? 'on' : ''}></i>`)}
       </span>` : null}
     </span>
@@ -100,14 +100,14 @@ export function ChessCard({ slot, idx, priv, frozen = false, reason = null, free
         <span>${c?.subProfessionName || ''}</span>
       </span>
     </span>
-    ${willMerge ? html`<span class="scard__mergetag" title=${hint}>可晋升</span>` : null}
+    ${willMerge ? html`<span class="scard__mergetag" title=${hint}>Можно повысить</span>` : null}
     ${frozen ? html`<span class="scard__ice" aria-hidden="true"><${Icon} name="snow" /></span>` : null}
     ${armed ? html`<${ArmedTag} reason=${reason} free=${free} />` : null}
   </button>`;
   return reason && reason !== '已售出' && !armed ? html`<${Tooltip} text=${reason} block=${true} class="scard-wrap">${card}<//>` : card;
 }
 
-/** The loadout's skill (icon; name + 已调配 in the tooltip) and an elite's module type, on an operator card. */
+/** The loadout's skill (icon; name + «Настроено» in the tooltip) and an elite's module type, on an operator card. */
 function SkillBadge({ chess, lo }) {
   const m = data.get('assets');
   const custom = !lo.defaultSkill;
@@ -115,7 +115,7 @@ function SkillBadge({ chess, lo }) {
   const src = custom ? skillRecordIconUrl(m, lo.skill, { empty: false }) : skillIconUrl(m, chess);
   const slot = Number.isInteger(lo.skill.index) ? `S${lo.skill.index + 1}` : null;
   const mod = lo.module && !lo.module.none ? lo.module : null;
-  const tip = `技能${slot ? ` ${slot}` : ''}：${lo.skill.name || ''}${custom ? '（已调配）' : ''}${mod ? ` · 模组：${mod.name}` : lo.module?.none ? ' · 未装备模组' : ''}`;
+  const tip = `Навык${slot ? ` ${slot}` : ''}: ${lo.skill.name || ''}${custom ? ' (настроено)' : ''}${mod ? ` · Модуль: ${mod.name}` : lo.module?.none ? ' · Модуль не установлен' : ''}`;
   return html`<span class=${cx('scard__skill', custom && 'is-custom')} title=${tip} aria-label=${tip} data-skill=${lo.skill.skillId || ''}>
     <${Img} src=${src} fallback=${slot ? html`<span class="scard__sglyph num">${slot}</span>` : html`<${GIcon} name="bolt" />`} />
     ${mod && mod.typeName ? html`<span class="scard__mod" data-type=${mod.typeName}><${Img} src=${moduleTypeIconUrl(data.get('local'), mod.typeName)} class="scard__modicon" />${mod.typeName}</span>` : null}
@@ -134,7 +134,7 @@ export function ItemCard({ slot, idx, frozen = false, reason = null, free = fals
   const tap = () => { if (onTap) onTap(idx); else if (!disabled) onBuy(idx); else onDetail(slot.id, 'item'); };
   const card = html`<button type="button" class=${cx('scard', 'scard--item', frozen && 'is-frozen', disabled && 'is-disabled', armed && 'is-armed')}
       onClick=${tap} onContextMenu=${(e) => { e.preventDefault(); onDetail(slot.id, 'item'); }}
-      aria-label=${`${it?.name || '装备'}，价格 ${slot.price}${armed ? (disabled ? '，无法购买' : '，再次点击确认') : ''}`}
+      aria-label=${`${it?.name || 'Снаряжение'}, цена ${slot.price}${armed ? (disabled ? ', покупка невозможна' : ', нажмите ещё раз для подтверждения') : ''}`}
       aria-pressed=${onTap ? String(!!armed) : undefined}>
     <span class="scard__bg" aria-hidden="true"></span>
     <span class="scard__top">
@@ -153,8 +153,8 @@ export function ItemCard({ slot, idx, frozen = false, reason = null, free = fals
 }
 
 function SoldCard({ item = false }) {
-  return html`<div class=${cx('scard', 'scard--sold', item && 'scard--item')} aria-label="已售出">
-    <span class="scard__soldtxt"><${MicroLabel}>SOLD OUT</${MicroLabel}><span>${item ? '已购买' : '已招募'}</span></span>
+  return html`<div class=${cx('scard', 'scard--sold', item && 'scard--item')} aria-label="Продано">
+    <span class="scard__soldtxt"><${MicroLabel}>SOLD OUT</${MicroLabel}><span>${item ? 'Куплено' : 'Нанято'}</span></span>
   </div>`;
 }
 
@@ -163,14 +163,14 @@ function LevelCard({ shop, reason, armed = false, onTap }) {
   const max = lv >= (shop?.maxLevel ?? 6);
   const price = shop?.upgradePrice ?? 0;
   return html`<button type="button" class=${cx('lvcard', max && 'is-max', reason && 'is-disabled', armed && 'is-armed')} onClick=${() => !reason && onTap()}
-      title=${reason || (armed ? `再次点击确认升级（${price} 资金）` : `升级调度中心（${price} 资金） · D`)} aria-disabled=${reason ? 'true' : 'false'}
+      title=${reason || (armed ? `Нажмите ещё раз для подтверждения улучшения (${price} средств)` : `Улучшить диспетчерский центр (${price} средств) · D`)} aria-disabled=${reason ? 'true' : 'false'}
       aria-pressed=${String(!!armed)}>
     ${!max ? html`<${HexBadge} value=${price} tone=${reason && reason !== '调度中心已达最高等级' ? 'dark' : 'gold'} size="md" class="lvcard__price" />` : null}
     <span class="lvcard__frame">
       <span class="lvcard__micro">LEVEL</span>
       <b class="lvcard__num num">${lv}</b>
     </span>
-    <span class="lvcard__label">${max ? '已满级' : armed ? '确认升级' : '升级'}</span>
+    <span class="lvcard__label">${max ? 'Максимальный уровень' : armed ? 'Подтвердить улучшение' : 'Улучшить'}</span>
     <kbd class="lvcard__key">D</kbd>
   </button>`;
 }
@@ -217,12 +217,12 @@ export function useTwoTap({ editable, keys }) {
 }
 
 /**
- * A free pick-one offer in place of the bar's operator cards (pick 1 — g.reward idx — or put it off: 稍后选择 → the
+ * A free pick-one offer in place of the bar's operator cards (pick 1 — g.reward idx — or put it off: «Выбрать позже» → the
  * normal shop + a reminder pill): the promotion reward (research 00 §3: 3 free operators of tier min(level+1, 6)) and
- * the special refreshes of strategies, items and 特质 — e.g. 凯瑟琳 【定向投放】 "在调度中心刷新随机3件装备，可以选择并获得
- * 其中1件". Each slot is drawn by its kind: an item slot is an item card (icon, name, tier, description, FREE) — player
+ * the special refreshes of strategies, items and 特质 — e.g. 凯瑟琳 【定向投放】 «в диспетчерском центре обновляются 3 случайных предмета снаряжения; можно выбрать и получить
+ * один из них». Each slot is drawn by its kind: an item slot is an item card (icon, name, tier, description, FREE) — player
  * report #6 after 0.1.0, the items used to be drawn as nameless operator cards — and the header names the offer
- * (gameLogic.offerHeader: 晋升奖励 / the strategy's effect name …; "之后还有 N 项" while more offers wait behind it).
+ * (gameLogic.offerHeader: «Награда за повышение» / the strategy's effect name …; «После ещё N» while more offers wait behind it).
  */
 export function RewardCards({ offer, priv, editable, onPick, onDetail, onLater, armed, onTap, offBonds = null }) {
   const head = offerHeader(offer);
@@ -233,11 +233,11 @@ export function RewardCards({ offer, priv, editable, onPick, onDetail, onLater, 
       <span class="rwtag__micro">${head.micro}</span>
       <span class="rwtag__sub">${head.sub}</span>
       ${head.more ? html`<span class="rwtag__sub rwtag__more">${head.more}</span>` : null}
-      <button type="button" class="rwtag__later" onClick=${onLater} title="稍后选择（回合结束后消失）"><${Icon} name="minus" />稍后</button>
+      <button type="button" class="rwtag__later" onClick=${onLater} title="Выбрать позже"><${Icon} name="minus" />Позже</button>
     </div>
     <div class="shopbar__rwcards">
       ${offer.slots.map((s, i) => {
-        if (!s || s.sold) return html`<div key=${`rw${i}`} class=${cx('scard', 'scard--sold', s && s.kind === 'item' && 'scard--item')}><span class="scard__soldtxt"><span>已选择</span></span></div>`;
+        if (!s || s.sold) return html`<div key=${`rw${i}`} class=${cx('scard', 'scard--sold', s && s.kind === 'item' && 'scard--item')}><span class="scard__soldtxt"><span>Уже выбрано</span></span></div>`;
         const kind = s.kind === 'item' ? 'item' : 'chess';
         const reason = shopBlockReason('reward', { priv, editable, slot: s, ...LOOKUPS });
         const props = { slot: { ...s, price: 0 }, idx: i, free: true, reason, armed: armed === armKey('r', i, s), onBuy: onPick, onDetail,
@@ -303,22 +303,22 @@ export function ShopBar({ priv, editable, collapsed, onCollapse, onBuy, onLevel,
   if (collapsed) {
     return html`<div class="shopbar-tab" ref=${barRef}>
       <div class="shopbar-tab__funds"><${CoinGlyph} /><b class="num">${funds}</b></div>
-      <button type="button" class="shopbar-tab__btn" onClick=${() => onCollapse(false)}><${Icon} name="chevronLeft" />展开商店</button>
+      <button type="button" class="shopbar-tab__btn" onClick=${() => onCollapse(false)}><${Icon} name="chevronLeft" />Развернуть магазин</button>
     </div>`;
   }
 
-  return html`<section class=${cx('shopbar', frozen && 'is-frozen', !editable && 'is-locked', showReward && 'has-reward', armed && 'has-armed')} ref=${barRef} aria-label="调度中心">
+  return html`<section class=${cx('shopbar', frozen && 'is-frozen', !editable && 'is-locked', showReward && 'has-reward', armed && 'has-armed')} ref=${barRef} aria-label="Диспетчерский центр">
     <div class="shopbar__tools">
-      <span class="shopbar__remain">剩余可放置角色：<b class=${cx('num', remaining === 0 && 't-orange')}>${remaining}</b></span>
+      <span class="shopbar__remain">Осталось мест для размещения: <b class=${cx('num', remaining === 0 && 't-orange')}>${remaining}</b></span>
       <button type="button" class=${cx('toolbtn', 'toolbtn--ice', frozen && 'is-on')} disabled=${!!frzReason} onClick=${onFreeze}
-        title=${frzReason || (frozen ? '解冻商店 · F' : '冻结商店（下回合保留） · F')}>
+        title=${frzReason || (frozen ? 'Разморозить магазин · F' : 'Заморозить магазин (сохранится до следующего раунда) · F')}>
         <${Img} src=${uiUrl(data.get('assets'), frozen ? 'shopPanel/frozen_icon2' : 'shopPanel/frozen_icon')} class="toolbtn__img" fallback=${html`<${Icon} name="snow" />`} />
-        <span>${frozen ? '解冻' : '冻结'}</span><kbd>F</kbd>
+        <span>${frozen ? 'Разморозить' : 'Заморозить'}</span><kbd>F</kbd>
       </button>
-      <button type="button" class="toolbtn toolbtn--amber" disabled=${!!refReason} onClick=${onRefresh} title=${refReason || '刷新商店 · R'}>
+      <button type="button" class="toolbtn toolbtn--amber" disabled=${!!refReason} onClick=${onRefresh} title=${refReason || 'Обновить магазин · R'}>
         <${Img} src=${uiUrl(data.get('assets'), 'shopPanel/refresh_icon')} class="toolbtn__img" fallback=${html`<${Icon} name="refresh" />`} />
-        <span>刷新</span>
-        ${free > 0 ? html`<span class="toolbtn__free">免费 ×${free}</span>` : html`<${HexBadge} value=${shop.refreshPrice ?? 1} tone=${refReason ? 'dark' : 'gold'} size="sm" />`}
+        <span>Обновить</span>
+        ${free > 0 ? html`<span class="toolbtn__free">Бесплатно ×${free}</span>` : html`<${HexBadge} value=${shop.refreshPrice ?? 1} tone=${refReason ? 'dark' : 'gold'} size="sm" />`}
         <kbd>R</kbd>
       </button>
     </div>
@@ -349,8 +349,8 @@ export function ShopBar({ priv, editable, collapsed, onCollapse, onBuy, onLevel,
           <${CoinGlyph} class="funds__coin" />
           <b class="funds__num num">${funds}</b>
         </div>
-        <span class="funds__label">目前资金</span>
-        <button type="button" class="funds__collapse" onClick=${() => onCollapse(true)}><${Icon} name="close" />收起</button>
+        <span class="funds__label">Текущие средства</span>
+        <button type="button" class="funds__collapse" onClick=${() => onCollapse(true)}><${Icon} name="close" />Свернуть</button>
       </div>
     </div>
   </section>`;

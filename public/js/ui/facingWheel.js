@@ -4,11 +4,12 @@
 // directional Art (画卷) — the piece stays on the tile as a ghost and this overlay opens:
 //   * a white diamond centred on the tile, ~3 tiles across its diagonal, a smaller inner diamond (the centre
 //     dead-zone, ~0.5 tile) and 4 chevrons (UP / RIGHT / DOWN / LEFT);
-//   * a red "✕ 点击取消" tag on the diamond's upper-left edge;
+//   * a red "✕ Нажмите, чтобы отменить" tag on the diamond's upper-left edge;
 //   * press and drag from the centre: past the dead-zone that side's chevron lights and the unit's range grid, rotated
 //     to that direction (DESIGN §3), shows as orange striped tiles (view.highlightTiles group 'facing' under the units
 //     + a striped SVG layer — slotted between the 3D board canvas and the Pixi canvas when the 3D board is on, so the
-//     units stand on the stripes; an overlay otherwise); outside the centre the tooltip "拖回中心区域取消" shows;
+//     units stand on the stripes; an overlay otherwise); outside the centre the tooltip "Верните к центру, чтобы
+//     отменить" shows;
 //   * on the mirrored right half of the Final Assault prep a screen direction maps to its board direction (RIGHT ↔
 //     LEFT, facing.js boardDir): the chevrons follow the finger, the range / model / intent use the board direction;
 //   * release outside the centre commits (g.move {uid, to, dir} / g.art {…, dir}); release inside the centre, a tap
@@ -249,7 +250,7 @@ export function FacingWheel({ view, row, col, grid, name = '', onPreview, onComm
 
   const outside = !!drag && !!dir;
   const box = half * 2;
-  return html`<div class=${cx('fwheel', drag && 'is-pressed', dir && `is-${dir.toLowerCase()}`)} role="dialog" aria-label=${`选择${name ? `「${name}」的` : ''}朝向`}
+  return html`<div class=${cx('fwheel', drag && 'is-pressed', dir && `is-${dir.toLowerCase()}`)} role="dialog" aria-label=${`Выбор направления${name ? ` для «${name}»` : ''}`}
       onPointerDown=${onDown} onPointerMove=${onMove} onPointerUp=${onUp} onPointerCancel=${onPointerCancel}
       onContextMenu=${(e) => { e.preventDefault(); onCancel(); }}>
     ${g ? html`<${Stripes} tiles=${tiles} view=${view} row=${row} col=${col} />` : null}
@@ -264,12 +265,12 @@ export function FacingWheel({ view, row, col, grid, name = '', onPreview, onComm
         ${DIRS.map((d) => html`<${Chevron} key=${d} dir=${d} on=${dir === d} />`)}
       </svg>
       <button type="button" class="fwheel__cancel" onPointerDown=${(e) => e.stopPropagation()}
-        onClick=${(e) => { e.stopPropagation(); onCancel(); }} aria-label="点击取消">
+        onClick=${(e) => { e.stopPropagation(); onCancel(); }} aria-label="Нажмите, чтобы отменить">
         <${LocalSprite} name="cancel_icon" class="fwheel__x" fallback=${html`<span class="fwheel__x fwheel__x--txt">✕</span>`} />
-        <span>点击取消</span>
+        <span>Нажмите, чтобы отменить</span>
       </button>
-      ${outside ? html`<span class="fwheel__tip" role="status">拖回中心区域取消</span>` : null}
-      <span class="fwheel__sr" aria-live="polite">${dir ? `朝向：${DIR_LABEL[dir]}` : ''}</span>
+      ${outside ? html`<span class="fwheel__tip" role="status">Верните к центру, чтобы отменить</span>` : null}
+      <span class="fwheel__sr" aria-live="polite">${dir ? `Направление: ${DIR_LABEL[dir]}` : ''}</span>
     </div>` : null}
   </div>`;
 }

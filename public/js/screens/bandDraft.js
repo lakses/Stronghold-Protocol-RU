@@ -1,22 +1,24 @@
-// Band draft — BAND_DRAFT "2/2 选择策略" (research 06 §4.2, D1): left = draft order (avatar, name, state:
-// … waiting / ⌛ 决策中 / chosen band ✓), current picker highlighted; centre = grid of every band allowed
-// for the mode type (icon, name, LP); a band a teammate already picked carries the picker's avatar and is marked
-// 队友已选 — it cannot be chosen again (research 09 §5, guidebook 策略与轮选; the server refuses it too); right =
-// detail pane (icon, 初始生命值, name, effect name + rich description) with 跳过 (co-op, once) and 确认选择.
-// One countdown (user playtest #4 item 4): every turn has the same clock (Match BAND_TURN_SECONDS, m.public.draft
-// turnSeconds) and the step header counts it down — m.public.deadline IS the turn's end, the same number as the
-// current picker's row. The highlighted band (the detail pane's) is what a turn that runs out takes: every change of it
-// is reported (g.bandFocus) and the server assigns it while it is free, else 「华法琳」, else the first free strategy
-// (timeoutBand). It starts on that default, so the tip under the order list always names what a timeout gives.
-// Solo, and a co-op match with a single human (the server's soloUntimed: draft.untimed): no clock at all.
-// A strategy built around a bond the mode switches off (bands.json bondIds ∩ the mode's inactive bonds — 标准: 潘格尼尼
-// 拉特兰, 克莱门莎 阿戈尔, 玛恩纳 卡西米尔; the bot never picks one) reads 本局禁用 on its card and in the detail pane
-// (BandOffTag / BandOffNote, DESIGN §21.26, §21.7's look); it stays selectable — information only.
-// 本局信息 (GitHub issue #8 item 1, "选策略时没法返回查看禁用的干员和盟约"): 查看禁用盟约与干员 under the order list opens the
-// briefing's bond rows, legend and 本局禁用干员 again, read-only (ui/matchInfo.js MatchInfoDialog — the very blocks of the
-// briefing). The draft runs on underneath: its status line repeats the current turn and the countdown (draftInfoStatus),
-// a turn change (a pick, a skip, a turn that runs out, an AI pick) closes it, the end of the draft unmounts it, and it
-// never touches the highlighted band or the buttons.
+// Band draft — BAND_DRAFT «2/2 Выбор стратегии» (research 06 §4.2, D1): слева — порядок ходов (аватар, имя, состояние:
+// … ожидает / ⌛ выбирает / стратегия выбрана ✓), текущий выбирающий подсвечен; в центре — сетка всех стратегий,
+// разрешённых для типа режима (иконка, имя, ЖЦ); стратегия, уже выбранная союзником, несёт аватар выбравшего и помечена
+// «Выбрано союзником» — её нельзя выбрать повторно (research 09 §5, guidebook «Стратегии и поочерёдный выбор»; сервер тоже
+// откажет); справа — панель подробностей (иконка, начальный запас жизней, имя, название эффекта + форматированное описание),
+// с кнопками «Пропустить» (совместная игра, один раз) и «Подтвердить выбор».
+// Один отсчёт (user playtest #4 item 4): у каждого хода одни и те же часы (Match BAND_TURN_SECONDS, m.public.draft
+// turnSeconds), и шапка шага ведёт обратный отсчёт — m.public.deadline И ЕСТЬ конец хода, то же число, что и в строке текущего
+// выбирающего. Подсвеченная стратегия (та, что в панели подробностей) — это то, что получает ход, истёкший по времени: каждое её
+// изменение сообщается на сервер (g.bandFocus), и сервер назначает её, если она свободна, иначе «Хуа Фалинь», иначе первую
+// свободную стратегию (timeoutBand). Выбор начинается с этого значения по умолчанию, поэтому подсказка под списком ходов
+// всегда называет то, что даст таймаут.
+// Одиночная игра и совместный матч с одним человеком (серверный soloUntimed: draft.untimed): часов вообще нет.
+// Стратегия, построенная вокруг альянса, который режим отключает (bands.json bondIds ∩ неактивные альянсы режима — «Стандарт»:
+// 潘格尼尼 → 拉特兰, 克莱门莎 → 阿戈尔, 玛恩纳 → 卡西米尔; бот такую никогда не берёт), несёт метку «Отключено в этом матче» на карточке
+// и в панели подробностей (BandOffTag / BandOffNote, DESIGN §21.26, внешний вид §21.7); она остаётся выбираемой — только для информации.
+// «Информация о матче» (GitHub issue #8 item 1, «при выборе стратегии нельзя вернуться и посмотреть запрещённых операторов и альянсы»):
+// «Посмотреть отключённые альянсы и операторов» под списком ходов снова открывает строки альянсов, легенду и «Запрещённых операторов матча»
+// из брифинга, только для чтения (ui/matchInfo.js MatchInfoDialog — те же самые блоки, что и в брифинге). Черновик при этом продолжает
+// работать: его строка состояния повторяет текущий ход и отсчёт (draftInfoStatus), смена хода (выбор, пропуск, истёкший ход,
+// выбор AI) закрывает диалог, конец черновика его размонтирует, и он никогда не касается подсвеченной стратегии или кнопок.
 
 import { useEffect, useMemo, useRef, useState } from '../../vendor/hooks.module.js';
 import { html, Button, Icon, MicroLabel, useTicker, secondsLeft } from '../ui/components.js';
@@ -31,19 +33,19 @@ import { modeOffBonds, bandOffBonds, bandOffLine } from '../ui/gameLogic.js';
 
 const cx = (...p) => p.flat().filter(Boolean).join(' ');
 
-/** 本局禁用 on a strategy card whose bonds `names` the mode switches off (bandOffBonds); nothing otherwise. */
+/** «Отключено в этом матче» на карточке стратегии, чьи альянсы `names` отключены режимом (bandOffBonds); иначе — ничего. */
 export function BandOffTag({ names = [] }) {
-  return names.length ? html`<span class="dband__off" title=${bandOffLine(names)}>本局禁用</span>` : null;
+  return names.length ? html`<span class="dband__off" title=${bandOffLine(names)}>Отключено в этом матче</span>` : null;
 }
 
-/** The detail pane's note for such a strategy: "本局禁用【拉特兰】盟约，此策略效果可能无法发挥" (the bond names struck through). */
+/** Пояснение в панели подробностей для такой стратегии: «В этом матче отключён альянс «Латеран», эффект стратегии может не сработать» (названия альянсов зачёркнуты). */
 export function BandOffNote({ names = [] }) {
   if (!names.length) return null;
-  return html`<p class="draft-detail__off" role="note" aria-label=${bandOffLine(names)}><${Icon} name="info" /><span>本局禁用${names.map((n, i) => html`<span key=${i}>【<s class="draft-detail__offname">${n}</s>】</span>`)}盟约，此策略效果可能无法发挥</span></p>`;
+  return html`<p class="draft-detail__off" role="note" aria-label=${bandOffLine(names)}><${Icon} name="info" /><span>В этом матче отключён альянс ${names.map((n, i) => html`<span key=${i}>«<s class="draft-detail__offname">${n}</s>»</span>`)}: эффект стратегии может не сработать</span></p>`;
 }
 
 /**
- * Bands selectable in a mode (modeTypeList contains the mode's type), sorted by sortId.
+ * Стратегии, доступные в режиме (modeTypeList содержит тип режима), отсортированные по sortId.
  * @param {any[]} bands
  * @param {string|null} modeType 'SINGLE'|'MULTI'
  */
@@ -54,14 +56,14 @@ export function allowedBands(bands, modeType) {
     .sort((a, b) => sid(a) - sid(b) || (a.bandId < b.bandId ? -1 : a.bandId > b.bandId ? 1 : 0));
 }
 
-/** The official default strategy of an automatic assignment (data/config.json bandDraft.timeoutBandId). */
+/** Официальная стратегия по умолчанию для автоматического выбора (data/config.json bandDraft.timeoutBandId). */
 export const DEFAULT_TIMEOUT_BAND = 'band_bldsk';
 
 /**
- * The strategy the server assigns me when my turn times out (server/match/Match.js defaultBand): the official default
- * 「华法琳」 while no teammate holds it, else the first free strategy in draft order (sortId) — never one a teammate
- * already picked (队友已选).
- * @param {any[]} bands allowedBands(...) (sortId order)
+ * Стратегия, которую сервер назначает мне, когда мой ход истекает по времени (server/match/Match.js defaultBand): официальное значение
+ * по умолчанию «Хуа Фалинь», пока её не занял союзник, иначе первая свободная стратегия в порядке черновика (sortId) — никогда та,
+ * которую уже выбрал союзник («Выбрано союзником»).
+ * @param {any[]} bands allowedBands(...) (порядок sortId)
  * @param {Map<string, any>} taken teammateBands(...)
  * @param {string} [defaultId]
  * @returns {string|null}
@@ -74,7 +76,7 @@ export function timeoutBand(bands, taken, defaultId = DEFAULT_TIMEOUT_BAND) {
 }
 
 /**
- * Bands taken by teammates (队友已选): bandId → the picking players (never the viewer).
+ * Стратегии, взятые союзниками («Выбрано союзником»): bandId → выбравшие игроки (никогда не сам зритель).
  * @param {Map<string, string>} picks normalizeDraft(...).picks (playerId → bandId)
  * @param {string} myId
  */
@@ -89,9 +91,9 @@ export function teammateBands(picks, myId) {
 }
 
 /**
- * The band the detail pane shows (= the highlighted band a turn that runs out takes): the current one, else my pick,
- * else the band a timeout would give me (timeoutBand: 「华法琳」 while free, else the first free one). When it is my
- * turn and the shown band was taken meanwhile (队友已选), that default instead (confirm would be disabled).
+ * Стратегия, которую показывает панель подробностей (= подсвеченная стратегия, которую возьмёт истёкший ход): текущая, иначе мой
+ * выбор, иначе та, что даст таймаут (timeoutBand: «Хуа Фалинь», пока свободна, иначе первая свободная). Когда наступает мой ход, а
+ * показанная стратегия уже занята («Выбрано союзником»), берём то же значение по умолчанию (иначе подтверждение было бы заблокировано).
  * @param {string|null} sel
  * @param {{ bands: any[], taken: Map<string, any>, myPick: string|null, myTurn: boolean, defaultId?: string }} o
  */
@@ -104,9 +106,9 @@ export function draftSelection(sel, { bands, taken, myPick, myTurn, defaultId = 
 }
 
 /**
- * The strategy a turn that runs out assigns me (server Match.timeoutBand): the highlighted band while it is one of
- * the mode's and no teammate holds it, else timeoutBand. Null after my pick.
- * @param {string|null} sel the highlighted band
+ * Стратегия, которую истёкший ход назначает мне (server Match.timeoutBand): подсвеченная, пока она принадлежит режиму и её
+ * не занял союзник, иначе timeoutBand. Null после моего выбора.
+ * @param {string|null} sel подсвеченная стратегия
  * @param {{ bands: any[], taken: Map<string, any>, myPick?: string|null, defaultId?: string }} o
  */
 export function autoPickBand(sel, { bands, taken, myPick = null, defaultId = DEFAULT_TIMEOUT_BAND }) {
@@ -118,22 +120,22 @@ export function autoPickBand(sel, { bands, taken, myPick = null, defaultId = DEF
 }
 
 /**
- * The tip under the co-op draft order: the one skip, the turn clock and what a turn that runs out assigns me (the
- * highlighted band while free — autoPickBand). Untimed drafts (a single human) name no clock.
+ * Подсказка под списком ходов в совместной игре: один пропуск, часы хода и то, что истёкший ход назначит мне (подсвеченная
+ * стратегия, пока свободна — autoPickBand). В черновике без ограничения времени (один человек) часы не называются.
  * @param {{ timed: boolean, turnSeconds?: number|null, autoName?: string|null, selected?: boolean }} o
- *   selected: the auto pick is the highlighted band (not the default standing in for a band a teammate holds)
+ *   selected: автовыбор — это подсвеченная стратегия (а не значение по умолчанию вместо стратегии, которую занял союзник)
  */
 export function draftTip({ timed, turnSeconds = null, autoName = null, selected = true }) {
-  const skip = '联合模拟在选择策略时可以进行一次跳过';
-  if (!timed) return `${skip}；本局不限时`;
-  const clock = Number(turnSeconds) > 0 ? `每位博士有 ${Math.round(turnSeconds)} 秒` : '每位博士限时决策';
-  if (!autoName) return `${skip}；${clock}`;
-  return `${skip}；${clock}，超时将自动选择${selected ? '当前选中的' : ''}「${autoName}」`;
+  const skip = 'В совместной симуляции можно один раз пропустить выбор стратегии';
+  if (!timed) return `${skip}; матч без ограничения времени`;
+  const clock = Number(turnSeconds) > 0 ? `у каждого Доктора ${Math.round(turnSeconds)} сек.` : 'у каждого Доктора ограниченное время';
+  if (!autoName) return `${skip}; ${clock}`;
+  return `${skip}; ${clock}, при истечении автоматически выберется${selected ? ' текущая' : ''} «${autoName}»`;
 }
 
 /**
- * The step header's countdown during the draft: the current turn's (m.public.deadline = draft.turnDeadline) with a
- * turn's length as the gauge total — null when the draft is untimed.
+ * Отсчёт в шапке шага во время черновика: отсчёт текущего хода (m.public.deadline = draft.turnDeadline) с длительностью хода как
+ * шкалой — null, когда черновик без ограничения времени.
  * @param {any} pub m.public
  * @returns {{ deadline: number, total: number|null } | null}
  */
@@ -146,21 +148,21 @@ export function draftClock(pub) {
 }
 
 /**
- * The status line of the 本局信息 dialog: what the draft does while the dialog covers it — my pick, else whose turn it is
- * with the turn's seconds left (the step header's number; none when untimed), warning at ≤ 10 s like the countdown.
+ * Строка состояния диалога «Информация о матче»: что делает черновик, пока диалог его закрывает — мой выбор, иначе чей сейчас
+ * ход и сколько секунд осталось (число из шапки шага; нет — когда без ограничения времени), предупреждение при ≤ 10 сек., как у отсчёта.
  * @param {{ myPick?: string|null, pickName?: string|null, myTurn: boolean, turnName?: string|null, secs?: number|null,
- *   waiting?: boolean }} o waiting: teammates still have to pick after my pick
+ *   waiting?: boolean }} o waiting: союзникам ещё предстоит выбор после моего
  * @returns {{ text: string, secs: number|null, tone: 'mint'|'gold'|'warn'|'dim' }}
  */
 export function draftInfoStatus({ myPick = null, pickName = null, myTurn, turnName = null, secs = null, waiting = false }) {
-  if (myPick) return { text: `已选择「${pickName || ''}」${waiting ? '，等待其他博士' : ''}`, secs: null, tone: 'mint' };
+  if (myPick) return { text: `Выбрано «${pickName || ''}»${waiting ? ', ждём остальных Докторов' : ''}`, secs: null, tone: 'mint' };
   const s = Number.isFinite(secs) ? Math.max(0, Math.round(secs)) : null;
   const tone = s != null && s <= 10 ? 'warn' : 'gold';
-  if (myTurn) return { text: '轮到你决策', secs: s, tone };
-  return { text: turnName ? `${turnName} 决策中` : '等待轮到你', secs: s, tone: s != null ? tone : 'dim' };
+  if (myTurn) return { text: 'Ваш ход', secs: s, tone };
+  return { text: turnName ? `Ход ${turnName}` : 'Ожидание своего хода', secs: s, tone: s != null ? tone : 'dim' };
 }
 
-/** BAND_DRAFT screen. */
+/** Экран BAND_DRAFT. */
 export function BandDraftScreen() {
   const pub = useStore((s) => s.match.public);
   const priv = useStore((s) => s.match.private);
@@ -174,7 +176,7 @@ export function BandDraftScreen() {
   const [infoOpen, setInfoOpen] = useState(false);
 
   const mode = gd.config?.modes?.[pub?.modeId];
-  const offBonds = modeOffBonds(mode); // the bonds this mode never activates (标准: 10 of 23)
+  const offBonds = modeOffBonds(mode); // альянсы, которые этот режим никогда не активирует («Стандарт»: 10 из 23)
   const solo = roomSolo || mode?.type === 'SINGLE' || String(pub?.modeId || '').includes('single');
   const bands = useMemo(() => allowedBands(gd.list('bands'), mode?.type || (solo ? 'SINGLE' : 'MULTI')), [gd.ready, mode?.type, solo]);
   const players = sortedPlayers(pub);
@@ -184,43 +186,42 @@ export function BandDraftScreen() {
   const skipsLeft = draft.skipsLeft.has(myId) ? draft.skipsLeft.get(myId) : (skipped ? 0 : 1);
   const canSkip = !solo && myTurn && skipsLeft > 0 && draft.order.length > 1;
   const taken = solo ? new Map() : teammateBands(draft.picks, myId);
-  const pickers = new Map(); // bandId → players
+  const pickers = new Map(); // bandId → игроки
   for (const [pid, bid] of draft.picks) {
     const p = players.find((x) => x.playerId === pid);
     if (!pickers.has(bid)) pickers.set(bid, []);
     pickers.get(bid).push(p || { playerId: pid, name: '?' });
   }
 
-  // default selection: my pick, else what a timeout gives me (华法琳 while free); when my turn comes while the selected
-  // band has been taken by a teammate meanwhile (队友已选), move the selection back to that default
+  // выбор по умолчанию: мой, иначе то, что даст таймаут («Хуа Фалинь», пока свободна); когда мой ход приходит, а выбранная
+  // стратегия уже занята союзником («Выбрано союзником»), выбор возвращается к этому значению по умолчанию
   const defaultId = gd.config?.bandDraft?.timeoutBandId || DEFAULT_TIMEOUT_BAND;
   const takenKey = [...taken.keys()].sort().join(',');
   useEffect(() => {
     const next = draftSelection(sel, { bands, taken, myPick, myTurn, defaultId });
     if (next !== sel) setSel(next);
   }, [bands.length, myPick, myTurn, takenKey]);
-  // "your turn" cue
+  // сигнал «ваш ход»
   useEffect(() => { if (myTurn && !solo) audio.sfx('yourTurn'); }, [myTurn]);
-  // the 本局信息 dialog never outlives the turn it was opened in: a turn change (a pick, a skip, a turn that ran out, an
-  // AI pick) or my pick closes it, so whoever's turn begins sees the draft
+  // диалог «Информация о матче» не переживает ход, в котором был открыт: смена хода (выбор, пропуск, истёкший ход, выбор AI)
+  // или мой выбор закрывает его, чтобы тот, чей ход начинается, видел черновик
   const turnKey = `${draft.turnPid || ''}|${myPick || ''}`;
   useEffect(() => { setInfoOpen(false); }, [turnKey]);
 
-  // one countdown (user playtest #4 item 4): the current turn's — m.public.deadline, the same clock as the picker's row
+  // один отсчёт (user playtest #4 item 4): текущего хода — m.public.deadline, те же часы, что и в строке текущего выбирающего
   const clock = solo ? null : draftClock(pub);
-  // the highlighted band is what a turn that runs out takes (Match.timeoutBand): report every change before my pick
+  // подсвеченная стратегия — то, что возьмёт истёкший ход (Match.timeoutBand): сообщаем о каждом изменении до моего выбора
   const timed = !solo && !!pub?.draft && !pub.draft.untimed;
   const focusSent = useRef(null);
   useEffect(() => {
-    // (a spectator seat — community report #26 — is in no draft order: it never reports)
-    if (!timed || myPick || !sel || focusSent.current === sel || !draft.order.includes(myId)) return;
+    if (!timed || myPick || !sel || focusSent.current === sel) return;
     focusSent.current = sel;
     act('g.bandFocus', { bandId: sel }, { sfx: false, quiet: true });
   }, [sel, timed, myPick]);
 
-  // what a timeout gives me: the highlighted band while free, else the default (never 队友已选 — Match.js timeoutBand)
+  // что даст таймаут: подсвеченная стратегия, пока свободна, иначе значение по умолчанию (никогда «Выбрано союзником» — Match.js timeoutBand)
   const autoId = autoPickBand(sel, { bands, taken, myPick, defaultId });
-  const autoName = (autoId && gd.band(autoId)?.name) || gd.band(defaultId)?.name || '华法琳';
+  const autoName = (autoId && gd.band(autoId)?.name) || gd.band(defaultId)?.name || 'Хуа Фалинь';
 
   const band = sel ? gd.band(sel) : null;
   const selTaken = !!band && taken.has(band.bandId);
@@ -238,21 +239,21 @@ export function BandDraftScreen() {
   };
   const turnName = players.find((p) => p.playerId === draft.turnPid)?.name;
   useTicker(clock ? 250 : 0);
-  // the picker's row shows the step header's number (both read the one turn deadline)
+  // в строке текущего выбирающего показывается то же число, что и в шапке шага (оба читают один и тот же дедлайн хода)
   const turnSecs = clock ? secondsLeft(clock.deadline) : null;
   const turnLen = Number(pub?.draft?.turnSeconds) > 0 ? Math.round(pub.draft.turnSeconds) : null;
-  // 本局信息: the briefing's blocks (built only while the dialog is open) and the draft's state under it
+  // «Информация о матче»: блоки брифинга (строятся, только пока диалог открыт) и состояние черновика под ним
   const info = infoOpen ? matchInfoModel(pub, { bonds: gd.list('bonds'), chess: gd.chess, mode }) : null;
   const infoStatus = infoOpen ? draftInfoStatus({ myPick, pickName: myPick ? gd.band(myPick)?.name : null, myTurn, turnName, secs: turnSecs,
     waiting: !solo && !draft.done }) : null;
 
   return html`<div class="screen draft">
     <div class="brief__bg" aria-hidden="true"></div>
-    <${StepHeader} step=${2} of=${2} title="选择策略" micro="STRATEGY // BAND CHECK" pub=${clock ? { ...pub, deadline: clock.deadline } : { ...pub, deadline: 0 }}
+    <${StepHeader} step=${2} of=${2} title="Выбор стратегии" micro="STRATEGY // BAND CHECK" pub=${clock ? { ...pub, deadline: clock.deadline } : { ...pub, deadline: 0 }}
       total=${clock ? clock.total : null} onExit=${() => setExit(true)} />
     <main class="draft__main">
       <aside class="draft-order">
-        <h3 class="brief-h"><span>${solo ? '独立模拟' : '决策顺序'}</span><${MicroLabel}>${solo ? 'FREE PICK' : 'RANDOM ORDER'}</${MicroLabel}></h3>
+        <h3 class="brief-h"><span>${solo ? 'Одиночная симуляция' : 'Порядок ходов'}</span><${MicroLabel}>${solo ? 'FREE PICK' : 'RANDOM ORDER'}</${MicroLabel}></h3>
         ${(solo ? players.filter((p) => p.playerId === myId) : draft.order.map((pid) => players.find((p) => p.playerId === pid)).filter(Boolean)).map((p, i) => {
           const picked = draft.picks.get(p.playerId) || (p.playerId === myId ? myPick : p.bandId) || null;
           const cur = !picked && (solo || draft.turnPid === p.playerId);
@@ -261,10 +262,10 @@ export function BandDraftScreen() {
             ${!solo ? html`<span class="dorder__idx num">${i + 1}</span>` : null}
             <${PlayerAvatar} player=${p} self=${p.playerId === myId} />
             <div class="dorder__text">
-              <b class="dorder__name">${p.name || '博士'}${p.isBot ? html`<span class="dorder__ai">AI</span>` : null}</b>
-              <span class="dorder__state">${picked ? html`<span class="t-mint">${pband?.name || '已选择'}</span>`
-                : cur ? html`<span class="t-gold"><${Icon} name="hourglass" />决策中${turnSecs != null ? html`<b class="num dorder__secs">${turnSecs}s</b>` : null}</span>`
-                : html`<span class="t-dim"><${Icon} name="dots" />等待中</span>`}</span>
+              <b class="dorder__name">${p.name || 'Доктор'}${p.isBot ? html`<span class="dorder__ai">AI</span>` : null}</b>
+              <span class="dorder__state">${picked ? html`<span class="t-mint">${pband?.name || 'Выбрано'}</span>`
+                : cur ? html`<span class="t-gold"><${Icon} name="hourglass" />выбирает${turnSecs != null ? html`<b class="num dorder__secs">${turnSecs}s</b>` : null}</span>`
+                : html`<span class="t-dim"><${Icon} name="dots" />ожидает</span>`}</span>
             </div>
             <span class="dorder__box">
               ${picked ? html`<${BandIcon} bandId=${picked} size="sm" /><span class="dorder__check"><${Icon} name="check" /></span>`
@@ -274,24 +275,24 @@ export function BandDraftScreen() {
           </div>`;
         })}
         <${Button} variant="secondary" icon="search" block=${true} class="draft-order__info" data-testid="match-info-open"
-          aria-haspopup="dialog" onClick=${() => setInfoOpen(true)}>查看禁用盟约与干员<//>
+          aria-haspopup="dialog" onClick=${() => setInfoOpen(true)}>Неактивные альянсы<//>
         ${!solo ? html`<p class="draft-order__tip" data-testid="draft-tip">${draftTip({ timed, turnSeconds: turnLen, autoName: myPick ? null : autoName, selected: autoId === sel })}</p>` : null}
       </aside>
 
-      <section class="draft-grid" role="listbox" aria-label="策略">
+      <section class="draft-grid" role="listbox" aria-label="Стратегии">
         ${bands.map((b) => {
           const who = pickers.get(b.bandId) || [];
           const isTaken = taken.has(b.bandId);
-          const offNames = bandOffBonds(b, offBonds).map((id) => gd.bond(id)?.name || id); // 本局禁用 (still selectable)
+          const offNames = bandOffBonds(b, offBonds).map((id) => gd.bond(id)?.name || id); // «Отключено в этом матче» (всё ещё выбираема)
           return html`<button key=${b.bandId} type="button" role="option" aria-selected=${sel === b.bandId ? 'true' : 'false'} data-band=${b.bandId}
-              aria-disabled=${isTaken ? 'true' : 'false'} title=${isTaken ? '队友已选' : offNames.length ? bandOffLine(offNames) : undefined}
+              aria-disabled=${isTaken ? 'true' : 'false'} title=${isTaken ? 'Выбрано союзником' : offNames.length ? bandOffLine(offNames) : undefined}
               class=${cx('dband', sel === b.bandId && 'is-sel', myPick === b.bandId && 'is-mine', isTaken && 'is-taken', offNames.length && 'is-off')} onClick=${() => { setSel(b.bandId); audio.sfx('tab', { volume: 0.5 }); }}>
             <${BandIcon} bandId=${b.bandId} size="lg" />
             <span class="dband__name">${b.name}</span>
             <span class="dband__lp num"><i></i>${b.totalHp}</span>
             <${BandOffTag} names=${offNames} />
             ${who.length ? html`<span class="dband__who">${who.slice(0, 4).map((p) => html`<${PlayerAvatar} key=${p.playerId} player=${p} size="sm" />`)}</span>` : null}
-            ${isTaken ? html`<span class="dband__taken">队友已选</span>` : null}
+            ${isTaken ? html`<span class="dband__taken">Выбрано союзником</span>` : null}
           </button>`;
         })}
       </section>
@@ -301,22 +302,22 @@ export function BandDraftScreen() {
           <div class="draft-detail__art">
             <${BandIcon} bandId=${band.bandId} size="xl" />
           </div>
-          <div class="draft-detail__hp"><span>初始生命值</span><${LpTower} value=${band.totalHp} size="lg" /></div>
+          <div class="draft-detail__hp"><span>Начальный запас жизней</span><${LpTower} value=${band.totalHp} size="lg" /></div>
           <h2 class="draft-detail__name">${band.name}</h2>
           <${BandOffNote} names=${bandOffBonds(band, offBonds).map((id) => gd.bond(id)?.name || id)} />
           <div class="draft-detail__eff">
             <${MicroLabel} tone="mint">EFFECT</${MicroLabel}>
             <b>${band.effectName || ''}</b>
             <${RichText} as="p" text=${band.descRaw || band.desc} class="draft-detail__desc" />
-          </div>` : html`<p class="t-dim">选择一个策略查看详情</p>`}
+          </div>` : html`<p class="t-dim">Выберите стратегию, чтобы посмотреть подробности</p>`}
         <div class="draft-detail__actions">
-          ${myPick ? html`<p class="draft-detail__status t-mint"><${Icon} name="check" />已选择「${gd.band(myPick)?.name || ''}」${!solo && !draft.done ? '，等待其他博士' : ''}</p>`
-            : selTaken ? html`<p class="draft-detail__status draft-detail__status--taken"><${Icon} name="close" />队友已选，请选择其他策略</p>`
-            : !myTurn ? html`<p class="draft-detail__status"><${Icon} name="hourglass" />${turnName ? `${turnName} 正在决策…` : '等待轮到你'}</p>` : null}
+          ${myPick ? html`<p class="draft-detail__status t-mint"><${Icon} name="check" />Выбрано «${gd.band(myPick)?.name || ''}»${!solo && !draft.done ? ', ждём остальных Докторов' : ''}</p>`
+            : selTaken ? html`<p class="draft-detail__status draft-detail__status--taken"><${Icon} name="close" />Выбрано союзником, выберите другую стратегию</p>`
+            : !myTurn ? html`<p class="draft-detail__status"><${Icon} name="hourglass" />${turnName ? `${turnName} выбирает…` : 'Ожидание своего хода'}</p>` : null}
           <div class="draft-detail__btns">
             ${!solo ? html`<${Button} variant="secondary" size="lg" icon="chevrons" disabled=${!canSkip} loading=${busy === 'skip'} onClick=${skip}
-              title=${skipsLeft > 0 ? '跳过本轮，稍后再选' : '跳过次数已用完'}>跳过${skipsLeft > 0 ? '' : '（已用）'}<//>` : null}
-            <${Button} variant="primary" size="lg" icon="check" disabled=${!myTurn || !band || selTaken} loading=${busy === 'pick'} onClick=${confirm}>${selTaken ? '队友已选' : '确认选择'}<//>
+              title=${skipsLeft > 0 ? 'Пропустить ход и выбрать позже' : 'Пропуски закончились'}>Пропустить${skipsLeft > 0 ? '' : ' (использовано)'}<//>` : null}
+            <${Button} variant="primary" size="lg" icon="check" disabled=${!myTurn || !band || selTaken} loading=${busy === 'pick'} onClick=${confirm}>${selTaken ? 'Выбрано союзником' : 'Подтвердить выбор'}<//>
           </div>
         </div>
       </aside>

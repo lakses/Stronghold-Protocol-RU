@@ -1,17 +1,16 @@
-// Whose bonds the bond strip shows (DESIGN §20.15, user report after playtest #6: "观看队友时…盟约栏应该变成当前队友的
-// 盟约以及他的层数") — pure helpers for the game screen (screens/game.js), the strip and its popup (ui/bondStrip.js).
+// Whose bonds the bond strip shows (DESIGN §20.15, user report after playtest #6: «при просмотре союзника… полоса альянсов должна показывать альянсы текущего союзника и его слои») — pure helpers for the game screen (screens/game.js), the strip and its popup (ui/bondStrip.js).
 //
 // The strip follows the player whose field / half the camera shows:
 //   * the own board (prep) and the own battle → your own bonds (m.private bonds);
-//   * a teammate's board in prep (前往查看, research 09 §3.1 "their board, read-only, including their pen and bonds"), a
+//   * a teammate's board in prep («Перейти к просмотру», research 09 §3.1 "their board, read-only, including their pen and bonds"), a
 //     teammate's battle watched after the own one ended, the field an eliminated player auto-observes → THAT player's
 //     bonds (m.public players[].bonds);
 //   * a shared field (联防 'u', the Final Assault / Hidden Core pair 'b1' / 'b2') — no source shows the strip there; this
-//     rule was settled by the user (DESIGN §20.15): the player holding the half the ‹ › pill points at ("你自己" → yours, "👁 name" → theirs). On 全景 (or an
-//     empty half, "无人在家"): yourself when you fight on that field; a viewer who does not (a 联防 leaker, an eliminated
-//     spectator) never sees their own bonds there — the teammate they picked with 前往查看 (official observing targets a
+//     rule was settled by the user (DESIGN §20.15): the player holding the half the ‹ › pill points at («Свой» → yours, «👁 имя» → theirs). On «Общий обзор» (or an
+//     empty half, «никого нет»): yourself when you fight on that field; a viewer who does not (a 联防 leaker, an eliminated
+//     spectator) never sees their own bonds there — the teammate they picked with «Перейти к просмотру» (official observing targets a
 //     player: ObserveUp / DeadAutoObDn { obIndex }), else the field's first player (helper 1 / the pair's first seat;
-//     the official non-helper pill reads "‹ 👁 helper# ›"). 前往查看 of a player on a two-half field also moves the
+//     the official non-helper pill reads "‹ 👁 helper# ›"). «Перейти к просмотру» of a player on a two-half field also moves the
 //     camera to their half (playerLayer), so the pill and the strip name the same player.
 // In battle the layers are live: the local simulation of the battle on screen (the own one, a teammate's display
 // replica — battle/runner.js state().bondLayers, absolute counts ≤ BOND_LAYER_CAP) is laid over the view's start-of-
@@ -19,7 +18,7 @@
 // (server/match/bondsMeta.js bondsWithGains), so the counts never fall back during 联防.
 // A detail card's bond chips follow the UNIT's owner instead (detailBondOwner: a shared field shows both halves' units
 // whoever the strip follows), and a bond popup carries the player it was opened for (toggleBond / popupView): the
-// strip's owner, or the chip's — its entry, member list and "👁 name" label always belong to that one player.
+// strip's owner, or the chip's — its entry, member list and "👁 имя" label always belong to that one player.
 
 import { BOND_LAYER_CAP } from '../../../shared/constants.js';
 import { sidesOf, nameOf, cameraLayers } from '../battle/observe.js';
@@ -48,7 +47,7 @@ export function screenFieldId({ combat = false, settle = false, watchingOther = 
  * @param {{ pub: any, myId: string, fieldId?: string|null, field?: any, layer?: 'L'|'ALL'|'R', halves?: boolean,
  *   watched?: string|null }} o — field: the field meta on screen (store.match.field: `sides` / `players`), consulted when
  *   it is `fieldId`; halves: the ‹ › pill is offered (battle/observe.js cameraLayers non-empty); watched: the player
- *   picked with 前往查看 (watchedPlayer), consulted on a shared field the viewer does not fight on
+ *   picked with «Перейти к просмотру» (watchedPlayer), consulted on a shared field the viewer does not fight on
  * @returns {string}
  */
 export function bondOwnerId({ pub, myId, fieldId = null, field = null, layer = 'ALL', halves = false, watched = null } = {}) {
@@ -66,7 +65,7 @@ export function bondOwnerId({ pub, myId, fieldId = null, field = null, layer = '
     const pid = Object.keys(sides).find((id) => sides[id] === layer);
     if (ok(pid)) return pid;
   }
-  // 全景, an empty half, no ‹ › pill: the field's members (m.public.fields, else the meta)
+  // общий обзор, an empty half, no ‹ › pill: the field's members (m.public.fields, else the meta)
   const listed = fieldsOf(pub).find((f) => f.fieldId === fieldId);
   const members = Array.isArray(listed?.players) ? listed.players : Array.isArray(meta?.players) ? meta.players : [];
   if (members.includes(myId)) return myId;
@@ -77,7 +76,7 @@ export function bondOwnerId({ pub, myId, fieldId = null, field = null, layer = '
 }
 
 /**
- * The player picked with 前往查看 while that watch is on screen: `who` = { fieldId, playerId } remembered by the game
+ * The player picked with «Перейти к просмотру» while that watch is on screen: `who` = { fieldId, playerId } remembered by the game
  * screen when a team row was tapped (a shared field shows more than one player, the fieldId alone cannot tell).
  * @param {{ fieldId?: string, playerId?: string }|null} who @param {string|null} watching the watched fieldId
  * @returns {string|null}
@@ -89,7 +88,7 @@ export function watchedPlayer(who, watching) {
 
 /**
  * The ‹ › layer that shows `playerId`'s half of a two-half shared field (联防 with two helpers, a pair's boss field),
- * or null (a normal / lone field, a player not on it). 前往查看 of such a player moves the camera there.
+ * or null (a normal / lone field, a player not on it). «Перейти к просмотру» of such a player moves the camera there.
  * @param {any} field the field meta on screen @param {any} pub @param {string} myId @param {string|null} playerId
  * @returns {'L'|'R'|null}
  */
@@ -103,7 +102,7 @@ export function playerLayer(field, pub, myId, playerId) {
 /**
  * A player's bond list as the views carry it: your own m.private bonds (thresholds / countsHand included), a teammate's
  * m.public players[].bonds ({ bondId, count, active, tier, layers, harmony? } — `harmony`: 调和's +1 is in `count`, the
- * popup's 调和 row; DESIGN §21.26).
+ * popup's «Гармония» row; DESIGN §21.26).
  * @returns {any[]}
  */
 export function ownerBonds({ pub, priv = null, myId, ownerId }) {

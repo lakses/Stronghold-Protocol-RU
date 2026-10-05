@@ -1,7 +1,7 @@
 // Pure match-status helpers of the in-match HUD (no DOM, no Preact — unit-tested in test/ui/leftovers.test.js):
 //
 //   * Boss-round clock (最终攻势 / 隐秘核心, research 00-INDEX §5, 01 §10): m.public.deadline is the level's
-//     maxPlayTime countdown (120 real s, config modes[…].rounds[r].levelMaxPlayTime) — "计时结束后战斗仍然会继续" —
+//     maxPlayTime countdown (120 real s, config modes[…].rounds[r].levelMaxPlayTime) — «после окончания отсчёта бой всё равно продолжается» —
 //     and m.public.overtimeAt is when the overtime drain starts (bossTurnHpReduceTime, 150 real s): from then on the
 //     merged team LP loses config.bossOvertimeDrainPerSec (1) per whole real second (server gamedata.js
 //     bossOvertimeDue: the first point at overtimeAt + 1 s). `overtimeState` says what the red DOT warning shows.

@@ -1,1 +1,1831 @@
-{"yanShip":{"bondId":"yanShip","name":"炎","identifier":1,"isCore":true,"bondType":"SEASON","bondOrder":2,"powerIdList":["yan","sui","lungmen","lee","lgd"],"iconId":"icon_yanShip","activeCount":3,"thresholds":[3,6,9],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"【炎】干员攻击力提升（受层数影响）\n<在场6名不同【炎】干员>战斗开始时召唤可自主行动的“炎佑”，其攻击力生命值分别为开战时【炎】干员攻击力生命值总和的30%，“炎佑”同时攻击3个目标，可使用“祛恶之焰”，攻击时附带攻击力一定比例的灼燃损伤且周围敌人受到一定比例的元素脆弱\n<在场9名不同【炎】干员>改为召唤2只“炎佑”，攻击力提升至1.5倍，受到的伤害-90%","descRaw":"【炎】干员<@ba.vup>攻击力</>提升<@autochess.gray>（受层数影响）</>\n<在场<@autochess.dgreen>6</>名不同【炎】干员>战斗开始时召唤可自主行动的<@ba.vup>“炎佑”</>，其攻击力生命值分别为开战时【炎】干员攻击力生命值总和的30%，“炎佑”同时攻击3个目标，可使用<@ba.vup>“祛恶之焰”</>，攻击时附带攻击力一定比例的灼燃损伤且周围敌人受到一定比例的元素脆弱\n<在场<@autochess.dgreen>9</>名不同【炎】干员>改为召唤2只<@ba.vup>“炎佑”</>，攻击力提升至<@ba.vup>1.5</>倍，受到的伤害<@ba.vup>-90%</>","effectId":"bondeffect_yan","effectName":"炎","effectDesc":"【炎】干员攻击力+{0:0%}（受层数影响）\n<在场6名不同【炎】干员>战斗开始时收集【炎】干员部分属性召唤“炎佑”（其攻击力和生命值为【炎】干员攻击力和生命值总和的30%）；“炎佑”同时攻击3个目标，攻击附带20%攻击力的灼燃损伤，周围敌人受到20%的元素脆弱，周期性使用“祛恶之焰”\n<在场9名不同【炎】干员>改为召唤2只“炎佑”；“炎佑”攻击力提升至1.5倍，受到的伤害-90%","effectDescRaw":"【炎】干员攻击力<@ba.vup>+{0:0%}</><@ba.acrem>（受层数影响）</>\n<在场<@ba.vup>6</>名不同【炎】干员>战斗开始时收集【炎】干员部分属性召唤“炎佑”（其攻击力和生命值为【炎】干员攻击力和生命值总和的30%）；“炎佑”同时攻击3个目标，攻击附带20%<@ba.vup>攻击力</>的<@ba.vup>灼燃损伤</>，周围敌人受到20%的<@ba.vup>元素脆弱</>，周期性使用“祛恶之焰”\n<在场<@ba.vup>9</>名不同【炎】干员>改为召唤2只“炎佑”；“炎佑”攻击力提升至1.5倍，受到的伤害-90%","effectDescParams":[{"index":0,"format":"0%","base":"base_atk","perStack":"atk_per_stack"}],"bb":{"base_atk":0.23,"atk_per_stack":0.009,"power_bond_char_cnt":6,"ex_bond_char_cnt":9,"damage_resistance":0.9,"atk":1.5},"bbStr":{"key":"act1autochess_bond_eff_yan"},"buffs":[{"key":"env_gbuff_new","bb":{"base_atk":0.23,"atk_per_stack":0.009,"power_bond_char_cnt":6,"ex_bond_char_cnt":9,"damage_resistance":0.9,"atk":1.5},"bbStr":{"key":"act1autochess_bond_eff_yan"}}],"baseParams":["base_atk"],"perStackParams":["atk_per_stack"],"members":["chess_char_1_03_a","chess_char_2_04_a","chess_char_3_03_a","chess_char_3_04_a","chess_char_4_15_a","chess_char_4_17_a","chess_char_5_03_a","chess_char_5_12_a","chess_char_5_23_a","chess_char_6_03_a","chess_char_6_15_a"],"visibleMembers":["chess_char_1_03_a","chess_char_2_04_a","chess_char_3_03_a","chess_char_3_04_a","chess_char_4_17_a","chess_char_5_03_a","chess_char_5_12_a","chess_char_5_23_a","chess_char_6_03_a","chess_char_6_15_a"],"spec":{"tiers":[{"need":"3 distinct 炎 on board","effect":"炎 members (+调和 members) ATK x(1 + 0.23 + 0.009*L)."},{"need":"6 distinct","effect":"At battle start spawn 1 \"炎佑\" (enemy_9012_acloon template, allied flying ranged unit, not blockable, moves on its own). ATK = 0.30 x sum(ATK of 炎 operators on board at battle start), maxHP = 0.30 x sum(maxHP of those operators). Template: DEF 200, RES 0, BAT 2.5 s, ASPD 100, attack range radius 2.0 tiles, magic damage, hits up to 3 targets; every hit adds 灼燃损伤 (burn elemental damage) = 20% of its ATK and applies 元素脆弱 (elemental damage taken x1.2) to enemies within 0.8 tiles of the target. Skill \"祛恶之焰\": cooldown 15 s (first cast 15 s after spawn), channels a flame on one enemy in range dealing 60% ATK magic damage per second to it and to enemies within 1.0 tile, for up to 20 s."},{"need":"9 distinct","effect":"Spawn 2 炎佑 instead; each has ATK x1.5 and takes 90% less damage (damage_resistance 0.9)."}],"formulas":{"atkMultiplier":"1 + 0.23 + 0.009*L"},"caps":"none","layerGain":"Economy-driven: 惊蛰 获得时 +shop level (no activation needed); 小满 休整期结束 +1 per operator gained this round; 夕 +2 炎/奥术 per operator gained; 录武官 获得时 +6 炎 +3 奇迹; 星熊 获得时 +8 own bonds; 烛煌 获得时 +5 炎/维多利亚; 机变 \"诗怀雅的盟誓\" +10. Strategy 杜遥夜: first 2 manual refreshes each round prefer a 炎 operator.","howToPlay":"Buy many operators each round (every gain feeds 小满/夕), rush 6 炎 for the 炎佑 spike; 琳琅诗怀雅 / 诗怀雅 give early gold. 9 炎 is a late-game luxury.","assumed":["炎佑 base stats are replaced (not added) by the 30% sums","祛恶之焰 hit_duration=20 read as 20 one-second ticks","spawn point: centre of the player's board / near the objective","targets = 3 nearest enemies in range"]}},"sargonShip":{"bondId":"sargonShip","name":"萨尔贡","identifier":2,"isCore":true,"bondType":"SEASON","bondOrder":2,"powerIdList":["sargon"],"iconId":"icon_sargonShip","activeCount":3,"thresholds":[3,6],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"【萨尔贡】干员开启技能时，所有【萨尔贡】干员攻击速度提升（有上限），持续一定时间（受层数影响，每层持续时间独立计算）\n<在场6名不同【萨尔贡】干员>开启技能还会为所有【萨尔贡】干员提供等持续时间的攻击力（有上限）\n选择策略【娜仁图亚】时，<在场6名不同【萨尔贡】干员>的效果会有所改变","descRaw":"【萨尔贡】干员开启技能时，所有【萨尔贡】干员<@ba.vup>攻击速度</>提升（有上限），持续一定时间<@autochess.gray>（受层数影响，每层持续时间独立计算）</>\n<在场<@autochess.dgreen>6</>名不同【萨尔贡】干员>开启技能还会为所有【萨尔贡】干员提供等持续时间的<@ba.vup>攻击力</>（有上限）\n<@ba.acrem>选择策略【娜仁图亚】时，<在场6名不同【萨尔贡】干员>的效果会有所改变</>","effectId":"bondeffect_sargon","effectName":"萨尔贡","effectDesc":"【萨尔贡】干员开启技能时，所有【萨尔贡】干员攻击速度+12（至多+300），持续{0:0}秒（受层数影响）\n<在场6名不同【萨尔贡】干员>开启技能还会使所有【萨尔贡】干员攻击力+12%（至多+300%）\n选择策略【娜仁图亚】时，<在场6名不同【萨尔贡】干员>的效果会有所改变","effectDescRaw":"【萨尔贡】干员开启技能时，所有【萨尔贡】干员攻击速度+12（至多<@ba.vup>+300</>），持续<@ba.vup>{0:0}</>秒<@ba.acrem>（受层数影响）</>\n<在场<@ba.vup>6</>名不同【萨尔贡】干员>开启技能还会使所有【萨尔贡】干员攻击力+12%（至多<@ba.vup>+300%</>）\n<@ba.acrem>选择策略【娜仁图亚】时，<在场6名不同【萨尔贡】干员>的效果会有所改变</>","effectDescParams":[{"index":0,"format":"0","base":"base_time","perStack":"time_per_stack"}],"bb":{"base_time":5,"time_per_stack":0.22,"max_buff_stack_cnt":25,"base_attack_speed":12,"power_bond_char_cnt":6,"base_atk":0.12,"base_power_time":60,"power_time_per_stack":0,"filter_item_level":5},"bbStr":{"key":"act1autochess_bond_eff_sargon","invalid_in_band":"band_narant","valid_in_band":"band_narant"},"buffs":[{"key":"env_gbuff_new","bb":{"base_time":5,"time_per_stack":0.22,"max_buff_stack_cnt":25,"base_attack_speed":12,"power_bond_char_cnt":6,"base_atk":0.12},"bbStr":{"key":"act1autochess_bond_eff_sargon","invalid_in_band":"band_narant"}},{"key":"env_gbuff_new","bb":{"base_time":5,"time_per_stack":0.22,"max_buff_stack_cnt":25,"base_attack_speed":12,"power_bond_char_cnt":6,"base_power_time":60,"power_time_per_stack":0,"filter_item_level":5},"bbStr":{"key":"act2autochess_bond_eff_sargon[share]","valid_in_band":"band_narant"}}],"baseParams":["base_time"],"perStackParams":["time_per_stack"],"members":["chess_char_1_12_a","chess_char_2_06_a","chess_char_2_08_a","chess_char_3_06_a","chess_char_3_13_a","chess_char_4_05_a","chess_char_4_23_a","chess_char_4_24_a","chess_char_5_02_a","chess_char_5_18_a","chess_char_6_05_a","chess_char_6_06_a"],"visibleMembers":["chess_char_1_12_a","chess_char_2_06_a","chess_char_2_08_a","chess_char_3_06_a","chess_char_3_13_a","chess_char_4_23_a","chess_char_4_24_a","chess_char_5_02_a","chess_char_6_05_a","chess_char_6_06_a"],"spec":{"tiers":[{"need":"3 distinct","effect":"Whenever any 萨尔贡 member activates its skill, every 萨尔贡 member on the field gains one stack: ASPD +12 for (5 + 0.22*L) s. Each stack has its own timer; at most 25 concurrent stacks (=> +300 ASPD cap)."},{"need":"6 distinct","effect":"Each stack additionally gives ATK +12% (25 stacks => +300% cap), same duration."},{"need":"6 distinct AND strategy 娜仁图亚 (band_narant)","effect":"Replaces the 6-member effect: when a 萨尔贡 member activates its skill, operators on its 8 surrounding tiles also enjoy the effects of the equipment (tier <= V, filter_item_level 5) it carries, for 60 s (base_power_time 60, power_time_per_stack 0)."}],"formulas":{"stackDurationSec":"5 + 0.22*L","aspdPerStack":"12","atkPerStack(6)":"0.12","maxStacks":"25"},"caps":"25 stacks: +300 ASPD, +300% ATK","layerGain":"In battle on skill activation: 菲莱 +6 每次开技能, 百炼嘉维尔 +9 每次开技能, 莎草 +5 首次开技能, 缇缇 +1 萨尔贡/精准 per sleep/stun in range (<=24/battle); 艾丝黛尔 获得时 +2; 机变 \"缇缇的盟誓\" +10. Strategy 佩佩: after shop level 2/4/6 one special refresh preferring 萨尔贡.","howToPlay":"Fast-cycling skills (萨尔贡浓茶 / 黄沙罗盘 items) keep many stacks alive; L mainly extends duration, so stacks overlap more.","notes":["PRTS: the in-level UI shows twice the real duration (display bug); real duration is 5+0.22L."],"assumed":["When a 26th stack would be added, it replaces the stack with the shortest remaining time","stack granted to all 萨尔贡 members including the caster"]}},"victoriaShip":{"bondId":"victoriaShip","name":"维多利亚","identifier":3,"isCore":true,"bondType":"SEASON","bondOrder":2,"powerIdList":["victoria","glasgow"],"iconId":"icon_victoriaShip","activeCount":3,"thresholds":[3,6],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[{"layer":25,"mode":"every","effect":"bond_layer_added_reward_equip"}],"desc":"携带装备的【维多利亚】干员造成的伤害提升（受层数影响）\n<每叠加25层>获得1件带有随机效果的维式重锤\n<在场6名不同【维多利亚】干员>携带装备的【维多利亚】干员攻击力提升，携带进阶装备时额外提升","descRaw":"携带装备的【维多利亚】干员造成的<@ba.vup>伤害提升</><@autochess.gray>（受层数影响）</>\n<每叠加<@autochess.dgreen>25</>层>获得1件带有随机效果的<@ba.vup>维式重锤</>\n<在场<@autochess.dgreen>6</>名不同【维多利亚】干员>携带装备的【维多利亚】干员<@ba.vup>攻击力</>提升，携带进阶装备时额外提升","effectId":"bondeffect_victoria","effectName":"维多利亚","effectDesc":"携带装备的【维多利亚】干员伤害提升至{0:0%}（受层数影响）\n<每叠加25层>获得一件带有随机特殊效果的维式重锤\n<在场6名不同【维多利亚】干员>【维多利亚】干员每携带1件装备攻击力+50%，携带进阶装备改为+80%","effectDescRaw":"<@ba.vup>携带装备</>的【维多利亚】干员伤害提升至<@ba.vup>{0:0%}</><@ba.acrem>（受层数影响）</>\n<每叠加<@ba.vup>25</>层>获得一件带有随机特殊效果的维式重锤\n<在场<@ba.vup>6</>名不同【维多利亚】干员>【维多利亚】干员每携带1件装备攻击力<@ba.vup>+50%</>，携带进阶装备改为<@ba.vup>+80%</>","effectDescParams":[{"index":0,"format":"0%","base":"base_damage_scale","perStack":"damage_scale_per_stack"}],"bb":{"damage_scale_per_stack":0.008,"base_damage_scale":1.25,"power_bond_char_cnt":6,"atk_normal_equip":0.5,"atk_golden_equip":0.3,"layer":25,"count":1},"bbStr":{"key":"act1autochess_bond_eff_victoria","pool":"pool_equip_vict"},"buffs":[{"key":"env_gbuff_new","bb":{"damage_scale_per_stack":0.008,"base_damage_scale":1.25,"power_bond_char_cnt":6,"atk_normal_equip":0.5,"atk_golden_equip":0.3},"bbStr":{"key":"act1autochess_bond_eff_victoria"}},{"key":"bond_layer_added_reward_equip","bb":{"layer":25,"count":1},"bbStr":{"pool":"pool_equip_vict"}}],"baseParams":["base_damage_scale"],"perStackParams":["damage_scale_per_stack"],"members":["chess_char_1_06_a","chess_char_2_05_a","chess_char_2_10_a","chess_char_3_08_a","chess_char_4_07_a","chess_char_4_11_a","chess_char_5_03_a","chess_char_5_08_a","chess_char_6_07_a","chess_char_6_08_a"],"visibleMembers":["chess_char_1_06_a","chess_char_2_05_a","chess_char_2_10_a","chess_char_3_08_a","chess_char_4_07_a","chess_char_4_11_a","chess_char_5_03_a","chess_char_5_08_a","chess_char_6_07_a","chess_char_6_08_a"],"spec":{"tiers":[{"need":"3 distinct","effect":"维多利亚 members that carry >= 1 equipment: all damage dealt x(1.25 + 0.008*L)."},{"need":"every 25 layers (cumulative)","effect":"Gain 1 维式重锤 with a random special effect (pool_equip_vict)."},{"need":"6 distinct","effect":"维多利亚 members: ATK +50% per equipped item; an advanced (进阶/golden) item gives +80% instead (atk_normal_equip 0.5 + atk_golden_equip 0.3)."}],"formulas":{"damageMultiplier":"1.25 + 0.008*L (only if carrying equipment)","hammerPayouts":"floor(L/25)","atkPerItem(6)":"0.5 normal, 0.8 advanced"},"caps":"none","layerGain":"休整期结束: 薄绿 +2 per distinct tier of 维多利亚 on board, 维娜·维多利亚 +3 per distinct tier (and 奇迹 +2 per distinct tier of 奇迹), 刺玫 +1, 号角 +2 per distinct-tier operator of the highest-layer bond; in battle: 风笛 first 3 kills +2 维多利亚/远见/不屈; 烛煌 获得时 +5; 机变 \"风笛的盟誓\" +8. Strategy 哈洛德: from round 4 gain 1 维多利亚 operator every 2 rounds.","howToPlay":"Field 维多利亚 of as many different tiers as possible (T1..T6) for 薄绿/维娜; hand all equipment (incl. free hammers) to 维多利亚 carries; 蒸汽之心 copies all hammer effects.","assumed":["pool_equip_vict = uniform random among 灼燃/坚固/加速/战栗维式重锤 (normal grade)","hammer payout also counts layers added while the bond is inactive"]}},"kjeragShip":{"bondId":"kjeragShip","name":"谢拉格","identifier":4,"isCore":true,"bondType":"SEASON","bondOrder":2,"powerIdList":["kjerag","karlan"],"iconId":"icon_kjeragShip","activeCount":3,"thresholds":[3,6],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"【谢拉格】干员造成的伤害提升，对寒冷、冻结敌人获得额外提升（受层数影响）\n<在场6名不同【谢拉格】干员>战场上每25秒过一阵寒风使场上的敌人寒冷一定时间（受层数影响）","descRaw":"【谢拉格】干员造成的<@ba.vup>伤害提升</>，对<@ba.vup>寒冷、冻结</>敌人获得额外提升<@autochess.gray>（受层数影响）</>\n<在场<@autochess.dgreen>6</>名不同【谢拉格】干员>战场上每25秒过一阵寒风使场上的敌人寒冷一定时间<@autochess.gray>（受层数影响）</>","effectId":"bondeffect_kjerag","effectName":"谢拉格","effectDesc":"【谢拉格】干员伤害提升至125%，对寒冷和冻结敌人额外提升至{0:0%}（受层数影响）\n<在场6名不同【谢拉格】干员>战场上每25秒吹过一阵寒风使敌人寒冷{1:0}秒（受层数影响）","effectDescRaw":"【谢拉格】干员伤害提升至<@ba.vup>125%</>，对寒冷和冻结敌人额外提升至<@ba.vup>{0:0%}</><@ba.acrem>（受层数影响）</>\n<在场<@ba.vup>6</>名不同【谢拉格】干员>战场上每25秒吹过一阵寒风使敌人寒冷<@ba.vup>{1:0}</>秒<@ba.acrem>（受层数影响）</>","effectDescParams":[{"index":0,"format":"0%","base":"base_ex_damage_scale","perStack":"ex_damage_scale_per_stack"},{"index":1,"format":"0","base":"bond_eff_kjerag[storm].base_time","perStack":"bond_eff_kjerag[storm].time_per_stack"}],"bb":{"base_damage_scale":1.25,"base_ex_damage_scale":1.35,"ex_damage_scale_per_stack":0.01,"power_bond_char_cnt":6,"bond_eff_kjerag[storm].interval":25,"bond_eff_kjerag[storm].base_time":20,"bond_eff_kjerag[storm].time_per_stack":0.1},"bbStr":{"key":"act1autochess_bond_eff_kjerag"},"buffs":[{"key":"env_gbuff_new","bb":{"base_damage_scale":1.25,"base_ex_damage_scale":1.35,"ex_damage_scale_per_stack":0.01,"power_bond_char_cnt":6,"bond_eff_kjerag[storm].interval":25,"bond_eff_kjerag[storm].base_time":20,"bond_eff_kjerag[storm].time_per_stack":0.1},"bbStr":{"key":"act1autochess_bond_eff_kjerag"}}],"baseParams":["base_ex_damage_scale","bond_eff_kjerag[storm].base_time"],"perStackParams":["ex_damage_scale_per_stack","bond_eff_kjerag[storm].time_per_stack"],"members":["chess_char_1_02_a","chess_char_2_03_a","chess_char_2_05_a","chess_char_3_11_a","chess_char_3_14_a","chess_char_3_20_a","chess_char_4_03_a","chess_char_4_13_a","chess_char_4_22_a","chess_char_5_14_a","chess_char_6_02_a","chess_char_6_19_a"],"visibleMembers":["chess_char_1_02_a","chess_char_2_05_a","chess_char_3_11_a","chess_char_3_14_a","chess_char_3_20_a","chess_char_4_13_a","chess_char_4_22_a","chess_char_5_14_a","chess_char_6_02_a","chess_char_6_19_a"],"spec":{"tiers":[{"need":"3 distinct","effect":"谢拉格 members deal damage x1.25; against enemies that are 寒冷 (cold) or 冻结 (frozen) x(1.35 + 0.01*L) instead."},{"need":"6 distinct","effect":"Every 25 s a cold wind applies 寒冷 to every enemy on the field for (20 + 0.1*L) s."}],"formulas":{"damageMultiplier":"1.25","damageMultiplierVsColdOrFrozen":"1.35 + 0.01*L","windIntervalSec":"25","windColdDurationSec":"20 + 0.1*L"},"caps":"none","layerGain":"In battle, freeze-driven: 初雪 and 银灰 - each enemy in range that becomes frozen: 50% chance +1; 凛御银灰 gives the 谢拉格 operator in front of it a 60% version (<=200/battle); 锏 部署时 +8 own active bonds (<=24/battle). 获得时: 角峰 +2, 崖心 +3 (hidden), 雪猎 +5, 灵知 +5, 锏 +8. 机变 \"银灰的盟誓\" +8. Strategy 休露丝: first 谢拉格 bought each round costs 1.","howToPlay":"Standard AK rule: applying 寒冷 to an already-cold enemy freezes it. The 6-member wind + cold-on-hit sources (谢拉格不融冰 12% 1.5 s cold) create constant freezes, so layers can reach hundreds per battle.","notes":["巴哈姆特: avoid lighting 3 奥术 alongside max-layer 谢拉格 (圣聆初雪 gets damage-capped)."],"assumed":["first wind at t = 25 s","wind re-applying cold on a cold enemy triggers freeze like any cold source"]}},"lateranoShip":{"bondId":"lateranoShip","name":"拉特兰","identifier":5,"isCore":true,"bondType":"SEASON","bondOrder":2,"powerIdList":["laterano"],"iconId":"icon_lateranoShip","activeCount":3,"thresholds":[3,6],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"【拉特兰】干员开启技能获得的弹药量提升（受层数影响）\n<在场6名不同【拉特兰】干员>【拉特兰】干员每消耗1发弹药，所有【拉特兰】干员攻击力提升（有上限）","descRaw":"【拉特兰】干员开启技能获得的<@ba.vup>弹药量</>提升<@autochess.gray>（受层数影响）</>\n<在场<@autochess.dgreen>6</>名不同【拉特兰】干员>【拉特兰】干员每消耗1发弹药，所有【拉特兰】干员<@ba.vup>攻击力</>提升（有上限）","effectId":"bondeffect_laterano","effectName":"拉特兰","effectDesc":"【拉特兰】干员开启技能时获得的弹药量+{0:0%}（受层数影响）\n<在场6名不同【拉特兰】干员>任意【拉特兰】干员每消耗1发弹药，全体【拉特兰】干员攻击力+4%，至多+200%","effectDescRaw":"【拉特兰】干员开启技能时获得的弹药量<@ba.vup>+{0:0%}</><@ba.acrem>（受层数影响）</>\n<在场<@ba.vup>6</>名不同【拉特兰】干员>任意【拉特兰】干员每消耗1发弹药，全体【拉特兰】干员攻击力+4%，至多<@ba.vup>+200%</>","effectDescParams":[{"index":0,"format":"0%","base":"base_ammo_percent","perStack":"ammo_percent_per_stack"}],"bb":{"base_ammo_percent":0.05,"ammo_percent_per_stack":0.015,"power_bond_char_cnt":6,"atk_per_consume":0.04,"max_atk_for_consume":2},"bbStr":{"key":"act1autochess_bond_eff_laterano"},"buffs":[{"key":"env_gbuff_new","bb":{"base_ammo_percent":0.05,"ammo_percent_per_stack":0.015,"power_bond_char_cnt":6,"atk_per_consume":0.04,"max_atk_for_consume":2},"bbStr":{"key":"act1autochess_bond_eff_laterano"}}],"baseParams":["base_ammo_percent"],"perStackParams":["ammo_percent_per_stack"],"members":["chess_char_1_01_a","chess_char_2_01_a","chess_char_3_01_a","chess_char_3_07_a","chess_char_3_21_a","chess_char_4_01_a","chess_char_4_02_a","chess_char_5_01_a","chess_char_6_01_a","chess_char_6_09_a","chess_char_6_13_a"],"visibleMembers":["chess_char_1_01_a","chess_char_2_01_a","chess_char_3_01_a","chess_char_3_21_a","chess_char_4_01_a","chess_char_4_02_a","chess_char_5_01_a","chess_char_6_01_a","chess_char_6_09_a","chess_char_6_13_a"],"spec":{"tiers":[{"need":"3 distinct","effect":"When a 拉特兰 member activates a skill that grants ammo, ammo gained x(1 + 0.05 + 0.015*L), rounded down."},{"need":"6 distinct","effect":"Every ammo consumed by any 拉特兰 member: all 拉特兰 members ATK +4% (until battle end), max +200% (= 50 ammo)."}],"formulas":{"ammoMultiplier":"floor(baseAmmo * (1.05 + 0.015*L))","atkPerAmmo(6)":"0.04","atkCap(6)":"2.0"},"caps":"+200% ATK from the 6-member effect","layerGain":"Ammo consumption in battle: 圣约送葬人 each 7 bullets +7 拉特兰 (7 triggers => 49/battle) and +3 远见 (<=21/battle); 莫斯提马 ops in its 4 adjacent tiles each 6 ammo +1; 蕾缪安 each 10 bullets with 3 ops in its row +2 拉特兰/精准; 送葬人 first kill +3 精准/拉特兰. Prep: 空弦 进入休整期 +3 to self and front tile operator's active bonds. 机变 \"莫斯提马的盟誓\" +10. Strategy 潘格尼尼: after spending 55 gold gain a random elite T4+ 拉特兰.","howToPlay":"Only ammo-skill operators benefit from the 3-tier; the bond is weak until 6 (巴哈姆特: \"3人效果較差\").","assumed":["non-ammo skills unaffected","\"ammo consumed\" = each shot/bullet decrement"]}},"egirShip":{"bondId":"egirShip","name":"阿戈尔","identifier":6,"isCore":true,"bondType":"SEASON","bondOrder":2,"powerIdList":["egir","abyssal"],"iconId":"icon_egirShip","activeCount":3,"thresholds":[3,5],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"【阿戈尔】干员生命值提升（受层数影响）\n战斗开始时，【阿戈尔】干员会吞噬身前一格干员对其造成5000点物理伤害并获得其基础攻击力和阻挡数，使【阿戈尔】叠加等于被吞噬者等阶的盟约层数（【阿戈尔】之间优先更靠左和靠上的干员发起吞噬）\n<在场5名不同【阿戈尔】干员>前3名【阿戈尔】干员首次被击倒时立刻复活","descRaw":"【阿戈尔】干员<@ba.vup>生命值</>提升<@autochess.gray>（受层数影响）</>\n战斗开始时，【阿戈尔】干员会<@ba.vup>吞噬</>身前一格干员对其造成<@ba.vdown>5000</>点物理伤害并获得其<@ba.vup>基础攻击力</>和<@ba.vup>阻挡数</>，使【阿戈尔】叠加等于被吞噬者等阶的<@ba.vup>盟约层数</><@autochess.gray>（【阿戈尔】之间优先更靠左和靠上的干员发起吞噬）</>\n<在场<@autochess.dgreen>5</>名不同【阿戈尔】干员>前3名【阿戈尔】干员首次被击倒时<@ba.vup>立刻复活</>","effectId":"bondeffect_egir","effectName":"阿戈尔","effectDesc":"【阿戈尔】干员生命值+{0:0%}（受层数影响）\n战斗开始时【阿戈尔】干员依次吞噬身前一格干员造成5000点物理伤害并获得其基础攻击力和阻挡数，并叠加等于被吞噬者等阶的盟约层数（【阿戈尔】之间优先更靠左和靠上的干员发起吞噬）\n<在场5名不同【阿戈尔】干员>前3名【阿戈尔】干员首次被击倒时立刻复活","effectDescRaw":"【阿戈尔】干员生命值<@ba.vup>+{0:0%}</><@ba.acrem>（受层数影响）</>\n战斗开始时【阿戈尔】干员依次吞噬身前一格干员造成<@ba.vdown>5000</>点物理伤害并获得其<@ba.vup>基础攻击力</>和<@ba.vup>阻挡数</>，并叠加等于被吞噬者等阶的盟约层数<@ba.acrem>（【阿戈尔】之间优先更靠左和靠上的干员发起吞噬）</>\n<在场<@ba.vup>5</>名不同【阿戈尔】干员>前3名【阿戈尔】干员首次被击倒时<@ba.vup>立刻复活</>","effectDescParams":[{"index":0,"format":"0%","base":"base_max_hp","perStack":"max_hp_per_stack"}],"bb":{"base_max_hp":0.35,"max_hp_per_stack":0.01,"damage_value":5000,"power_bond_char_cnt":5,"max_free_respawn_cnt":3},"bbStr":{"key":"act1autochess_bond_eff_egir","bond_type":"bond_by_id","bond_id":"egirShip","bond_add_type":"by_charlevel"},"buffs":[{"key":"env_gbuff_new","bb":{"base_max_hp":0.35,"max_hp_per_stack":0.01,"damage_value":5000,"power_bond_char_cnt":5,"max_free_respawn_cnt":3},"bbStr":{"key":"act1autochess_bond_eff_egir","bond_type":"bond_by_id","bond_id":"egirShip","bond_add_type":"by_charlevel"}}],"baseParams":["base_max_hp"],"perStackParams":["max_hp_per_stack"],"members":["chess_char_1_04_a","chess_char_2_07_a","chess_char_3_05_a","chess_char_3_09_a","chess_char_4_09_a","chess_char_4_12_a","chess_char_5_05_a","chess_char_5_13_a","chess_char_6_04_a"],"visibleMembers":["chess_char_1_04_a","chess_char_2_07_a","chess_char_3_05_a","chess_char_3_09_a","chess_char_4_09_a","chess_char_4_12_a","chess_char_5_05_a","chess_char_5_13_a","chess_char_6_04_a"],"spec":{"tiers":[{"need":"3 distinct","effect":"阿戈尔 members maxHP x(1 + 0.35 + 0.01*L)."},{"need":"3 distinct (battle start)","effect":"Devour (吞噬): see algorithm."},{"need":"5 distinct","effect":"The first 3 阿戈尔 members by position (the devour order: leftmost first, then topmost; fixed at battle start) each revive immediately on their own first knock-out, whatever the order of knock-outs (max_free_respawn_cnt 3)."}],"algorithm":["Order: 阿戈尔 members sorted leftmost first, then topmost (\"更靠左和靠上\").","Each 阿戈尔 in order marks the unit on the tile directly in front of it (its facing direction) and also the front-tile unit of every 阿戈尔 it has marked (chain). It never marks itself, a unit it already marked, or a unit that marked it.","The marker immediately gains the base ATK of every unit it marked (added to base ATK at the final stage) and their block counts.","After all marks are placed, each mark makes its target suffer one 5000-point physical 流失 (HP loss, source = the target itself; if it dies, the kill is credited to the marker), resolved in marking order. A target that dies cancels its remaining pending marks.","Each devoured unit adds layers to 阿戈尔 equal to its tier (1-6), once per unit per battle.","(5-member tier) Revive is implemented as: when the unit leaves the field for any reason other than being moved, its next deployment has 0 redeploy time and 0 cost (PRTS). Devour layers: each devoured unit adds its tier once per battle (refreshes next round)."],"formulas":{"hpMultiplier":"1.35 + 0.01*L","devourDamage":"5000","layersPerDevoured":"tier of devoured unit"},"caps":"3 revives per battle","layerGain":"Devour (tier per devoured unit, every battle); 幽灵鲨 被击倒 +3; 归溟幽灵鲨 被击倒/替身切换 +5 阿戈尔 +5 不屈; 斯卡蒂 each 2 kills +1 阿戈尔/坚守/突袭; 海霓 first kill (enemy or ally) +3 阿戈尔/奥术; 机变 \"斯卡蒂的盟誓\" +8. Strategy 克莱门莎: an 阿戈尔 knocked out adds layers = its tier.","howToPlay":"Put cheap/high-tier fodder in front of 阿戈尔 carries: they steal base ATK and block, gain layers, and (5) revive. Tier-6 fodder gives +6 layers per battle.","assumed":["5000 physical 流失 ignores DEF and shields","marked allied units are the player's own operators (devour hits allies)"]}},"siracusaShip":{"bondId":"siracusaShip","name":"叙拉古","identifier":7,"isCore":true,"bondType":"SEASON","bondOrder":2,"powerIdList":["siracusa","chiave"],"iconId":"icon_siracusaShip","activeCount":3,"thresholds":[3,6],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"【叙拉古】干员部署后攻击速度提升，持续一定时间（受层数影响）\n<在场6名不同【叙拉古】干员>【叙拉古】干员部署后进入等时长的隐匿状态，【叙拉古】干员隐匿状态下和脱离隐匿10秒内对敌人攻击时有3%的概率造成一定真实伤害（受层数影响）并恐惧3秒","descRaw":"【叙拉古】干员部署后<@ba.vup>攻击速度</>提升，持续一定时间<@autochess.gray>（受层数影响）</>\n<在场<@autochess.dgreen>6</>名不同【叙拉古】干员>【叙拉古】干员部署后进入等时长的隐匿状态，【叙拉古】干员隐匿状态下和脱离隐匿<@ba.vup>10</>秒内对敌人攻击时有<@ba.vup>3%</>的概率造成一定真实伤害<@autochess.gray>（受层数影响）</>并<@ba.vup>恐惧</>3秒","effectId":"bondeffect_siracusa","effectName":"叙拉古","effectDesc":"【叙拉古】干员部署后攻击速度+{0:0}，持续{1:0}秒（受层数影响）\n<在场6名不同【叙拉古】干员>【叙拉古】干员部署后还会进入等时长的隐匿状态，【叙拉古】干员在隐匿状态和脱离隐匿10秒内对敌人攻击时有3%概率造成{2:0}（受层数影响）点真实伤害并恐惧目标3秒","effectDescRaw":"【叙拉古】干员部署后攻击速度<@ba.vup>+{0:0}</>，持续<@ba.vup>{1:0}</>秒<@ba.acrem>（受层数影响）</>\n<在场<@ba.vup>6</>名不同【叙拉古】干员>【叙拉古】干员部署后还会进入等时长的隐匿状态，【叙拉古】干员在隐匿状态和脱离隐匿10秒内对敌人攻击时有3%概率造成<@ba.vup>{2:0}</><@ba.acrem>（受层数影响）</>点真实伤害并<@ba.vup>恐惧</>目标3秒","effectDescParams":[{"index":0,"format":"0","base":"base_attack_speed","perStack":"attack_speed_per_stack"},{"index":1,"format":"0","base":"base_duration","perStack":"duration_per_stack"},{"index":2,"format":"0","base":"base_damage","perStack":"damage_per_stack"}],"bb":{"base_duration":32,"duration_per_stack":0.4,"base_attack_speed":25,"attack_speed_per_stack":0.8,"power_bond_char_cnt":6,"ex_bond_char_cnt":6,"end_duration":10,"prob":0.03,"base_damage":5000,"damage_per_stack":50,"fear":3},"bbStr":{"key":"act2autochess_bond_eff_siracusa"},"buffs":[{"key":"env_gbuff_new","bb":{"base_duration":32,"duration_per_stack":0.4,"base_attack_speed":25,"attack_speed_per_stack":0.8,"power_bond_char_cnt":6,"ex_bond_char_cnt":6,"end_duration":10,"prob":0.03,"base_damage":5000,"damage_per_stack":50,"fear":3},"bbStr":{"key":"act2autochess_bond_eff_siracusa"}}],"baseParams":["base_attack_speed","base_duration","base_damage"],"perStackParams":["attack_speed_per_stack","duration_per_stack","damage_per_stack"],"members":["chess_char_1_07_a","chess_char_1_08_a","chess_char_2_16_a","chess_char_3_15_a","chess_char_3_18_a","chess_char_3_19_a","chess_char_4_10_a","chess_char_4_16_a","chess_char_5_10_a","chess_char_5_20_a","chess_char_6_18_a"],"visibleMembers":["chess_char_1_07_a","chess_char_1_08_a","chess_char_2_16_a","chess_char_3_18_a","chess_char_3_19_a","chess_char_4_10_a","chess_char_4_16_a","chess_char_5_10_a","chess_char_5_20_a","chess_char_6_18_a"],"spec":{"tiers":[{"need":"3 distinct","effect":"After every deployment (incl. redeploy) a 叙拉古 member gains ASPD +(25 + 0.8*L) for (32 + 0.4*L) s."},{"need":"6 distinct","effect":"After deployment also 隐匿 (camouflage) for the same duration. While camouflaged and for 10 s after it ends, each normal damage instance (普通伤害 = attack type NORMAL: attacks, skill hits, drone attacks; not 溅射 / 持续 / 附加 — `bonds/core.js siracusaRolls`) it deals may add (5000 + 50*L) true damage (source = the operator) and 恐惧 (fear) 3 s. Nominal 3% chance, implemented as pseudo-random: all 叙拉古 members share one counter; attempt n since last proc succeeds with p = 0.00139*n (guaranteed at n = 720); counter resets on proc."}],"formulas":{"aspd":"25 + 0.8*L","durationSec":"32 + 0.4*L","procDamage":"5000 + 50*L","prdStep":"0.00139"},"caps":"none","layerGain":"Shop refresh-driven: 拉普兰德 first manual refresh each round +4 (works from bench); 安洁莉娜 休整期结束 +4 per refresh this round (<=12/round); 阿罗玛 +2 叙拉古/奥术 per refresh (<=6); 伺夜 first 3 kills +2 叙拉古 +1 奇迹; 荒芜拉普兰德 each kill +2 (elite: every 叙拉古 gets this, <=100/battle); 忍冬 获得时 +6 own bonds (x2/x3 with 投资人); 机变 \"德克萨斯的盟誓\" +10. Strategy 贾维: every 6 manual refreshes get a free 叙拉古 (<=2/round).","howToPlay":"Refresh a lot in prep (free refresh sources: 普罗旺斯, 德克萨斯, 缄默德克萨斯, 巫恋) to feed 拉普兰德/安洁莉娜; pair with 投资人 for 忍冬.","notes":["PRTS: the 10 s post-stealth window restarts if the operator's status effects or immunities change."],"assumed":["隐匿 = standard AK camouflage (not targeted by ranged enemies unless blocking)"]}},"kazimierzShip":{"bondId":"kazimierzShip","name":"卡西米尔","identifier":8,"isCore":true,"bondType":"SEASON","bondOrder":2,"powerIdList":["kazimierz","pinus"],"iconId":"icon_kazimierzShip","activeCount":3,"thresholds":[3,6],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"每次有干员部署时，【卡西米尔】干员攻击力+20%持续至战斗结束（上限受层数影响）\n<在场6名不同【卡西米尔】干员>【卡西米尔】干员阻挡敌人时每2秒对周围敌人造成120%攻击力真实伤害和0.1秒晕眩，未阻挡敌人时攻击附带30%攻击力的真实伤害","descRaw":"每次有干员部署时，【卡西米尔】干员攻击力<@ba.vup>+20%</>持续至战斗结束<@autochess.gray>（上限受层数影响）</>\n<在场<@autochess.dgreen>6</>名不同【卡西米尔】干员>【卡西米尔】干员阻挡敌人时每<@ba.vup>2</>秒对周围敌人造成<@ba.vup>120%</>攻击力真实伤害和<@ba.vup>0.1</>秒晕眩，未阻挡敌人时攻击附带<@ba.vup>30%</>攻击力的真实伤害","effectId":"bondeffect_kazimierz","effectName":"卡西米尔","effectDesc":"每次有干员部署时【卡西米尔】干员攻击力+20%（至多+{0:0%}）（受层数影响）\n<在场6名不同【卡西米尔】干员>【卡西米尔】干员阻挡敌人时每2秒对周围敌人造成120%攻击力真实伤害和0.1秒晕眩，未阻挡敌人时攻击附带30%攻击力的真实伤害","effectDescRaw":"每次有干员部署时【卡西米尔】干员攻击力+20%（至多<@ba.vup>+{0:0%}</>）<@ba.acrem>（受层数影响）</>\n<在场<@ba.vup>6</>名不同【卡西米尔】干员>【卡西米尔】干员阻挡敌人时每2秒对周围敌人造成<@ba.vup>120%</>攻击力真实伤害和<@ba.vup>0.1</>秒晕眩，未阻挡敌人时攻击附带<@ba.vup>30%</>攻击力的真实伤害","effectDescParams":[{"index":0,"format":"0%","base":"base_max_atk_when_born","perStack":"max_atk_when_born_per_stack"}],"bb":{"atk_when_born":0.2,"base_max_atk_when_born":0.5,"max_atk_when_born_per_stack":0.01,"damage_interval":2,"damage_atk_scale":1.2,"stun":0.1,"range_radius":0.8,"power_bond_char_cnt":6,"pure_atk_scale":0.3},"bbStr":{"key":"act2autochess_bond_eff_kazimierz"},"buffs":[{"key":"env_gbuff_new","bb":{"atk_when_born":0.2,"base_max_atk_when_born":0.5,"max_atk_when_born_per_stack":0.01,"damage_interval":2,"damage_atk_scale":1.2,"stun":0.1,"range_radius":0.8,"power_bond_char_cnt":6,"pure_atk_scale":0.3},"bbStr":{"key":"act2autochess_bond_eff_kazimierz"}}],"baseParams":["base_max_atk_when_born"],"perStackParams":["max_atk_when_born_per_stack"],"members":["chess_char_1_19_a","chess_char_2_12_a","chess_char_2_18_a","chess_char_3_12_a","chess_char_3_17_a","chess_char_4_19_a","chess_char_4_20_a","chess_char_5_19_a","chess_char_6_17_a","chess_char_6_19_a"],"visibleMembers":["chess_char_1_19_a","chess_char_2_12_a","chess_char_2_18_a","chess_char_3_12_a","chess_char_3_17_a","chess_char_4_19_a","chess_char_4_20_a","chess_char_5_19_a","chess_char_6_17_a","chess_char_6_19_a"],"spec":{"tiers":[{"need":"3 distinct","effect":"Every time any friendly operator is deployed (incl. redeploys) each 卡西米尔 member gains ATK +20% until battle end, capped at +(50 + 1*L)%."},{"need":"6 distinct","effect":"While blocking >= 1 enemy: every 2 s deals 120% ATK true damage to all enemies within radius 0.8 tiles and stuns them 0.1 s. While not blocking: each normal damage instance adds 30% ATK sourceless true damage."}],"formulas":{"atkPerDeploy":"0.20","atkCap":"0.50 + 0.01*L"},"caps":"ATK bonus cap 50%+1%/layer","layerGain":"Deploy-driven in battle: 砾 部署时 +1; 瑕光 部署时 +4 own active bonds (<=12/battle); 远牙 grants the right-most operator in its row \"部署时 +4 卡西米尔/精准 (<=24/battle)\"; 锏 部署时 +8 (<=24); 获得时: 野鬃 +2, 灰毫 +3 to highest-layer bond; 机变 \"玛恩纳的盟誓\" +12. Strategy 玛恩纳: +1 gold next round per 卡西米尔 bought (<=3).","howToPlay":"Maximise deploy events: low redeploy time (助力 -30%, 骑士戒律), operators that die/retreat and come back (砾 + 不屈). 巴哈姆特: do not light 坚守 (damage sharing keeps 砾 alive).","assumed":["initial auto-deployments at battle start also count as deploys","buff applies to members deployed later too (stored globally, capped)"]}},"preciShip":{"bondId":"preciShip","name":"精准","identifier":9,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_preciShip","activeCount":2,"thresholds":[2,3],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"【精准】干员攻击力提升（受层数影响）\n<在场3名不同【精准】干员>生效范围变为【精准】干员和所有远程干员，且攻击无视一定的防御力和法术抗性","descRaw":"【精准】干员<@ba.vup>攻击力</>提升<@autochess.gray>（受层数影响）</>\n<在场<@autochess.dgreen>3</>名不同【精准】干员>生效范围变为【精准】干员和所有远程干员，且攻击无视一定的<@ba.vup>防御力</>和<@ba.vup>法术抗性</>","effectId":"bondeffect_preci","effectName":"精准","effectDesc":"【精准】干员攻击力+{0:0%}（受层数影响）\n<在场3名不同【精准】干员>生效范围变为所有【精准】干员和远程干员，且攻击无视30%防御力和法术抗性","effectDescRaw":"【精准】干员攻击力<@ba.vup>+{0:0%}</><@ba.acrem>（受层数影响）</>\n<在场<@ba.vup>3</>名不同【精准】干员>生效范围变为所有【精准】干员和远程干员，且攻击无视<@ba.vup>30%</>防御力和法术抗性","effectDescParams":[{"index":0,"format":"0%","base":"base_atk","perStack":"atk_per_stack"}],"bb":{"base_atk":0.1,"atk_per_stack":0.012,"power_def_penetrate":0.3,"power_magic_resist_penetrate":0.3,"power_bond_char_cnt":3},"bbStr":{"key":"act1autochess_bond_eff_preci"},"buffs":[{"key":"env_gbuff_new","bb":{"base_atk":0.1,"atk_per_stack":0.012,"power_def_penetrate":0.3,"power_magic_resist_penetrate":0.3,"power_bond_char_cnt":3},"bbStr":{"key":"act1autochess_bond_eff_preci"}}],"baseParams":["base_atk"],"perStackParams":["atk_per_stack"],"members":["chess_char_1_09_a","chess_char_1_17_a","chess_char_2_01_a","chess_char_3_11_a","chess_char_4_06_a","chess_char_4_14_a","chess_char_4_20_a","chess_char_5_02_a","chess_char_6_01_a","chess_char_6_05_a","chess_char_6_08_a","chess_char_6_12_a"],"visibleMembers":["chess_char_1_09_a","chess_char_1_17_a","chess_char_2_01_a","chess_char_3_11_a","chess_char_4_06_a","chess_char_4_14_a","chess_char_4_20_a","chess_char_5_02_a","chess_char_6_01_a","chess_char_6_05_a","chess_char_6_08_a","chess_char_6_12_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"精准 members ATK x(1 + 0.10 + 0.012*L)."},{"need":"3 distinct","effect":"Scope becomes 精准 members + every RANGED operator; affected units also ignore 30% of target DEF and 30% of target RES."}],"formulas":{"atkMultiplier":"1.10 + 0.012*L","defPenetrateRatio(3)":"0.3","resPenetrateRatio(3)":"0.3"},"layerGain":"Kill/skill/deploy in battle: 寒芒克洛丝 gives front operator \"开技能 +1 精准 (<=10/battle)\"; 远牙 grant (+4/deploy); 缇缇 +1 per sleep/stun; 蕾缪安, 送葬人; 莱恩哈特 休整期结束 +5 own active bonds; 获得时: 深靛 +2, 雪猎 +5. 机变 \"缇缇的盟誓\" +10.","assumed":["penetration = ratio ignore (like 无视 x% 防御)"]}},"swiftShip":{"bondId":"swiftShip","name":"迅捷","identifier":10,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_swiftShip","activeCount":2,"thresholds":[2],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[{"layer":40,"mode":"reach","effect":"env_gbuff_new"}],"desc":"【迅捷】干员技能结束时有概率（受层数影响）立刻回复12点技力\n<达到40层>所有干员技能结束时有等概率额外回复15点技力","descRaw":"【迅捷】干员技能结束时有概率<@autochess.gray>（受层数影响）</>立刻回复<@ba.vup>12点</>技力\n<达到<@autochess.dgreen>40</>层>所有干员技能结束时有等概率额外回复<@ba.vup>15点</>技力","effectId":"bondeffect_swift","effectName":"迅捷","effectDesc":"【迅捷】干员技能结束时有{0:0%}概率（受层数影响）立刻回复12点技力\n<达到40层>所有干员技能结束时有等概率额外回复15点技力","effectDescRaw":"【迅捷】干员技能结束时有<@ba.vup>{0:0%}</>概率<@ba.acrem>（受层数影响）</>立刻回复<@ba.vup>12</>点技力\n<达到<@ba.vup>40</>层>所有干员技能结束时有等概率额外回复<@ba.vup>15</>点技力","effectDescParams":[{"index":0,"format":"0%","base":"base_prob","perStack":"prob_per_stack"}],"bb":{"base_prob":0.2,"prob_per_stack":0.0035,"power_bond_stack_cnt":40,"normal_sp":12,"power_sp":15},"bbStr":{"key":"act1autochess_bond_eff_swift"},"buffs":[{"key":"env_gbuff_new","bb":{"base_prob":0.2,"prob_per_stack":0.0035,"power_bond_stack_cnt":40,"normal_sp":12,"power_sp":15},"bbStr":{"key":"act1autochess_bond_eff_swift"}}],"baseParams":["base_prob"],"perStackParams":["prob_per_stack"],"members":["chess_char_1_01_a","chess_char_1_16_a","chess_char_1_19_a","chess_char_2_13_a","chess_char_2_19_a","chess_char_3_10_a","chess_char_3_18_a","chess_char_4_14_a","chess_char_5_14_a","chess_char_5_15_a","chess_char_5_22_a","chess_char_6_05_a","chess_char_6_10_a","chess_char_6_19_a"],"visibleMembers":["chess_char_1_01_a","chess_char_1_19_a","chess_char_2_13_a","chess_char_2_19_a","chess_char_3_10_a","chess_char_3_18_a","chess_char_4_14_a","chess_char_5_14_a","chess_char_5_15_a","chess_char_5_22_a","chess_char_6_05_a","chess_char_6_19_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"When a 迅捷 member's skill ends: with p = min(1, 0.20 + 0.0035*L) immediately +12 SP."},{"need":"L >= 40","effect":"Every operator whose skill ends: with the same p, additionally +15 SP."}],"formulas":{"p":"min(1, 0.20 + 0.0035*L)","reaches100%AtL":"229"},"layerGain":"妮芙 休整期结束 +2 per operator on the bench; 蒂比 进入休整期 +2 own active bonds; 莱恩哈特 +5; 引星棘刺 +4 self & front; 获得时: 锡人/野鬃 +2, 忍冬 +6, 锏 +8. 机变 \"银灰的盟誓\" +8.","assumed":["迅捷 members roll both the 12 SP and the 15 SP independently"]}},"skillfulShip":{"bondId":"skillfulShip","name":"灵巧","identifier":11,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_skillfulShip","activeCount":2,"thresholds":[2],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[{"layer":40,"mode":"reach","effect":"env_gbuff_new"}],"desc":"【灵巧】干员及周围4格干员攻击速度提升（受层数影响）\n<达到40层>生效范围变为【灵巧】干员周围8格","descRaw":"【灵巧】干员及周围4格干员<@ba.vup>攻击速度</>提升<@autochess.gray>（受层数影响）</>\n<达到<@autochess.dgreen>40</>层>生效范围变为【灵巧】干员周围8格","effectId":"bondeffect_skillful","effectName":"灵巧","effectDesc":"【灵巧】干员及周围4格的干员攻击速度+{0:0}（受层数影响）\n <达到40层>生效范围变为【灵巧】干员周围8格","effectDescRaw":"【灵巧】干员及周围4格的干员攻击速度<@ba.vup>+{0:0}</><@ba.acrem>（受层数影响）</>\n <达到<@ba.vup>40</>层>生效范围变为【灵巧】干员周围8格","effectDescParams":[{"index":0,"format":"0","base":"base_attack_speed","perStack":"attack_speed_per_stack"}],"bb":{"base_attack_speed":10,"attack_speed_per_stack":1,"power_bond_stack_cnt":40},"bbStr":{"key":"act1autochess_bond_eff_skillful"},"buffs":[{"key":"env_gbuff_new","bb":{"base_attack_speed":10,"attack_speed_per_stack":1,"power_bond_stack_cnt":40},"bbStr":{"key":"act1autochess_bond_eff_skillful"}}],"baseParams":["base_attack_speed"],"perStackParams":["attack_speed_per_stack"],"members":["chess_char_1_14_a","chess_char_2_04_a","chess_char_2_13_a","chess_char_3_02_a","chess_char_3_13_a","chess_char_3_21_a","chess_char_4_11_a","chess_char_4_13_a","chess_char_4_21_a","chess_char_5_06_a","chess_char_5_16_a","chess_char_6_16_a"],"visibleMembers":["chess_char_1_14_a","chess_char_2_04_a","chess_char_2_13_a","chess_char_3_02_a","chess_char_3_13_a","chess_char_3_21_a","chess_char_4_11_a","chess_char_4_13_a","chess_char_4_21_a","chess_char_5_06_a","chess_char_6_16_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"灵巧 members and operators on their 4 orthogonally adjacent tiles: ASPD +(10 + 1*L)."},{"need":"L >= 40","effect":"Area becomes the 8 surrounding tiles."}],"formulas":{"aspd":"10 + L"},"layerGain":"溯光星源 休整期结束 +2 灵巧/奥术 per 3 gold spent this round ; 断崖 +3 self & behind; 空弦 +3 self & front; 蒂比 +2; 获得时 灵知 +5. (act1 灵巧 also had a 20-layer shop reward; removed in act2.)","assumed":["a unit covered by several 灵巧 auras gets the bonus once"]}},"arcaneShip":{"bondId":"arcaneShip","name":"奥术","identifier":12,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_arcaneShip","activeCount":2,"thresholds":[2,3],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"【奥术】干员造成法术伤害时使目标受到的法术伤害提升（受层数影响），持续3秒\n<在场3名不同【奥术】干员>【奥术】干员对生命值低于50%的敌人施加的伤害提升比例提升（受层数影响）","descRaw":"【奥术】干员造成法术伤害时使目标受到的法术伤害提升<@autochess.gray>（受层数影响）</>，持续3秒\n<在场<@autochess.dgreen>3</>名不同【奥术】干员>【奥术】干员对生命值低于<@ba.vup>50%</>的敌人施加的伤害提升比例提升<@autochess.gray>（受层数影响）</>","effectId":"bondeffect_arcane","effectName":"奥术","effectDesc":"【奥术】干员造成法术伤害时使目标受到的法术伤害提升{0:0%}（受层数影响），持续3秒\n<在场3名不同【奥术】干员>【奥术】干员对生命值低于50%的敌人施加的伤害提升比例为{1:0%}（受层数影响）","effectDescRaw":"【奥术】干员造成法术伤害时使目标受到的法术伤害提升<@ba.vup>{0:0%}</><@ba.acrem>（受层数影响）</>，持续3秒\n<在场<@ba.vup>3</>名不同【奥术】干员>【奥术】干员对生命值低于50%的敌人施加的伤害提升比例为<@ba.vup>{1:0%}</><@ba.acrem>（受层数影响）</>","effectDescParams":[{"index":0,"format":"0%","base":"base_damage_scale_show","perStack":"damage_scale_per_stack"},{"index":1,"format":"0%","base":"base_damage_scale_show_ex","perStack":"damage_scale_per_stack_show_ex"}],"bb":{"weak_duration":3,"base_damage_scale":1.2,"damage_scale_per_stack":0.01,"power_bond_char_cnt":3,"power_weak_scale":1.4,"hp_ratio":0.5,"base_damage_scale_show":0.2,"base_damage_scale_show_ex":0.68,"damage_scale_per_stack_show_ex":0.014},"bbStr":{"key":"act2autochess_bond_eff_arcane"},"buffs":[{"key":"env_gbuff_new","bb":{"weak_duration":3,"base_damage_scale":1.2,"damage_scale_per_stack":0.01,"power_bond_char_cnt":3,"power_weak_scale":1.4,"hp_ratio":0.5,"base_damage_scale_show":0.2,"base_damage_scale_show_ex":0.68,"damage_scale_per_stack_show_ex":0.014},"bbStr":{"key":"act2autochess_bond_eff_arcane"}}],"baseParams":["base_damage_scale_show","base_damage_scale_show_ex"],"perStackParams":["damage_scale_per_stack","damage_scale_per_stack_show_ex"],"members":["chess_char_1_17_a","chess_char_2_10_a","chess_char_2_15_a","chess_char_3_09_a","chess_char_4_02_a","chess_char_4_10_a","chess_char_5_07_a","chess_char_5_12_a","chess_char_6_02_a","chess_char_6_16_a"],"visibleMembers":["chess_char_1_17_a","chess_char_2_10_a","chess_char_3_09_a","chess_char_4_02_a","chess_char_4_10_a","chess_char_5_07_a","chess_char_5_12_a","chess_char_6_02_a","chess_char_6_16_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"When an 奥术 member deals magic damage, the target takes magic damage x(1.20 + 0.01*L) (i.e. +(20+L)%) for 3 s. ONE instance per target whatever applies it: the strongest value wins, a weaker one resumes if it outlasts it; reapplying refreshes (corrected 2026-10-01: PRTS 作战机制 同名buff默认只表现出一个; 巴哈姆特 12316 the two players of a pair field compete for it)."},{"need":"3 distinct","effect":"Against enemies below 50% HP the multiplier is 1.4 x (1.20 + 0.01*L) = 1.68 + 0.014*L (i.e. +(68+1.4L)%)."}],"formulas":{"magicTakenMul":"1.20 + 0.01*L","magicTakenMulLowHp(3)":"1.4*(1.20 + 0.01*L)","hpThreshold":"0.5","durationSec":"3"},"layerGain":"夕 +2 per operator gained; 阿罗玛 +2 per refresh (<=6); 溯光星源 +2 per 3 gold spent; 海霓 first kill +3; 获得时: 深靛 +2, 协律 +4 (hidden). 机变 \"莫斯提马的盟誓\" +10.","assumed":["one instance per target, the strongest (the engine's default same-name rule; the two players of a pair field compete for it) — until v2.5 the remake kept one per player and they multiplied"]}},"steadShip":{"bondId":"steadShip","name":"坚守","identifier":13,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_steadShip","activeCount":2,"thresholds":[2,3],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"所有干员生命值提升（受层数影响）\n<在场3名不同【坚守】干员>场上非【坚守】干员受到伤害时，所受伤害的40%由所有【坚守】干员平均承担。【坚守】干员受到伤害时，伤害来源将受到一定法术伤害（受层数影响，每0.2秒至多触发1次）和持续5秒的40%脆弱效果","descRaw":"所有干员<@ba.vup>生命值</>提升<@autochess.gray>（受层数影响）</>\n<在场<@autochess.dgreen>3</>名不同【坚守】干员>场上非【坚守】干员受到伤害时，所受伤害的<@ba.vup>40%</>由所有【坚守】干员<@ba.vup>平均承担</>。【坚守】干员受到伤害时，伤害来源将受到一定法术伤害<@autochess.gray>（受层数影响，每0.2秒至多触发1次）</>和持续<@ba.vup>5</>秒的<@ba.vup>40%</>脆弱效果","effectId":"bondeffect_stead","effectName":"坚守","effectDesc":"所有干员生命值+{0:0%}（受层数影响）\n<在场3名不同【坚守】干员>场上非【坚守】干员受到伤害时，所受伤害的40%由【坚守】干员平均承担；【坚守】干员受到伤害时，伤害来源受到{1:0}点法术伤害（受层数影响，每0.2秒至多触发1次）和持续5秒的40%的脆弱效果","effectDescRaw":"所有干员生命值<@ba.vup>+{0:0%}</><@ba.acrem>（受层数影响）</>\n<在场<@ba.vup>3</>名不同【坚守】干员>场上非【坚守】干员受到伤害时，所受伤害的<@ba.vup>40%</>由【坚守】干员平均承担；【坚守】干员受到伤害时，伤害来源受到<@ba.vup>{1:0}</>点法术伤害<@ba.acrem>（受层数影响，每0.2秒至多触发1次）</>和持续5秒的<@ba.vup>40%</>的脆弱效果","effectDescParams":[{"index":0,"format":"0%","base":"base_max_hp","perStack":"max_hp_per_stack"},{"index":1,"format":"0","base":"base_damage_value","perStack":"damage_value_per_stack"}],"bb":{"base_max_hp":0.25,"max_hp_per_stack":0.012,"damage_resistance":0.4,"power_bond_char_cnt":3,"cd_duration":0.2,"weak[limit]":5,"damage_scale":1.4,"base_damage_value":850,"damage_value_per_stack":10},"bbStr":{"key":"act1autochess_bond_eff_stead"},"buffs":[{"key":"env_gbuff_new","bb":{"base_max_hp":0.25,"max_hp_per_stack":0.012,"damage_resistance":0.4,"power_bond_char_cnt":3,"cd_duration":0.2,"weak[limit]":5,"damage_scale":1.4,"base_damage_value":850,"damage_value_per_stack":10},"bbStr":{"key":"act1autochess_bond_eff_stead"}}],"baseParams":["base_max_hp","base_damage_value"],"perStackParams":["max_hp_per_stack","damage_value_per_stack"],"members":["chess_char_1_02_a","chess_char_1_10_a","chess_char_2_08_a","chess_char_2_17_a","chess_char_2_18_a","chess_char_3_05_a","chess_char_3_16_a","chess_char_4_01_a","chess_char_5_11_a","chess_char_6_03_a"],"visibleMembers":["chess_char_1_02_a","chess_char_1_10_a","chess_char_2_08_a","chess_char_2_17_a","chess_char_2_18_a","chess_char_3_05_a","chess_char_3_16_a","chess_char_4_01_a","chess_char_5_11_a","chess_char_6_03_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"ALL operators maxHP x(1 + 0.25 + 0.012*L)."},{"need":"3 distinct","effect":"When a non-坚守 operator takes damage, 40% of that damage is taken instead by the 坚守 members, split evenly. When a 坚守 member takes damage, the damage source takes (850 + 10*L) sourceless magic damage and 脆弱 (damage taken x1.4) for 5 s; each 坚守 member can reflect at most once per 0.2 s."}],"formulas":{"hpMultiplier":"1.25 + 0.012*L","redirectRatio":"0.4","thornsDamage":"850 + 10*L","thornsCooldownSec":"0.2","fragile":"1.4 for 5 s"},"layerGain":"折桠 休整期结束 +4; 蛇屠箱 +1 per operator in same row; 斯卡蒂 kills; 获得时 角峰 +2; 机变 \"斯卡蒂的盟誓\" +8.","notes":["PRTS: thorns hit whatever the damage source is; sourceless damage can consume the thorns cooldown."]}},"deputShip":{"bondId":"deputShip","name":"助力","identifier":14,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_deputShip","activeCount":2,"thresholds":[2,3],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"所有干员防御力提升（受层数影响），再部署时间减少\n休整期结束时，使当前所有已激活盟约层数+2\n<在场3名不同【助力】干员>改为层数+4","descRaw":"所有干员<@ba.vup>防御力</>提升<@autochess.gray>（受层数影响）</>，<@ba.vup>再部署时间</>减少\n休整期结束时，使当前所有已激活盟约层数<@ba.vup>+2</>\n<在场<@autochess.dgreen>3</>名不同【助力】干员>改为层数<@ba.vup>+4</>","effectId":"bondeffect_deput","effectName":"助力","effectDesc":"所有干员防御力+{0:0%}（受层数影响），再部署时间-30%\n休整期结束时，使当前所有已激活的盟约层数+2\n<在场3名不同【助力】干员>改为层数+4","effectDescRaw":"所有干员防御力<@ba.vup>+{0:0%}</><@ba.acrem>（受层数影响）</>，再部署时间<@ba.vup>-30%</>\n休整期结束时，使当前所有已激活的盟约层数<@ba.vup>+2</>\n<在场<@ba.vup>3</>名不同【助力】干员>改为层数<@ba.vup>+4</>","effectDescParams":[{"index":0,"format":"0%","base":"base_def","perStack":"def_per_stack"}],"bb":{"base_def":0.15,"def_per_stack":0.012,"respawn_time":-0.3,"layer":2,"count":3,"more_layer":4},"bbStr":{"key":"act1autochess_bond_eff_deput","bond":"deputShip"},"buffs":[{"key":"env_gbuff_new","bb":{"base_def":0.15,"def_per_stack":0.012,"respawn_time":-0.3},"bbStr":{"key":"act1autochess_bond_eff_deput"}},{"key":"bond_activated_add_layer","bb":{"layer":2,"count":3,"more_layer":4},"bbStr":{"bond":"deputShip"}}],"baseParams":["base_def"],"perStackParams":["def_per_stack"],"members":["chess_char_1_06_a","chess_char_1_13_a","chess_char_2_14_a","chess_char_2_15_a","chess_char_3_15_a","chess_char_3_20_a","chess_char_4_03_a","chess_char_4_05_a","chess_char_4_21_a","chess_char_4_24_a","chess_char_5_16_a","chess_char_6_14_a","chess_char_6_20_a"],"visibleMembers":["chess_char_1_06_a","chess_char_1_13_a","chess_char_2_14_a","chess_char_3_20_a","chess_char_4_21_a","chess_char_4_24_a","chess_char_6_14_a","chess_char_6_20_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"ALL operators DEF x(1 + 0.15 + 0.012*L); redeploy time -30%. At the end of every prep phase (休整期结束时) every currently active bond (incl. 助力) gets +2 layers."},{"need":"3 助力 (distinct name or elite state)","effect":"+4 layers instead of +2."}],"formulas":{"defMultiplier":"1.15 + 0.012*L","redeployTimeMul":"0.7","layersPerRound":"2 (4 at 3 members) to every active bond"},"layerGain":"波登可 +1 / 调香师 +2 to highest-layer bond at prep end (work from bench); 流明 +2 to active bonds of every bench operator; 纯烬艾雅法拉 +3 highest-layer bond per skill; its own +2/+4 per round.","howToPlay":"Cheap universal layer engine: activate as many bonds as possible so each gets +2/+4 every round (helps the hidden-round threshold)."}},"visiShip":{"bondId":"visiShip","name":"远见","identifier":15,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_visiShip","activeCount":2,"thresholds":[2],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD_AND_DECK","countsHand":true,"countsGoldenOnly":false,"activeType":"ALL","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[{"layer":10,"mode":"every","effect":"bond_layer_gain_coin"},{"layer":80,"mode":"first","effect":"bond_multi_layer_char_goods_price_bond_discount"},{"layer":150,"mode":"first","effect":"bond_multi_layer_char_goods_price_bond_discount"}],"desc":"<每叠加10层>获得一次2资金\n<首次达到80层>所有【远见】干员购买价格永久-1资金\n<首次达到150层>以上效果改为调度中心内所有干员的购买价格永久-1资金（整备区的【远见】干员也可用于激活盟约）","descRaw":"<每叠加<@autochess.dgreen>10</>层>获得一次<@ba.vup>2</>资金\n<首次达到<@autochess.dgreen>80</>层>所有【远见】干员购买价格<@ba.vup>永久-1</>资金\n<首次达到<@autochess.dgreen>150</>层>以上效果改为调度中心内所有干员的购买价格<@ba.vup>永久-1</>资金（整备区的【远见】干员也可用于激活盟约）","effectId":"bondeffect_visi","effectName":"远见","effectDesc":"<每叠加10层>获得一次2资金\n<首次到达80层>所有【远见】干员购买价格永久-1资金\n<首次到达150层>上述效果改为所有干员购买价格永久-1资金\n整备区的【远见】干员也可用于激活盟约","effectDescRaw":"<每叠加<@ba.vup>10</>层>获得一次<@ba.vup>2</>资金\n<首次到达<@ba.vup>80</>层>所有【远见】干员购买价格永久-1资金\n<首次到达<@ba.vup>150</>层>上述效果改为所有干员购买价格永久-1资金\n整备区的【远见】干员也可用于激活盟约","effectDescParams":[],"bb":{"layer":10,"count":2,"layer1":80,"discount":1,"layer2":150},"bbStr":{"bond":"visiShip"},"buffs":[{"key":"bond_layer_gain_coin","bb":{"layer":10,"count":2},"bbStr":{}},{"key":"bond_multi_layer_char_goods_price_bond_discount","bb":{"layer1":80,"discount":1,"layer2":150},"bbStr":{"bond":"visiShip"}}],"baseParams":[],"perStackParams":[],"members":["chess_char_1_11_a","chess_char_2_02_a","chess_char_3_03_a","chess_char_3_14_a","chess_char_4_04_a","chess_char_4_07_a","chess_char_5_01_a","chess_char_5_21_a","chess_char_6_12_a"],"visibleMembers":["chess_char_2_02_a","chess_char_3_03_a","chess_char_3_14_a","chess_char_4_04_a","chess_char_4_07_a","chess_char_5_01_a","chess_char_5_21_a","chess_char_6_12_a"],"spec":{"tiers":[{"need":"2 distinct (board + bench)","effect":"Each time cumulative L passes a multiple of 10: +2 gold."},{"need":"first time L >= 80","effect":"All 远见 operators' shop price permanently -1."},{"need":"first time L >= 150","effect":"Replaces the above: every operator in the shop permanently -1 (overrides, does not stack; 3/27 update)."}],"formulas":{"goldPayouts":"2 * floor(L/10)"},"layerGain":"寒檀 进入/结束休整期 +4 each; 伊内丝 +5 own active bonds; 赫默 +2; 圣约送葬人 +3 per 7 bullets (<=21/battle); 风笛 kills +2; 机变 \"风笛的盟誓\" +8.","assumed":["no floor but 0 (owner's decision 2026-10-04; a floor of 1 was assumed until 0.1.3)"]}},"miraShip":{"bondId":"miraShip","name":"奇迹","identifier":16,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_miraShip","activeCount":2,"thresholds":[2],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD_AND_DECK","countsHand":true,"countsGoldenOnly":false,"activeType":"ALL","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[{"layer":100,"mode":"every","effect":"bond_layer_gain_coin"}],"desc":"刷新调度中心时，有概率使下次刷新不消耗资金（受层数影响）\n<每叠加100层>获得20资金（整备区的【奇迹】干员也可用于激活盟约）","descRaw":"刷新调度中心时，有概率使下次刷新<@ba.vup>不消耗资金</><@autochess.gray>（受层数影响）</>\n<每叠加<@autochess.dgreen>100</>层>获得<@ba.vup>20</>资金（整备区的【奇迹】干员也可用于激活盟约）","effectId":"bondeffect_mira","effectName":"奇迹","effectDesc":"刷新调度中心时，有{0:0%}（受层数影响）概率使下次刷新不消耗资金\n<每叠加100层>获得20资金\n整备区的【奇迹】干员也可用于激活盟约","effectDescRaw":"刷新调度中心时，有<@ba.vup>{0:0%}</><@ba.acrem>（受层数影响）</>概率使下次刷新不消耗资金\n<每叠加<@ba.vup>100</>层>获得<@ba.vup>20</>资金\n整备区的【奇迹】干员也可用于激活盟约","effectDescParams":[{"index":0,"format":"0%","base":"baseprob","perStack":"prob"}],"bb":{"probk":0.3,"prob":0.003,"baseprob":0.18,"layer":100,"count":20},"bbStr":{},"buffs":[{"key":"bond_refresh_shop_next_free","bb":{"probk":0.3,"prob":0.003,"baseprob":0.18},"bbStr":{}},{"key":"bond_layer_gain_coin","bb":{"layer":100,"count":20},"bbStr":{}}],"baseParams":["baseprob"],"perStackParams":["prob"],"members":["chess_char_1_11_a","chess_char_2_11_a","chess_char_3_01_a","chess_char_3_19_a","chess_char_4_15_a","chess_char_4_26_a","chess_char_5_04_a","chess_char_5_15_a","chess_char_5_20_a","chess_char_5_23_a","chess_char_6_07_a"],"visibleMembers":["chess_char_2_11_a","chess_char_3_01_a","chess_char_3_19_a","chess_char_4_26_a","chess_char_5_15_a","chess_char_5_20_a","chess_char_5_23_a","chess_char_6_07_a"],"spec":{"tiers":[{"need":"2 distinct (board + bench)","effect":"After each shop refresh, if the player has 0 free refreshes: with p = 0.18 + 0.003*L gain 1 free refresh."},{"need":"every 100 layers","effect":"+20 gold."}],"formulas":{"p":"min(1, 0.18 + 0.003*L)","goldPayouts":"20 * floor(L/100)"},"layerGain":"维娜·维多利亚 +2 per distinct-tier 奇迹; 录武官 获得时 +3; 伺夜 kills +1; 引星棘刺 +4 self & front; 华法琳 (奇迹 member) gives the operator in front \"开技能时 +1 own active bonds\" (data: <=7/battle, elite +2 <=14; PRTS 3/27 patch note says cap raised to 12/24).","notes":["blackboard probk = 0.3: meaning unknown (not in any description) [UNKNOWN]."]}},"investShip":{"bondId":"investShip","name":"投资人","identifier":17,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_investShip","activeCount":3,"thresholds":[3],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD_AND_DECK","countsHand":true,"countsGoldenOnly":false,"activeType":"ALL","isActiveInDeck":false,"noStack":false,"weight":0,"maxInactiveBondCount":-1,"layerMilestones":[{"layer":100,"mode":"reach","effect":"bond_layer_char_garrison_bonus"}],"desc":"干员的“获得时”类特质每次触发2次\n<达到100层>“获得时”类特质每次触发3次（整备区的【投资人】干员也可用于激活盟约）","descRaw":"干员的“获得时”类特质每次<@ba.vup>触发2次</>\n<达到<@autochess.dgreen>100</>层>“获得时”类特质每次<@ba.vup>触发3次</>（整备区的【投资人】干员也可用于激活盟约）","effectId":"bondeffect_invest","effectName":"投资人","effectDesc":"干员的“获得时”类特质每次触发2次\n<达到100层>“获得时”类特质每次触发3次\n整备区的【投资人】干员也可用于激活盟约","effectDescRaw":"干员的“获得时”类特质每次触发2次\n<达到<@ba.vup>100</>层>“获得时”类特质每次触发3次\n整备区的【投资人】干员也可用于激活盟约","effectDescParams":[],"bb":{"layer":0,"count":2},"bbStr":{"event":"SERVER_GAIN"},"buffs":[{"key":"bond_layer_char_garrison_bonus","bb":{"layer":0,"count":2},"bbStr":{"event":"SERVER_GAIN"}},{"key":"bond_layer_char_garrison_bonus","bb":{"layer":100,"count":3},"bbStr":{"event":"SERVER_GAIN"}}],"baseParams":[],"perStackParams":[],"members":["chess_char_1_16_a","chess_char_2_19_a","chess_char_3_04_a","chess_char_5_14_a","chess_char_5_17_a"],"visibleMembers":["chess_char_2_19_a","chess_char_3_04_a","chess_char_5_14_a","chess_char_5_17_a"],"spec":{"tiers":[{"need":"3 distinct (board + bench)","effect":"Every \"获得时\" (SERVER_GAIN) trait of every operator triggers 2 times."},{"need":"L >= 100","effect":"Triggers 3 times."}],"formulas":{"gainTraitRepeat":"2 if L < 100 else 3"},"layerGain":"山 休整期结束 +1 per operator gained this round; 机变 \"诗怀雅的盟誓\" +10, \"银灰的盟誓\" +8; generic sources.","howToPlay":"Pair with high \"获得时 +N 自身所属盟约\" operators (忍冬 +6, 锏 +8, 星熊 +8, 雪猎 +5) - their layers double/triple."}},"raidShip":{"bondId":"raidShip","name":"突袭","identifier":18,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_raidShip","activeCount":2,"thresholds":[2],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[{"layer":50,"mode":"reach","effect":"env_gbuff_new"}],"desc":"【突袭】干员10秒内未进行攻击或技能就绪时，若范围内没有敌人，则保留技力立即再部署至一名地面敌人周围，期间攻击力和生命值提升（受层数影响）\n<达到50层>所有干员攻击速度+50","descRaw":"【突袭】干员<@ba.vup>10</>秒内未进行攻击或技能就绪时，若范围内没有敌人，则保留技力立即<@ba.vup>再部署至一名地面敌人周围</>，期间<@ba.vup>攻击力</>和<@ba.vup>生命值</>提升<@autochess.gray>（受层数影响）</>\n<达到<@autochess.dgreen>50</>层>所有干员攻击速度<@ba.vup>+50</>","effectId":"bondeffect_raid","effectName":"突袭","effectDesc":"【突袭】干员10秒内未进行攻击或技能就绪时，若范围内没有敌人，则保留技力立即再部署至一名地面敌人周围，期间攻击力和生命值+{0:0%}（受层数影响）\n <达到50层>所有干员攻击速度+50","effectDescRaw":"【突袭】干员10秒内未进行攻击或技能就绪时，若范围内没有敌人，则保留技力立即再部署至一名地面敌人周围，期间攻击力和生命值<@ba.vup>+{0:0%}</><@ba.acrem>（受层数影响）</>\n <达到<@ba.vup>50</>层>所有干员攻击速度<@ba.vup>+50</>","effectDescParams":[{"index":0,"format":"0%","base":"base_atk","perStack":"atk_per_stack"}],"bb":{"base_attack_speed":0,"attack_speed_per_stack":0,"base_atk":0.25,"atk_per_stack":0.01,"base_max_hp":0.25,"max_hp_per_stack":0.01,"power_bond_stack_cnt":50,"power_attack_speed":50,"no_attack_duration":10},"bbStr":{"key":"act1autochess_bond_eff_raid"},"buffs":[{"key":"env_gbuff_new","bb":{"base_attack_speed":0,"attack_speed_per_stack":0,"base_atk":0.25,"atk_per_stack":0.01,"base_max_hp":0.25,"max_hp_per_stack":0.01,"power_bond_stack_cnt":50,"power_attack_speed":50,"no_attack_duration":10},"bbStr":{"key":"act1autochess_bond_eff_raid"}}],"baseParams":["base_atk"],"perStackParams":["atk_per_stack"],"members":["chess_char_1_18_a","chess_char_2_09_a","chess_char_3_05_a","chess_char_3_12_a","chess_char_4_04_a","chess_char_4_16_a","chess_char_5_07_a","chess_char_6_15_a","chess_char_6_17_a"],"visibleMembers":["chess_char_1_18_a","chess_char_2_09_a","chess_char_3_05_a","chess_char_3_12_a","chess_char_4_04_a","chess_char_4_16_a","chess_char_5_07_a","chess_char_6_15_a","chess_char_6_17_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"If a 突袭 member has not attacked for 10 s, or its skill is ready, and no enemy is in its range: it is immediately redeployed (keeping SP) onto a tile next to a ground enemy; while in that redeployed state its ATK and maxHP x(1 + 0.25 + 0.01*L)."},{"need":"L >= 50","effect":"ALL operators ASPD +50."}],"formulas":{"atkHpMultiplier":"1.25 + 0.01*L","idleSec":"10","aspdAll(L>=50)":"50"},"layerGain":"史尔特尔 部署时 +8 (<=50/battle); 休谟斯 each 2 kills +1; 瑕光 +4/deploy; 斯卡蒂; 伊内丝 +5; 机变 \"斯卡蒂的盟誓\" +8, \"德克萨斯的盟誓\" +10.","assumed":["target enemy = the ground enemy closest to the player's objective (its own field's; another field's only while its own has none) that the member can reach; landing tile = the nearest free deployable tile within 2 tiles of it from which the member's attack range covers it. No such tile for any of the 8 most advanced -> no jump; the poll looks again every 0.25 s (GitHub issue #51 - up to 0.1.1 the idle trigger landed out of reach and hopped every 10 s; DESIGN §22.2)","the buff lasts until the operator leaves the field"]}},"indomShip":{"bondId":"indomShip","name":"不屈","identifier":19,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_indomShip","activeCount":2,"thresholds":[2,3],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":false,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"地面干员被击倒时，有概率立即重新部署（受层数影响）\n<在场3名不同【不屈】干员>地面干员被击倒时使场上所有干员技力+5","descRaw":"<@ba.vup>地面干员</>被击倒时，有概率立即<@ba.vup>重新部署</><@autochess.gray>（受层数影响）</>\n<在场<@autochess.dgreen>3</>名不同【不屈】干员><@ba.vup>地面干员</>被击倒时使场上所有干员<@ba.vup>技力+5</>","effectId":"bondeffect_indom","effectName":"不屈","effectDesc":"地面干员被击倒时，有{0:0%}（受层数影响）概率立刻重新部署\n<在场3名不同【不屈】干员>地面干员被击倒时使场上所有干员技力+5","effectDescRaw":"<@ba.vup>地面干员</>被击倒时，有<@ba.vup>{0:0%}</><@ba.acrem>（受层数影响）</>概率立刻重新部署\n<在场<@ba.vup>3</>名不同【不屈】干员><@ba.vup>地面干员</>被击倒时使场上所有干员技力<@ba.vup>+5</>","effectDescParams":[{"index":0,"format":"0%","base":"base_prob","perStack":"prob_per_stack"}],"bb":{"base_prob":0.18,"prob_per_stack":0.004,"power_bond_stack_cnt":0,"sp":5,"power_bond_char_cnt":3},"bbStr":{"key":"act1autochess_bond_eff_indom"},"buffs":[{"key":"env_gbuff_new","bb":{"base_prob":0.18,"prob_per_stack":0.004,"power_bond_stack_cnt":0,"sp":5,"power_bond_char_cnt":3},"bbStr":{"key":"act1autochess_bond_eff_indom"}}],"baseParams":["base_prob"],"perStackParams":["prob_per_stack"],"members":["chess_char_1_05_a","chess_char_1_20_a","chess_char_2_03_a","chess_char_2_12_a","chess_char_3_16_a","chess_char_4_07_a","chess_char_5_06_a","chess_char_5_13_a","chess_char_6_06_a"],"visibleMembers":["chess_char_1_20_a","chess_char_2_12_a","chess_char_3_16_a","chess_char_4_07_a","chess_char_5_06_a","chess_char_5_13_a","chess_char_6_06_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"When a ground operator (地面干员 = melee position, on any tile) is knocked out / retreats / swaps 替身<->本体: with p = min(1, 0.18 + 0.004*L) it is redeployed at once (next deployment has 0 redeploy time and 0 cost). Also consumes a \"复活\" charge if it had one."},{"need":"3 distinct","effect":"When a ground (melee-position) operator is knocked out: every operator on the field +5 SP."}],"formulas":{"p":"min(1, 0.18 + 0.004*L)","reaches100%AtL":"205"},"layerGain":"雷蛇 休整期结束 +1; 砾 被击倒 +2; 归溟幽灵鲨 +5; 风笛 kills +2; 机变 \"风笛的盟誓\" +8."}},"maniShip":{"bondId":"maniShip","name":"调和","identifier":20,"isCore":false,"bondType":"REGULAR","bondOrder":1,"powerIdList":[],"iconId":"icon_maniShip","activeCount":1,"thresholds":[1],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"MANI","isActiveInDeck":false,"noStack":true,"weight":0,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"激活时使场上核心盟约的激活人数+1，【调和】干员享受已激活的核心盟约的效果","descRaw":"激活时使场上核心盟约的<@ba.vup>激活人数+1</>，【调和】干员享受已激活的核心盟约的效果","effectId":"bondeffect_mani","effectName":"调和","effectDesc":"激活时可以使场上核心盟约的激活人数+1，【调和】干员享受已激活的核心盟约的效果","effectDescRaw":"激活时可以使场上核心盟约的<@ba.vup>激活人数+1</>，【调和】干员<@ba.vup>享受</>已激活的核心盟约的效果","effectDescParams":[],"bb":{"count":1},"bbStr":{},"buffs":[{"key":"other_bond_add_trigger_cnt","bb":{"count":1},"bbStr":{}}],"baseParams":[],"perStackParams":[],"members":["chess_char_1_15_a","chess_char_6_11_a"],"visibleMembers":["chess_char_6_11_a"],"spec":{"tiers":[{"need":"1 调和 on board","effect":"Every core bond's member count +1; 调和 operators receive the effects of all active core bonds."}],"members":"缪尔赛思 (T6) and 盟约·辅助干员 (T1, hidden; given in round 1 by strategy Pith \"优等生\").","assumed":["+1 only for core bonds with >=1 real member","one +1 total no matter how many 调和 operators"]}},"emptyShip":{"bondId":"emptyShip","name":"协防干员","identifier":21,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_emptyShip","activeCount":2,"thresholds":[2],"maxCount":null,"thresholdTemplate":"count_threshold_upward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":true,"weight":0,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"所有干员受到的物理和法术伤害-20%，【协防干员】伤害提升至120%，精锐【协防】干员造成伤害提升至140%","descRaw":"所有干员受到的物理和法术伤害<@ba.vup>-20%</>，【协防干员】伤害提升至<@ba.vup>120%</>，精锐【协防】干员造成伤害提升至<@ba.vup>140%</>","effectId":"bondeffect_empty","effectName":"协防干员","effectDesc":"所有干员受到的物理和法术伤害-20%；【协防干员】伤害提升至120%，精锐【协防干员】造成伤害提升至140%","effectDescRaw":"所有干员受到的物理和法术伤害<@ba.vup>-20%</>；【协防干员】伤害提升至<@ba.vup>120%</>，精锐【协防干员】造成伤害提升至<@ba.vup>140%</>","effectDescParams":[],"bb":{"damage_resistance":0.2,"damage_scale_normal":1.2,"damage_scale_extra":1.4},"bbStr":{"key":"act1autochess_bond_eff_assis"},"buffs":[{"key":"env_gbuff_new","bb":{"damage_resistance":0.2,"damage_scale_normal":1.2,"damage_scale_extra":1.4},"bbStr":{"key":"act1autochess_bond_eff_assis"}}],"baseParams":[],"perStackParams":[],"members":["chess_char_1_15_a","chess_char_2_14_a","chess_char_3_10_a","chess_char_4_08_a","chess_char_4_25_a","chess_char_5_09_a","chess_char_5_10_a","chess_char_6_12_a"],"visibleMembers":["chess_char_2_14_a","chess_char_3_10_a","chess_char_4_25_a","chess_char_5_10_a","chess_char_6_12_a"],"spec":{"tiers":[{"need":"2 distinct","effect":"ALL operators take -20% physical and magic damage; 协防干员 members deal damage x1.2 (elite 协防 x1.4)."}],"meaning":"\"协防干员\" (assist operators) = fallback bond (constData.fallbackBondId). DIY/self-selected 6-star operators whose faction matches no core bond become 协防干员; some preset operators (调香师, 松果, 瑰盐, 魔王, 铃兰, 迷迭香, 盟约·辅助干员) are natively 协防.","formulas":{"damageTakenMul":"0.8","memberDamageMul":"1.2 (elite 1.4)"},"notes":["noStack=true: no layer-scaled effect, but layers are still counted (巴哈姆特)."]}},"soloShip":{"bondId":"soloShip","name":"独行","identifier":22,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_soloShip","activeCount":1,"thresholds":[1],"maxCount":1,"thresholdTemplate":"count_threshold_downward","countMode":"BOARD","countsHand":false,"countsGoldenOnly":false,"activeType":"BATTLE","isActiveInDeck":false,"noStack":true,"weight":10,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"<在场1名【独行】干员>【独行】干员攻击力和生命值+60%，初始技力+15（在场2名及以上【独行】干员时失效）","descRaw":"<在场1名【独行】干员>【独行】干员攻击力和生命值<@ba.vup>+60%</>，初始技力<@ba.vup>+15</>（在场2名及以上【独行】干员时失效）","effectId":"bondeffect_solo","effectName":"独行","effectDesc":"<在场1名【独行】干员>【独行】干员攻击力和生命值+60%，初始技力+15（在场2名及以上【独行】干员时失效）","effectDescRaw":"<在场<@ba.vup>1</>名【独行】干员>【独行】干员攻击力和生命值<@ba.vup>+60%</>，初始技力<@ba.vup>+15</><@ba.acrem>（在场2名及以上【独行】干员时失效）</>","effectDescParams":[],"bb":{"atk":0.6,"max_hp":0.6,"sp":15},"bbStr":{"key":"act2autochess_bond_eff_solo"},"buffs":[{"key":"env_gbuff_new","bb":{"atk":0.6,"max_hp":0.6,"sp":15},"bbStr":{"key":"act2autochess_bond_eff_solo"}}],"baseParams":[],"perStackParams":[],"members":["chess_char_1_08_a","chess_char_2_17_a","chess_char_3_17_a","chess_char_4_09_a","chess_char_4_18_a","chess_char_5_11_a"],"visibleMembers":["chess_char_1_08_a","chess_char_2_17_a","chess_char_3_17_a","chess_char_4_09_a","chess_char_4_18_a","chess_char_5_11_a"],"spec":{"tiers":[{"need":"exactly 1 distinct 独行 on board","effect":"That operator ATK +60%, maxHP +60%, +15 SP when deployed. Disabled when 2+ different 独行 operators are on the board."}],"formulas":{"atkMul":"1.6","hpMul":"1.6","spOnDeploy":"15"},"notes":["noStack=true"]}},"suntShip":{"bondId":"suntShip","name":"绝技","identifier":23,"isCore":false,"bondType":"REGULAR","bondOrder":2,"powerIdList":[],"iconId":"icon_suntShip","activeCount":2,"thresholds":[2,5],"maxCount":null,"thresholdTemplate":"count_threshold_upward_golden","countMode":"BOARD_ALL_CHESS","countsHand":false,"countsGoldenOnly":true,"activeType":"BATTLE","isActiveInDeck":false,"noStack":true,"weight":0,"maxInactiveBondCount":-1,"layerMilestones":[],"desc":"<在场2名精锐状态的干员>精锐状态的干员攻击力+30%\n<在场5名精锐状态的干员>精锐状态的干员技力消耗-30%\n（所有干员的精锐状态均可激活本盟约）","descRaw":"<在场<@autochess.dgreen>2</>名精锐状态的干员>精锐状态的干员攻击力<@ba.vup>+30%</>\n<在场<@autochess.dgreen>5</>名精锐状态的干员>精锐状态的干员技力消耗<@ba.vup>-30%</>\n<@ba.acrem>（所有干员的精锐状态均可激活本盟约）</>","effectId":"bondeffect_sunt","effectName":"绝技","effectDesc":"<在场2名精锐状态的干员>精锐状态的干员攻击力+30%\n<在场5名精锐状态的干员>精锐状态的干员技力消耗-30%\n（所有干员的精锐状态均可激活本盟约）","effectDescRaw":"<在场<@ba.vup>2</>名精锐状态的干员>精锐状态的干员攻击力<@ba.vup>+30%</>\n<在场<@ba.vup>5</>名精锐状态的干员>精锐状态的干员技力消耗<@ba.vup>-30%</>\n<@ba.acrem>（所有干员的精锐状态均可激活本盟约）</>","effectDescParams":[],"bb":{"power_char_cnt":2,"ex_char_cnt":5,"power_atk":0.3,"sp_ratio":0.7},"bbStr":{"key":"act2autochess_bond_eff_sunt"},"buffs":[{"key":"env_gbuff_new","bb":{"power_char_cnt":2,"ex_char_cnt":5,"power_atk":0.3,"sp_ratio":0.7},"bbStr":{"key":"act2autochess_bond_eff_sunt"}}],"baseParams":[],"perStackParams":[],"members":[],"visibleMembers":[],"spec":{"tiers":[{"need":"2 elite (精锐) operators on board (any operators, duplicates count)","effect":"All elite operators ATK +30%."},{"need":"5 elite operators on board","effect":"At battle start every elite operator and its summons have skill SP cost x0.7 (rounded down, may become 0)."}],"formulas":{"atkMul":"1.3","spCostMul":"floor(sp*0.7)"},"notes":["isHiddenCharList=true, chessIdList empty: no member operators; elites are not \"members\" of 绝技 (PRTS).","noStack=true"]}}}
+{
+  "yanShip": {
+    "bondId": "yanShip",
+    "name": "Ян",
+    "identifier": 1,
+    "isCore": true,
+    "bondType": "SEASON",
+    "bondOrder": 2,
+    "powerIdList": ["yan","sui","lungmen","lee","lgd"],
+    "iconId": "icon_yanShip",
+    "activeCount": 3,
+    "thresholds": [3,6,9],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "【Ян】Оперативники: атака повышена (зависит от числа стаков)\n<6 разных оперативников 【Ян】 на поле>В начале боя призывается «Ян Ю», его атака и здоровье равны 30% от суммы атаки и здоровья оперативников 【Ян】 на момент начала боя, «Ян Ю» атакует 3 цели одновременно, может использовать «Пламя изгнания зла», атаки наносят урон огнём в пропорции от атаки, а окружающие враги получают часть элементарного ранения\n<9 разных оперативников 【Ян】 на поле>Вместо этого призываются 2 «Ян Ю», атака повышается до 1.5x, получаемый урон -90%",
+    "descRaw": "【Ян】Оперативники: <@ba.vup>атака</> повышена<@autochess.gray> (зависит от числа стаков)</>\n<На поле <@autochess.dgreen>6</> разных оперативников 【Ян】>В начале боя призывается <@ba.vup>«Ян Ю»</>, его атака и здоровье равны 30% от суммы атаки и здоровья оперативников 【Ян】 на момент начала боя, «Ян Ю» атакует 3 цели одновременно, может использовать <@ba.vup>«Пламя изгнания зла»</>, атаки наносят урон огнём в пропорции от атаки, а окружающие враги получают часть элементарного ранения\n<На поле <@autochess.dgreen>9</> разных оперативников 【Ян】>Вместо этого призываются 2 <@ba.vup>«Ян Ю»</>, атака повышается до <@ba.vup>1.5</>x, получаемый урон <@ba.vup>-90%</>",
+    "effectId": "bondeffect_yan",
+    "effectName": "Ян",
+    "effectDesc": "【Ян】Оперативники: атака +{0:0%} (зависит от числа стаков)\n<6 разных оперативников 【Ян】 на поле>В начале боя призывается «Ян Ю» (его атака и здоровье равны 30% от суммы атаки и здоровья оперативников 【Ян】); «Ян Ю» атакует 3 цели одновременно, атаки наносят урон огнём, равный 20% атаки, окружающие враги получают 20% элементарного ранения, периодически используется «Пламя изгнания зла»\n<9 разных оперативников 【Ян】 на поле>Вместо этого призываются 2 «Ян Ю»; атака «Ян Ю» повышается до 1.5x, получаемый урон -90%",
+    "effectDescRaw": "【Ян】Оперативники: атака<@ba.vup>+{0:0%}</><@ba.acrem> (зависит от числа стаков)</>\n<На поле <@ba.vup>6</> разных оперативников 【Ян】>В начале боя призывается «Ян Ю» (его атака и здоровье равны 30% от суммы атаки и здоровья оперативников 【Ян】); «Ян Ю» атакует 3 цели одновременно, атаки наносят урон огнём, равный 20% <@ba.vup>атаки</>, окружающие враги получают 20% <@ba.vup>элементарного ранения</>, периодически используется «Пламя изгнания зла»\n<На поле <@ba.vup>9</> разных оперативников 【Ян】>Вместо этого призываются 2 «Ян Ю»; атака «Ян Ю» повышается до 1.5x, получаемый урон -90%",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_atk","perStack":"atk_per_stack"}
+    ],
+    "bb": {
+      "base_atk":0.23,
+      "atk_per_stack":0.009,
+      "power_bond_char_cnt":6,
+      "ex_bond_char_cnt":9,
+      "damage_resistance":0.9,
+      "atk":1.5
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_yan"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_atk":0.23,
+          "atk_per_stack":0.009,
+          "power_bond_char_cnt":6,
+          "ex_bond_char_cnt":9,
+          "damage_resistance":0.9,
+          "atk":1.5
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_yan"}
+      }
+    ],
+    "baseParams": ["base_atk"],
+    "perStackParams": ["atk_per_stack"],
+    "members": ["chess_char_1_03_a","chess_char_2_04_a","chess_char_3_03_a","chess_char_3_04_a","chess_char_4_15_a","chess_char_4_17_a","chess_char_5_03_a","chess_char_5_12_a","chess_char_5_23_a","chess_char_6_03_a","chess_char_6_15_a"],
+    "visibleMembers": ["chess_char_1_03_a","chess_char_2_04_a","chess_char_3_03_a","chess_char_3_04_a","chess_char_4_17_a","chess_char_5_03_a","chess_char_5_12_a","chess_char_5_23_a","chess_char_6_03_a","chess_char_6_15_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных Ян на поле",
+          "effect": "Члены Ян (+ члены Гармония) — атака ×(1 + 0.23 + 0.009*L)."
+        },
+        {
+          "need": "6 разных",
+          "effect": "В начале боя призывается 1 «Ян Ю» (шаблон enemy_9012_acloon, союзный летающий дальний юнит, не блокируется, движется сам). Атака = 0.30 × сумма атаки оперативников Ян на поле в начале боя, макс. здоровье = 0.30 × сумма макс. здоровья этих оперативников. Шаблон: DEF 200, RES 0, BAT 2.5 с, ASPD 100, радиус атаки 2.0 клетки, магический урон, поражает до 3 целей; каждое попадание добавляет Burn Elemental Damage = 20% его атаки и накладывает Elemental Fragility (получаемый элементальный урон ×1.2) на врагов в пределах 0.8 клетки от цели. Навык «Flame of Expelling Evil»: перезарядка 15 с (первое применение через 15 с после появления), направляет пламя на одного врага в радиусе, нанося 60% атаки магического урона в секунду ему и врагам в пределах 1.0 клетки, до 20 с."
+        },
+        {
+          "need": "9 разных",
+          "effect": "Вместо этого призываются 2 «Ян Ю»; каждый имеет атаку ×1.5 и получает на 90% меньше урона (damage_resistance 0.9)."
+        }
+      ],
+      "formulas": {
+        "atkMultiplier": "1 + 0.23 + 0.009*L"
+      },
+      "caps": "нет",
+      "layerGain": "Экономика: Jingzhe при получении +уровень магазина (не требует активации); Xiaoman в конце фазы подготовки +1 за каждого оперативника, полученного в этом раунде; Dusk +2 Ян/Искусства за каждого полученного оперативника; Luwuguan при получении +6 Ян +3 Чудо; Hoshiguma при получении +8 своих альянсов; Zhuhuang при получении +5 Ян/Виктория; Jibian «Swire's Oath» +10. Стратегия Du Yaoye: первые 2 ручных обновления магазина каждый раунд предпочитают оперативника Ян.",
+      "howToPlay": "Покупайте много оперативников каждый раунд (каждое получение питает Xiaoman/Dusk), стремитесь к 6 Ян ради скачка «Ян Ю»; Linlang Swire / Swire дают раннее золото. 9 Ян — роскошь поздней игры.",
+      "assumed": [
+        "Базовые характеристики «Ян Ю» заменяются (а не добавляются) этими 30% суммами.",
+        "«Flame of Expelling Evil»: hit_duration=20 читается как 20 тиков по 1 секунде.",
+        "Точка появления: центр поля игрока / рядом с целью.",
+        "Цели = 3 ближайших врага в радиусе."
+      ]
+    }
+  },
+  "sargonShip": {
+    "bondId": "sargonShip",
+    "name": "Саргон",
+    "identifier": 2,
+    "isCore": true,
+    "bondType": "SEASON",
+    "bondOrder": 2,
+    "powerIdList": ["sargon"],
+    "iconId": "icon_sargonShip",
+    "activeCount": 3,
+    "thresholds": [3,6],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "【Саргон】Когда оперативник 【Саргон】 активирует навык, скорость атаки всех оперативников 【Саргон】 повышается (есть предел), длится определённое время (зависит от числа стаков; длительность каждого стака рассчитывается отдельно)\n<6 разных оперативников 【Саргон】 на поле>Активация навыка также даёт всем оперативникам 【Саргон】 прибавку к атаке равной длительности (есть предел)\nПри выборе стратегии 【Narantuya】 эффект <6 разных оперативников 【Саргон】 на поле> меняется",
+    "descRaw": "【Саргон】Когда оперативник 【Саргон】 активирует навык, <@ba.vup>скорость атаки</> всех оперативников 【Саргон】 повышается (есть предел), длится определённое время<@autochess.gray> (зависит от числа стаков; длительность каждого стака рассчитывается отдельно)</>\n<На поле <@autochess.dgreen>6</> разных оперативников 【Саргон】>Активация навыка также даёт всем оперативникам 【Саргон】 прибавку к <@ba.vup>атаке</> равной длительности (есть предел)\n<@ba.acrem>При выборе стратегии 【Narantuya】 эффект <На поле 6 разных оперативников 【Саргон】> меняется</>",
+    "effectId": "bondeffect_sargon",
+    "effectName": "Саргон",
+    "effectDesc": "【Саргон】Когда оперативник 【Саргон】 активирует навык, скорость атаки всех оперативников 【Саргон】 +12 (до +300), длится {0:0} сек (зависит от числа стаков)\n<6 разных оперативников 【Саргон】 на поле>Активация навыка также даёт всем оперативникам 【Саргон】 атаку +12% (до +300%)\nПри выборе стратегии 【Narantuya】 эффект <6 разных оперативников 【Саргон】 на поле> меняется",
+    "effectDescRaw": "【Саргон】Когда оперативник 【Саргон】 активирует навык, скорость атаки всех оперативников 【Саргон】 +12 (до <@ba.vup>+300</>), длится <@ba.vup>{0:0}</> сек<@ba.acrem> (зависит от числа стаков)</>\n<На поле <@ba.vup>6</> разных оперативников 【Саргон】>Активация навыка также даёт всем оперативникам 【Саргон】 атаку +12% (до <@ba.vup>+300%</>)\n<@ba.acrem>При выборе стратегии 【Narantuya】 эффект <На поле 6 разных оперативников 【Саргон】> меняется</>",
+    "effectDescParams": [
+      {"index":0,"format":"0","base":"base_time","perStack":"time_per_stack"}
+    ],
+    "bb": {
+      "base_time":5,
+      "time_per_stack":0.22,
+      "max_buff_stack_cnt":25,
+      "base_attack_speed":12,
+      "power_bond_char_cnt":6,
+      "base_atk":0.12,
+      "base_power_time":60,
+      "power_time_per_stack":0,
+      "filter_item_level":5
+    },
+    "bbStr": {
+      "key":"act1autochess_bond_eff_sargon",
+      "invalid_in_band":"band_narant",
+      "valid_in_band":"band_narant"
+    },
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_time":5,
+          "time_per_stack":0.22,
+          "max_buff_stack_cnt":25,
+          "base_attack_speed":12,
+          "power_bond_char_cnt":6,
+          "base_atk":0.12
+        },
+        "bbStr": {
+          "key":"act1autochess_bond_eff_sargon",
+          "invalid_in_band":"band_narant"
+        }
+      },
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_time":5,
+          "time_per_stack":0.22,
+          "max_buff_stack_cnt":25,
+          "base_attack_speed":12,
+          "power_bond_char_cnt":6,
+          "base_power_time":60,
+          "power_time_per_stack":0,
+          "filter_item_level":5
+        },
+        "bbStr": {
+          "key":"act2autochess_bond_eff_sargon[share]",
+          "valid_in_band":"band_narant"
+        }
+      }
+    ],
+    "baseParams": ["base_time"],
+    "perStackParams": ["time_per_stack"],
+    "members": ["chess_char_1_12_a","chess_char_2_06_a","chess_char_2_08_a","chess_char_3_06_a","chess_char_3_13_a","chess_char_4_05_a","chess_char_4_23_a","chess_char_4_24_a","chess_char_5_02_a","chess_char_5_18_a","chess_char_6_05_a","chess_char_6_06_a"],
+    "visibleMembers": ["chess_char_1_12_a","chess_char_2_06_a","chess_char_2_08_a","chess_char_3_06_a","chess_char_3_13_a","chess_char_4_23_a","chess_char_4_24_a","chess_char_5_02_a","chess_char_6_05_a","chess_char_6_06_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных",
+          "effect": "Когда любой член Саргон активирует навык, все члены Саргон на поле получают 1 стак: ASPD +12 на (5 + 0.22*L) с. Каждый стак имеет свой таймер; максимум 25 одновременных стаков (=> предел +300 ASPD)."
+        },
+        {
+          "need": "6 разных",
+          "effect": "Каждый стак дополнительно даёт атаку +12% (25 стаков => предел +300%), та же длительность."
+        },
+        {
+          "need": "6 разных И стратегия Narantuya (band_narant)",
+          "effect": "Заменяет эффект 6 участников: когда член Саргон активирует навык, оперативники на 8 окружающих его клетках также получают эффекты снаряжения (уровень <= V, filter_item_level 5), которое он несёт, на 60 с (base_power_time 60, power_time_per_stack 0)."
+        }
+      ],
+      "formulas": {
+        "stackDurationSec": "5 + 0.22*L",
+        "aspdPerStack": "12",
+        "atkPerStack(6)": "0.12",
+        "maxStacks": "25"
+      },
+      "caps": "25 стаков: +300 ASPD, +300% атаки",
+      "layerGain": "В бою при активации навыка: Feilai +6 за каждое применение навыка, Gavial the Invincible +9 за каждое применение навыка, Papyrus +5 за первое применение навыка, Titi +1 Саргон/Точность за сон/оглушение в радиусе (<=24 за бой); Estelle при получении +2; Jibian «Titi's Oath» +10. Стратегия Pepe: после уровня магазина 2/4/6 одно особое обновление с предпочтением Саргон.",
+      "howToPlay": "Быстро циклирующиеся навыки (предметы Sargon Tea / Yellow Sand Compass) поддерживают много стаков; L в основном продлевает длительность, поэтому стаки чаще перекрываются.",
+      "notes": ["PRTS: внутриуровневый интерфейс показывает удвоенную реальную длительность (баг отображения); реальная длительность — 5+0.22L."],
+      "assumed": [
+        "Когда должен добавиться 26-й стак, он заменяет стак с наименьшим оставшимся временем.",
+        "Стак даётся всем членам Саргон, включая самого активировавшего."
+      ]
+    }
+  },
+  "victoriaShip": {
+    "bondId": "victoriaShip",
+    "name": "Виктория",
+    "identifier": 3,
+    "isCore": true,
+    "bondType": "SEASON",
+    "bondOrder": 2,
+    "powerIdList": ["victoria","glasgow"],
+    "iconId": "icon_victoriaShip",
+    "activeCount": 3,
+    "thresholds": [3,6],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [{"layer":25,"mode":"every","effect":"bond_layer_added_reward_equip"}],
+    "desc": "Оперативники 【Виктория】, носящие экипировку, наносят повышенный урон (зависит от числа стаков)\n<Каждые накопленные 25 стаков>Даёт викторианский молот со случайным эффектом\n<6 разных оперативников 【Виктория】 на поле>Атака оперативников 【Виктория】 с экипировкой повышена, с продвинутой экипировкой — дополнительно повышена",
+    "descRaw": "Оперативники 【Виктория】, <@ba.vup>носящие экипировку</>, наносят <@ba.vup>повышенный урон</><@autochess.gray> (зависит от числа стаков)</>\n<Каждые накопленные <@autochess.dgreen>25</> стаков>Даёт <@ba.vup>викторианский молот</> со случайным эффектом\n<На поле <@autochess.dgreen>6</> разных оперативников 【Виктория】>Оперативники 【Виктория】 с экипировкой: <@ba.vup>атака</> повышена, с продвинутой экипировкой — дополнительно повышена",
+    "effectId": "bondeffect_victoria",
+    "effectName": "Виктория",
+    "effectDesc": "Оперативники 【Виктория】, носящие экипировку, наносят урон, повышенный до {0:0%} (зависит от числа стаков)\n<Каждые накопленные 25 стаков>Даёт викторианский молот со случайным особым эффектом\n<6 разных оперативников 【Виктория】 на поле>За каждую единицу экипировки оперативника 【Виктория】 атака +50%, с продвинутой экипировкой — +80%",
+    "effectDescRaw": "Оперативники 【Виктория】, <@ba.vup>носящие экипировку</>, наносят урон, повышенный до <@ba.vup>{0:0%}</><@ba.acrem> (зависит от числа стаков)</>\n<Каждые накопленные <@ba.vup>25</> стаков>Даёт викторианский молот со случайным особым эффектом\n<На поле <@ba.vup>6</> разных оперативников 【Виктория】>За каждую единицу экипировки оперативника 【Виктория】 атака <@ba.vup>+50%</>, с продвинутой экипировкой — <@ba.vup>+80%</>",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_damage_scale","perStack":"damage_scale_per_stack"}
+    ],
+    "bb": {
+      "damage_scale_per_stack":0.008,
+      "base_damage_scale":1.25,
+      "power_bond_char_cnt":6,
+      "atk_normal_equip":0.5,
+      "atk_golden_equip":0.3,
+      "layer":25,
+      "count":1
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_victoria","pool":"pool_equip_vict"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "damage_scale_per_stack":0.008,
+          "base_damage_scale":1.25,
+          "power_bond_char_cnt":6,
+          "atk_normal_equip":0.5,
+          "atk_golden_equip":0.3
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_victoria"}
+      },
+      {
+        "key":"bond_layer_added_reward_equip",
+        "bb":{"layer":25,"count":1},
+        "bbStr":{"pool":"pool_equip_vict"}
+      }
+    ],
+    "baseParams": ["base_damage_scale"],
+    "perStackParams": ["damage_scale_per_stack"],
+    "members": ["chess_char_1_06_a","chess_char_2_05_a","chess_char_2_10_a","chess_char_3_08_a","chess_char_4_07_a","chess_char_4_11_a","chess_char_5_03_a","chess_char_5_08_a","chess_char_6_07_a","chess_char_6_08_a"],
+    "visibleMembers": ["chess_char_1_06_a","chess_char_2_05_a","chess_char_2_10_a","chess_char_3_08_a","chess_char_4_07_a","chess_char_4_11_a","chess_char_5_03_a","chess_char_5_08_a","chess_char_6_07_a","chess_char_6_08_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных",
+          "effect": "Члены Виктория, несущие >= 1 снаряжение: весь наносимый урон ×(1.25 + 0.008*L)."
+        },
+        {
+          "need": "каждые 25 стаков (накопительно)",
+          "effect": "Получить 1 Victorian Heavy Hammer со случайным особым эффектом (pool_equip_vict)."
+        },
+        {
+          "need": "6 разных",
+          "effect": "Члены Виктория: атака +50% за каждый надетый предмет; продвинутый (Advanced/Golden) предмет даёт вместо этого +80% (atk_normal_equip 0.5 + atk_golden_equip 0.3)."
+        }
+      ],
+      "formulas": {
+        "damageMultiplier": "1.25 + 0.008*L (только если несёт снаряжение)",
+        "hammerPayouts": "floor(L/25)",
+        "atkPerItem(6)": "0.5 обычный, 0.8 продвинутый"
+      },
+      "caps": "нет",
+      "layerGain": "В конце фазы подготовки: Breeze +2 за каждый различный тир Виктория на поле, Vina Victoria +3 за каждый различный тир (и Чудо +2 за каждый различный тир Чудо), Cimei +1, Horn +2 за оперативника различного тира альянса с наибольшим числом стаков; в бою: Bagpipe первые 3 убийства +2 Виктория/Предвидение/Несгибаемость; Zhuhuang при получении +5; Jibian «Bagpipe's Oath» +8. Стратегия Harold: с 4-го раунда получать 1 оперативника Виктория каждые 2 раунда.",
+      "howToPlay": "Выставляйте Виктория как можно большего числа разных тиров (T1..T6) ради Breeze/Vina; отдавайте всё снаряжение (включая бесплатные молоты) носителям Виктория; Steam Heart копирует все эффекты молотов.",
+      "assumed": [
+        "pool_equip_vict = равномерно случайно среди Burn/Fortify/Haste/Fear Victorian Heavy Hammer (обычный класс).",
+        "Выплата молотов также учитывает стаки, добавленные пока альянс неактивен."
+      ]
+    }
+  },
+  "kjeragShip": {
+    "bondId": "kjeragShip",
+    "name": "Кьераг",
+    "identifier": 4,
+    "isCore": true,
+    "bondType": "SEASON",
+    "bondOrder": 2,
+    "powerIdList": ["kjerag","karlan"],
+    "iconId": "icon_kjeragShip",
+    "activeCount": 3,
+    "thresholds": [3,6],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "Оперативники 【Кьераг】 наносят повышенный урон, получают дополнительную прибавку против холодных и замороженных врагов (зависит от числа стаков)\n<6 разных оперативников 【Кьераг】 на поле>Каждые 25 секунд начинается снежная буря, накладывающая на врагов холод на определённое время (зависит от числа стаков)",
+    "descRaw": "Оперативники 【Кьераг】 наносят <@ba.vup>повышенный урон</>, против <@ba.vup>холодных и замороженных</> врагов получают дополнительную прибавку<@autochess.gray> (зависит от числа стаков)</>\n<На поле <@autochess.dgreen>6</> разных оперативников 【Кьераг】>Каждые 25 секунд начинается снежная буря, накладывающая на врагов холод на определённое время<@autochess.gray> (зависит от числа стаков)</>",
+    "effectId": "bondeffect_kjerag",
+    "effectName": "Кьераг",
+    "effectDesc": "Урон оперативников 【Кьераг】 повышен до 125%, против холодных и замороженных врагов дополнительно повышен до {0:0%} (зависит от числа стаков)\n<6 разных оперативников 【Кьераг】 на поле>Каждые 25 секунд начинается снежная буря, накладывающая на врагов холод на {1:0} сек (зависит от числа стаков)",
+    "effectDescRaw": "Урон оперативников 【Кьераг】 повышен до <@ba.vup>125%</>, против холодных и замороженных врагов дополнительно повышен до <@ba.vup>{0:0%}</><@ba.acrem> (зависит от числа стаков)\n<На поле <@ba.vup>6</> разных оперативников 【Кьераг】>Каждые 25 секунд начинается снежная буря, накладывающая на врагов холод на <@ba.vup>{1:0}</> сек<@ba.acrem> (зависит от числа стаков)</>",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_ex_damage_scale","perStack":"ex_damage_scale_per_stack"},
+      {"index":1,"format":"0","base":"bond_eff_kjerag[storm].base_time","perStack":"bond_eff_kjerag[storm].time_per_stack"}
+    ],
+    "bb": {
+      "base_damage_scale":1.25,
+      "base_ex_damage_scale":1.35,
+      "ex_damage_scale_per_stack":0.01,
+      "power_bond_char_cnt":6,
+      "bond_eff_kjerag[storm].interval":25,
+      "bond_eff_kjerag[storm].base_time":20,
+      "bond_eff_kjerag[storm].time_per_stack":0.1
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_kjerag"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_damage_scale":1.25,
+          "base_ex_damage_scale":1.35,
+          "ex_damage_scale_per_stack":0.01,
+          "power_bond_char_cnt":6,
+          "bond_eff_kjerag[storm].interval":25,
+          "bond_eff_kjerag[storm].base_time":20,
+          "bond_eff_kjerag[storm].time_per_stack":0.1
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_kjerag"}
+      }
+    ],
+    "baseParams": ["base_ex_damage_scale","bond_eff_kjerag[storm].base_time"],
+    "perStackParams": ["ex_damage_scale_per_stack","bond_eff_kjerag[storm].time_per_stack"],
+    "members": ["chess_char_1_02_a","chess_char_2_03_a","chess_char_2_05_a","chess_char_3_11_a","chess_char_3_14_a","chess_char_3_20_a","chess_char_4_03_a","chess_char_4_13_a","chess_char_4_22_a","chess_char_5_14_a","chess_char_6_02_a","chess_char_6_19_a"],
+    "visibleMembers": ["chess_char_1_02_a","chess_char_2_05_a","chess_char_3_11_a","chess_char_3_14_a","chess_char_3_20_a","chess_char_4_13_a","chess_char_4_22_a","chess_char_5_14_a","chess_char_6_02_a","chess_char_6_19_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных",
+          "effect": "Члены Кьераг наносят урон ×1.25; против врагов в состоянии Cold или Frozen — вместо этого ×(1.35 + 0.01*L)."
+        },
+        {
+          "need": "6 разных",
+          "effect": "Каждые 25 с холодный ветер накладывает Cold на всех врагов на поле на (20 + 0.1*L) с."
+        }
+      ],
+      "formulas": {
+        "damageMultiplier": "1.25",
+        "damageMultiplierVsColdOrFrozen": "1.35 + 0.01*L",
+        "windIntervalSec": "25",
+        "windColdDurationSec": "20 + 0.1*L"
+      },
+      "caps": "нет",
+      "layerGain": "В бою, от заморозки: Pramanix и SilverAsh — каждый враг в радиусе, ставший замороженным: 50% шанс +1; Linyu SilverAsh даёт оперативнику Кьераг перед собой 60% версию (<=200 за бой); Degenbrecher при развёртывании +8 своих активных альянсов (<=24 за бой). При получении: Matterhorn +2, Cliffheart +3 (скрыто), Xuelie +5, Gnosis +5, Degenbrecher +8. Jibian «SilverAsh's Oath» +8. Стратегия Xiulusi: первый Кьераг, купленный каждый раунд, стоит 1.",
+      "howToPlay": "Стандартное правило AK: наложение Cold на уже холодного врага замораживает его. Ветер 6 участников + источники холода при попадании (Kjerag Unmelting Ice 12% 1.5 с холода) создают постоянные заморозки, поэтому стаки могут достигать сотен за бой.",
+      "notes": ["Bahamut: избегайте включения 3 Искусства вместе с максимальным стаком Кьераг (Shengling Chuxue упирается в предел урона)."],
+      "assumed": [
+        "первый ветер на t = 25 с",
+        "ветер, повторно накладывающий холод на холодного врага, вызывает заморозку, как любой источник холода"
+      ]
+    }
+  },
+    "lateranoShip": {
+    "bondId": "lateranoShip",
+    "name": "Латерано",
+    "identifier": 5,
+    "isCore": true,
+    "bondType": "SEASON",
+    "bondOrder": 2,
+    "powerIdList": ["laterano"],
+    "iconId": "icon_lateranoShip",
+    "activeCount": 3,
+    "thresholds": [3,6],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "Оперативники 【Латерано】 при активации умения получают больше боеприпасов (зависит от числа стаков)\n<6 разных оперативников 【Латерано】 на поле>За каждую единицу израсходованных боеприпасов любого оперативника 【Латерано】 атака всех оперативников 【Латерано】 повышается (есть предел)",
+    "descRaw": "Оперативники 【Латерано】 при активации умения получают <@ba.vup>больше боеприпасов</><@autochess.gray> (зависит от числа стаков)</>\n<На поле <@autochess.dgreen>6</> разных оперативников 【Латерано】>За каждую единицу израсходованных боеприпасов любого оперативника 【Латерано】 <@ba.vup>атака</> всех оперативников 【Латерано】 повышается (есть предел)",
+    "effectId": "bondeffect_laterano",
+    "effectName": "Латерано",
+    "effectDesc": "Оперативники 【Латерано】 при активации умения получают боеприпасы +{0:0%} (зависит от числа стаков)\n<6 разных оперативников 【Латерано】 на поле>За каждую единицу израсходованных боеприпасов любого оперативника 【Латерано】 атака всех оперативников 【Латерано】 +4%, до +200%",
+    "effectDescRaw": "Оперативники 【Латерано】 при активации умения получают боеприпасы <@ba.vup>+{0:0%}</><@ba.acrem> (зависит от числа стаков)</>\n<На поле <@ba.vup>6</> разных оперативников 【Латерано】>За каждую единицу израсходованных боеприпасов любого оперативника 【Латерано】 атака всех оперативников 【Латерано】 +4%, до <@ba.vup>+200%</>",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_ammo_percent","perStack":"ammo_percent_per_stack"}
+    ],
+    "bb": {
+      "base_ammo_percent":0.05,
+      "ammo_percent_per_stack":0.015,
+      "power_bond_char_cnt":6,
+      "atk_per_consume":0.04,
+      "max_atk_for_consume":2
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_laterano"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_ammo_percent":0.05,
+          "ammo_percent_per_stack":0.015,
+          "power_bond_char_cnt":6,
+          "atk_per_consume":0.04,
+          "max_atk_for_consume":2
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_laterano"}
+      }
+    ],
+    "baseParams": ["base_ammo_percent"],
+    "perStackParams": ["ammo_percent_per_stack"],
+    "members": ["chess_char_1_01_a","chess_char_2_01_a","chess_char_3_01_a","chess_char_3_07_a","chess_char_3_21_a","chess_char_4_01_a","chess_char_4_02_a","chess_char_5_01_a","chess_char_6_01_a","chess_char_6_09_a","chess_char_6_13_a"],
+    "visibleMembers": ["chess_char_1_01_a","chess_char_2_01_a","chess_char_3_01_a","chess_char_3_21_a","chess_char_4_01_a","chess_char_4_02_a","chess_char_5_01_a","chess_char_6_01_a","chess_char_6_09_a","chess_char_6_13_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных",
+          "effect": "Когда член Laterano активирует навык, дающий боеприпасы, получаемые боеприпасы ×(1 + 0.05 + 0.015*L), округление вниз."
+        },
+        {
+          "need": "6 разных",
+          "effect": "За каждую единицу боеприпасов, израсходованную любым членом Laterano: всем членам Laterano атака +4% (до конца боя), максимум +200% (= 50 боеприпасов)."
+        }
+      ],
+      "formulas": {
+        "ammoMultiplier": "floor(baseAmmo * (1.05 + 0.015*L))",
+        "atkPerAmmo(6)": "0.04",
+        "atkCap(6)": "2.0"
+      },
+      "caps": "+200% атаки от эффекта 6 участников",
+      "layerGain": "Расход боеприпасов в бою: Executor the Ex Foedere каждые 7 пуль +7 Laterano (7 срабатываний => 49 за бой) и +3 Foresight (<=21 за бой); Mostima оперативники на 4 соседних клетках каждые 6 боеприпасов +1; Lemuen каждые 10 пуль при 3 оперативниках в ряду +2 Laterano/Precision; Executor первое убийство +3 Precision/Laterano. Подготовка: Archetto при входе в фазу подготовки +3 себе и оперативнику на клетке перед собой к активным альянсам. Jibian «Mostima's Oath» +10. Стратегия Panganini: после траты 55 золота получить случайного элитного Laterano T4+.",
+      "howToPlay": "Только оперативники с навыками на боеприпасы получают пользу от 3 участников; альянс слаб до 6 (Bahamut: «3-member effect is weak»).",
+      "assumed": [
+        "навыки без боеприпасов не затрагиваются",
+        "«израсходованные боеприпасы» = каждый выстрел/уменьшение пули"
+      ]
+    }
+  },
+  "egirShip": {
+    "bondId": "egirShip",
+    "name": "Эгир",
+    "identifier": 6,
+    "isCore": true,
+    "bondType": "SEASON",
+    "bondOrder": 2,
+    "powerIdList": ["egir","abyssal"],
+    "iconId": "icon_egirShip",
+    "activeCount": 3,
+    "thresholds": [3,5],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "【Эгир】Оперативники: здоровье повышено (зависит от числа стаков)\nВ начале боя оперативники 【Эгир】 поглощают оперативника на клетке перед собой, нанося ему 5000 физического урона и получая его базовую атаку и число блоков; при этом 【Эгир】 накапливает стаки альянса, равные рангу поглощённого (среди 【Эгир】 первыми поглощают те, кто левее и выше)\n<5 разных оперативников 【Эгир】 на поле>Первые 3 оперативника 【Эгир】 при первом получении смертельного урона мгновенно воскресают",
+    "descRaw": "【Эгир】Оперативники: <@ba.vup>здоровье</> повышено<@autochess.gray> (зависит от числа стаков)</>\nВ начале боя оперативники 【Эгир】 <@ba.vup>поглощают</> оперативника на клетке перед собой, нанося ему <@ba.vdown>5000</> физического урона и получая его <@ba.vup>базовую атаку</> и <@ba.vup>число блоков</>, при этом 【Эгир】 накапливает стаки <@ba.vup>альянса</>, равные рангу поглощённого<@autochess.gray> (среди 【Эгир】 первыми поглощают те, кто левее и выше)</>\n<На поле <@autochess.dgreen>5</> разных оперативников 【Эгир】>Первые 3 оперативника 【Эгир】 при первом получении смертельного урона <@ba.vup>мгновенно воскресают</>",
+    "effectId": "bondeffect_egir",
+    "effectName": "Эгир",
+    "effectDesc": "【Эгир】Оперативники: здоровье +{0:0%} (зависит от числа стаков)\nВ начале боя оперативники 【Эгир】 по очереди поглощают оперативника на клетке перед собой, нанося 5000 физического урона и получая его базовую атаку и число блоков, и накапливают стаки альянса, равные рангу поглощённого (среди 【Эгир】 первыми поглощают те, кто левее и выше)\n<5 разных оперативников 【Эгир】 на поле>Первые 3 оперативника 【Эгир】 при первом получении смертельного урона мгновенно воскресают",
+    "effectDescRaw": "【Эгир】Оперативники: здоровье<@ba.vup>+{0:0%}</><@ba.acrem> (зависит от числа стаков)</>\nВ начале боя оперативники 【Эгир】 по очереди поглощают оперативника на клетке перед собой, нанося <@ba.vdown>5000</> физического урона и получая его <@ba.vup>базовую атаку</> и <@ba.vup>число блокировок</>, и накапливают стаки альянса, равные рангу поглощённого<@ba.acrem> (среди 【Эгир】 первыми поглощают те, кто левее и выше)</>\n<На поле <@ba.vup>5</> разных оперативников 【Эгир】>Первые 3 оперативника 【Эгир】 при первом получении смертельного урона <@ba.vup>мгновенно воскресают</>",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_max_hp","perStack":"max_hp_per_stack"}
+    ],
+    "bb": {
+      "base_max_hp":0.35,
+      "max_hp_per_stack":0.01,
+      "damage_value":5000,
+      "power_bond_char_cnt":5,
+      "max_free_respawn_cnt":3
+    },
+    "bbStr": {
+      "key":"act1autochess_bond_eff_egir",
+      "bond_type":"bond_by_id",
+      "bond_id":"egirShip",
+      "bond_add_type":"by_charlevel"
+    },
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_max_hp":0.35,
+          "max_hp_per_stack":0.01,
+          "damage_value":5000,
+          "power_bond_char_cnt":5,
+          "max_free_respawn_cnt":3
+        },
+        "bbStr": {
+          "key":"act1autochess_bond_eff_egir",
+          "bond_type":"bond_by_id",
+          "bond_id":"egirShip",
+          "bond_add_type":"by_charlevel"
+        }
+      }
+    ],
+    "baseParams": ["base_max_hp"],
+    "perStackParams": ["max_hp_per_stack"],
+    "members": ["chess_char_1_04_a","chess_char_2_07_a","chess_char_3_05_a","chess_char_3_09_a","chess_char_4_09_a","chess_char_4_12_a","chess_char_5_05_a","chess_char_5_13_a","chess_char_6_04_a"],
+    "visibleMembers": ["chess_char_1_04_a","chess_char_2_07_a","chess_char_3_05_a","chess_char_3_09_a","chess_char_4_09_a","chess_char_4_12_a","chess_char_5_05_a","chess_char_5_13_a","chess_char_6_04_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных",
+          "effect": "Члены Aegir макс. здоровье ×(1 + 0.35 + 0.01*L)."
+        },
+        {
+          "need": "3 разных (в начале боя)",
+          "effect": "Поглощение (Devour): см. алгоритм."
+        },
+        {
+          "need": "5 разных",
+          "effect": "Первые 3 члена Aegir, выведенные из строя (в первый раз каждый), мгновенно воскресают (max_free_respawn_cnt 3)."
+        }
+      ],
+      "algorithm": [
+        "Порядок: члены Aegir сортируются сначала по самой левой позиции, затем по самой верхней («левее и выше»).",
+        "Каждый член Aegir по порядку помечает юнита на клетке прямо перед собой (в направлении своего взгляда) и также переднюю клетку каждого члена Aegir, которого он пометил (цепочка). Он никогда не помечает себя, уже помеченного им юнита или юнита, который пометил его.",
+        "Метка немедленно получает базовую атаку каждого помеченного ею юнита (добавляется к базовой атаке на финальной стадии) и их счётчики блокировки.",
+        "После размещения всех меток каждая метка заставляет свою цель получить один раз 5000 единиц физического урона типа «потеря HP» (источник = сама цель; если цель умирает, убийство засчитывается метящему), разрешается в порядке наложения меток. Цель, которая умирает, отменяет свои оставшиеся метки.",
+        "Каждый поглощённый юнит добавляет стаки Aegir, равные его тиру (1-6), один раз за бой.",
+        "Уровень 5 участников — Воскрешение реализуется так: когда юнит покидает поле по любой причине, кроме перемещения, его следующее развёртывание имеет 0 времени перезарядки и 0 стоимости (PRTS). Стаки от поглощения: каждый поглощённый юнит добавляет свой тир один раз за бой (обновляется в следующем раунде)."
+      ],
+      "formulas": {
+        "hpMultiplier": "1.35 + 0.01*L",
+        "devourDamage": "5000",
+        "layersPerDevoured": "тир поглощённого юнита"
+      },
+      "caps": "3 воскрешения за бой",
+      "layerGain": "Поглощение (тир за каждого поглощённого юнита, каждый бой); Gladiia при выведении из строя +3; Specter the Unchained при выведении из строя / переключении замены +5 Aegir +5 Indomitable; Skadi каждые 2 убийства +1 Aegir/Steadfast/Raid; Highmore первое убийство (врага или союзника) +3 Aegir/Arts; Jibian «Skadi's Oath» +8. Стратегия Clementia: выведенный из строя Aegir добавляет стаки = его тир.",
+      "howToPlay": "Ставьте дешёвых/высокотировых «кормовых» перед носителями Aegir: они крадут базовую атаку и блок, получают стаки и (на 5) воскресают. Корм тира 6 даёт +6 стаков за бой.",
+      "assumed": [
+        "5000 физического урона типа «потеря HP» игнорирует DEF и щиты",
+        "помеченные союзные юниты — это собственные оперативники игрока (поглощение бьёт по союзникам)"
+      ]
+    }
+  },
+  "siracusaShip": {
+    "bondId": "siracusaShip",
+    "name": "Сиракуза",
+    "identifier": 7,
+    "isCore": true,
+    "bondType": "SEASON",
+    "bondOrder": 2,
+    "powerIdList": ["siracusa","chiave"],
+    "iconId": "icon_siracusaShip",
+    "activeCount": 3,
+    "thresholds": [3,6],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "【Сиракуза】Оперативники: после развёртывания скорость атаки повышена, длится определённое время (зависит от числа стаков)\n<6 разных оперативников 【Сиракуза】 на поле>После развёртывания оперативники 【Сиракуза】 уходят в инвиз равной длительности; в инвизе и в течение 10 секунд после выхода из него атаки по врагам имеют 3% шанс нанести определённый истинный урон (зависит от числа стаков) и наложить страх на 3 секунды",
+    "descRaw": "【Сиракуза】Оперативники: после развёртывания <@ba.vup>скорость атаки</> повышается, длится определённое время<@autochess.gray> (зависит от числа стаков)</>\n<На поле <@autochess.dgreen>6</> разных оперативников 【Сиракуза】>После развёртывания оперативники 【Сиракуза】 уходят в инвиз равной длительности; в инвизе и в течение <@ba.vup>10</> секунд после выхода из него атаки по врагам имеют <@ba.vup>3%</> шанс нанести определённый истинный урон<@autochess.gray> (зависит от числа стаков)</> и <@ba.vup>наложить страх</> на 3 секунды",
+    "effectId": "bondeffect_siracusa",
+    "effectName": "Сиракуза",
+    "effectDesc": "【Сиракуза】Оперативники: после развёртывания скорость атаки +{0:0}, длится {1:0} сек (зависит от числа стаков)\n<6 разных оперативников 【Сиракуза】 на поле>После развёртывания оперативники 【Сиракуза】 также уходят в инвиз равной длительности; в инвизе и в течение 10 секунд после выхода из него атаки по врагам имеют 3% шанс нанести {2:0} (зависит от числа стаков) истинного урона и наложить страх на 3 секунды",
+    "effectDescRaw": "【Сиракуза】Оперативники: после развёртывания скорость атаки <@ba.vup>+{0:0}</>, длится <@ba.vup>{1:0}</> сек<@ba.acrem> (зависит от числа стаков)</>\n<На поле <@ba.vup>6</> разных оперативников 【Сиракуза】>После развёртывания оперативники 【Сиракуза】 также уходят в инвиз равной длительности; в инвизе и в течение 10 секунд после выхода из него атаки по врагам имеют 3% шанс нанести <@ba.vup>{2:0}</><@ba.acrem> (зависит от числа стаков)</> истинного урона и <@ba.vup>наложить страх</> на 3 секунды",
+    "effectDescParams": [
+      {"index":0,"format":"0","base":"base_attack_speed","perStack":"attack_speed_per_stack"},
+      {"index":1,"format":"0","base":"base_duration","perStack":"duration_per_stack"},
+      {"index":2,"format":"0","base":"base_damage","perStack":"damage_per_stack"}
+    ],
+    "bb": {
+      "base_duration":32,
+      "duration_per_stack":0.4,
+      "base_attack_speed":25,
+      "attack_speed_per_stack":0.8,
+      "power_bond_char_cnt":6,
+      "ex_bond_char_cnt":6,
+      "end_duration":10,
+      "prob":0.03,
+      "base_damage":5000,
+      "damage_per_stack":50,
+      "fear":3
+    },
+    "bbStr": {"key":"act2autochess_bond_eff_siracusa"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_duration":32,
+          "duration_per_stack":0.4,
+          "base_attack_speed":25,
+          "attack_speed_per_stack":0.8,
+          "power_bond_char_cnt":6,
+          "ex_bond_char_cnt":6,
+          "end_duration":10,
+          "prob":0.03,
+          "base_damage":5000,
+          "damage_per_stack":50,
+          "fear":3
+        },
+        "bbStr":{"key":"act2autochess_bond_eff_siracusa"}
+      }
+    ],
+    "baseParams": ["base_attack_speed","base_duration","base_damage"],
+    "perStackParams": ["attack_speed_per_stack","duration_per_stack","damage_per_stack"],
+    "members": ["chess_char_1_07_a","chess_char_1_08_a","chess_char_2_16_a","chess_char_3_15_a","chess_char_3_18_a","chess_char_3_19_a","chess_char_4_10_a","chess_char_4_16_a","chess_char_5_10_a","chess_char_5_20_a","chess_char_6_18_a"],
+    "visibleMembers": ["chess_char_1_07_a","chess_char_1_08_a","chess_char_2_16_a","chess_char_3_18_a","chess_char_3_19_a","chess_char_4_10_a","chess_char_4_16_a","chess_char_5_10_a","chess_char_5_20_a","chess_char_6_18_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных",
+          "effect": "После каждого развёртывания (включая повторное) член Siracusa получает ASPD +(25 + 0.8*L) на (32 + 0.4*L) с."
+        },
+        {
+          "need": "6 разных",
+          "effect": "После развёртывания также получает Скрытность (камуфляж) на ту же длительность. Пока скрыт и 10 с после окончания, каждый обычный экземпляр урона, который он наносит, может добавить (5000 + 50*L) истинного урона (источник = оперативник) и Страх на 3 с. Номинальный шанс 3%, реализован как псевдослучайный: все члены Siracusa используют один общий счётчик; попытка n с момента последнего срабатывания успешна с p = 0.00139*n (гарантия при n = 720); счётчик сбрасывается при срабатывании."
+        }
+      ],
+      "formulas": {
+        "aspd": "25 + 0.8*L",
+        "durationSec": "32 + 0.4*L",
+        "procDamage": "5000 + 50*L",
+        "prdStep": "0.00139"
+      },
+      "caps": "нет",
+      "layerGain": "Управляется обновлениями магазина: Lappland первое ручное обновление каждый раунд +4 (работает со скамейки); Angelina в конце фазы подготовки +4 за каждое обновление в этом раунде (<=12 за раунд); Arum +2 Siracusa/Arts за обновление (<=6); Vigil первые 3 убийства +2 Siracusa +1 Miracle; Wandering Lappland каждое убийство +2 (элитный: каждый Siracusa получает это, <=100 за бой); Rinshan при получении +6 своих альянсов (×2/×3 с Инвестор); Jibian «Texas's Oath» +10. Стратегия Chaves: каждые 6 ручных обновлений получить бесплатного Siracusa (<=2 за раунд).",
+      "howToPlay": "Много обновляйте в фазе подготовки (источники бесплатных обновлений: Provence, Texas, Texas the Omertosa, Shamare) чтобы питать Lappland/Angelina; сочетайте с Инвестор ради Rinshan.",
+      "notes": ["PRTS: 10-секундное окно после выхода из скрытности перезапускается, если статусные эффекты или иммунитеты оперативника меняются."],
+      "assumed": ["Скрытность = стандартный камуфляж AK (не выбирается дальними врагами, если не блокирует)"]
+    }
+  },
+  "kazimierzShip": {
+    "bondId": "kazimierzShip",
+    "name": "Казимеж",
+    "identifier": 8,
+    "isCore": true,
+    "bondType": "SEASON",
+    "bondOrder": 2,
+    "powerIdList": ["kazimierz","pinus"],
+    "iconId": "icon_kazimierzShip",
+    "activeCount": 3,
+    "thresholds": [3,6],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "При каждом развёртывании любого оперативника атака оперативников 【Казимеж】 +20% до конца боя (предел зависит от числа стаков)\n<6 разных оперативников 【Казимеж】 на поле>Когда оперативник 【Казимеж】 блокирует врагов, каждые 2 секунды наносит окружающим врагам истинный урон, равный 120% атаки, и оглушает на 0.1 сек; если не блокирует врагов, атаки наносят дополнительный истинный урон, равный 30% атаки",
+    "descRaw": "При каждом развёртывании любого оперативника атака оперативников 【Казимеж】 <@ba.vup>+20%</> до конца боя<@autochess.gray> (предел зависит от числа стаков)</>\n<На поле <@autochess.dgreen>6</> разных оперативников 【Казимеж】>Когда оперативник 【Казимеж】 блокирует врагов, каждые <@ba.vup>2</> секунды наносит окружающим врагам <@ba.vup>120%</> атаки истинным уроном и оглушает на <@ba.vup>0.1</>; если не блокирует врагов, атаки наносят дополнительно <@ba.vup>30%</> атаки истинным уроном",
+    "effectId": "bondeffect_kazimierz",
+    "effectName": "Казимеж",
+    "effectDesc": "При каждом развёртывании любого оперативника атака оперативников 【Казимеж】 +20% (до +{0:0%}) (зависит от числа стаков)\n<6 разных оперативников 【Казимеж】 на поле>Когда оперативник 【Казимеж】 блокирует врагов, каждые 2 секунды наносит окружающим врагам истинный урон, равный 120% атаки, и оглушает на 0.1 сек; если не блокирует врагов, атаки наносят дополнительный истинный урон, равный 30% атаки",
+    "effectDescRaw": "При каждом развёртывании любого оперативника атака оперативников 【Казимеж】 +20% (до <@ba.vup>+{0:0%}</>)<@ba.acrem> (зависит от числа стаков)</>\n<На поле <@ba.vup>6</> разных оперативников 【Казимеж】>Когда оперативник 【Казимеж】 блокирует врагов, каждые <@ba.vup>2</> секунды наносит окружающим врагам <@ba.vup>120%</> атаки истинным уроном и оглушает на <@ba.vup>0.1</> сек; если не блокирует врагов, атаки наносят дополнительно <@ba.vup>30%</> атаки истинным уроном",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_max_atk_when_born","perStack":"max_atk_when_born_per_stack"}
+    ],
+    "bb": {
+      "atk_when_born":0.2,
+      "base_max_atk_when_born":0.5,
+      "max_atk_when_born_per_stack":0.01,
+      "damage_interval":2,
+      "damage_atk_scale":1.2,
+      "stun":0.1,
+      "range_radius":0.8,
+      "power_bond_char_cnt":6,
+      "pure_atk_scale":0.3
+    },
+    "bbStr": {"key":"act2autochess_bond_eff_kazimierz"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "atk_when_born":0.2,
+          "base_max_atk_when_born":0.5,
+          "max_atk_when_born_per_stack":0.01,
+          "damage_interval":2,
+          "damage_atk_scale":1.2,
+          "stun":0.1,
+          "range_radius":0.8,
+          "power_bond_char_cnt":6,
+          "pure_atk_scale":0.3
+        },
+        "bbStr":{"key":"act2autochess_bond_eff_kazimierz"}
+      }
+    ],
+    "baseParams": ["base_max_atk_when_born"],
+    "perStackParams": ["max_atk_when_born_per_stack"],
+    "members": ["chess_char_1_19_a","chess_char_2_12_a","chess_char_2_18_a","chess_char_3_12_a","chess_char_3_17_a","chess_char_4_19_a","chess_char_4_20_a","chess_char_5_19_a","chess_char_6_17_a","chess_char_6_19_a"],
+    "visibleMembers": ["chess_char_1_19_a","chess_char_2_12_a","chess_char_2_18_a","chess_char_3_12_a","chess_char_3_17_a","chess_char_4_19_a","chess_char_4_20_a","chess_char_5_19_a","chess_char_6_17_a","chess_char_6_19_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных",
+          "effect": "Каждый раз, когда развёртывается любой союзный оперативник (включая повторное развёртывание), каждый член Kazimierz получает атаку +20% до конца боя, с пределом +(50 + 1*L)%."
+        },
+        {
+          "need": "6 разных",
+          "effect": "Пока блокирует >= 1 врага: каждые 2 с наносит 120% атаки истинного урона всем врагам в радиусе 0.8 клетки и оглушает их на 0.1 с. Пока не блокирует: каждый обычный экземпляр урона добавляет 30% атаки безысточникового истинного урона."
+        }
+      ],
+      "formulas": {
+        "atkPerDeploy": "0.20",
+        "atkCap": "0.50 + 0.01*L"
+      },
+      "caps": "предел бонуса атаки 50% + 1% за стак",
+      "layerGain": "Управляется развёртываниями в бою: Gravel при развёртывании +1; Blemishine при развёртывании +4 своих активных альянсов (<=12 за бой); Fartooth даёт самому правому оперативнику в своём ряду «при развёртывании +4 Kazimierz/Precision (<=24 за бой)»; Degenbrecher при развёртывании +8 (<=24); при получении: Wild Mane +2, Ashlock +3 к альянсу с наибольшим числом стаков; Jibian «Młynar's Oath» +12. Стратегия Młynar: +1 золото в следующем раунде за каждого купленного Kazimierz (<=3).",
+      "howToPlay": "Максимизируйте события развёртывания: низкое время перезарядки (Assistance -30%, Knight's Code), оперативники, которые умирают/отступают и возвращаются (Gravel + Indomitable). Bahamut: не включайте Steadfast (разделение урона сохраняет Gravel живым).",
+      "assumed": [
+        "начальные авторазвёртывания в начале боя тоже считаются развёртываниями",
+        "бафф применяется и к членам, развёрнутым позже (хранится глобально, с пределом)"
+      ]
+    }
+  },
+    "preciShip": {
+    "bondId": "preciShip",
+    "name": "Точность",
+    "identifier": 9,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_preciShip",
+    "activeCount": 2,
+    "thresholds": [2,3],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "【Точность】Оперативники: атака повышена (зависит от числа стаков)\n<3 разных оперативников 【Точность】 на поле>Действует на оперативников 【Точность】 и всех оперативников дальнего боя, атаки игнорируют часть защиты и сопротивления магии",
+    "descRaw": "【Точность】Оперативники: <@ba.vup>атака</> повышена<@autochess.gray> (зависит от числа стаков)</>\n<На поле <@autochess.dgreen>3</> разных оперативников 【Точность】>Действует на оперативников 【Точность】 и всех оперативников дальнего боя, атаки игнорируют часть <@ba.vup>защиты</> и <@ba.vup>сопротивления магии</>",
+    "effectId": "bondeffect_preci",
+    "effectName": "Точность",
+    "effectDesc": "【Точность】Оперативники: атака +{0:0%} (зависит от числа стаков)\n<3 разных оперативников 【Точность】 на поле>Действует на всех оперативников 【Точность】 и оперативников дальнего боя, атаки игнорируют 30% защиты и сопротивления магии",
+    "effectDescRaw": "【Точность】Оперативники: атака<@ba.vup>+{0:0%}</><@ba.acrem> (зависит от числа стаков)</>\n<На поле <@ba.vup>3</> разных оперативников 【Точность】>Действует на всех оперативников 【Точность】 и оперативников дальнего боя, атаки игнорируют <@ba.vup>30%</> защиты и сопротивления магии",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_atk","perStack":"atk_per_stack"}
+    ],
+    "bb": {
+      "base_atk":0.1,
+      "atk_per_stack":0.012,
+      "power_def_penetrate":0.3,
+      "power_magic_resist_penetrate":0.3,
+      "power_bond_char_cnt":3
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_preci"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_atk":0.1,
+          "atk_per_stack":0.012,
+          "power_def_penetrate":0.3,
+          "power_magic_resist_penetrate":0.3,
+          "power_bond_char_cnt":3
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_preci"}
+      }
+    ],
+    "baseParams": ["base_atk"],
+    "perStackParams": ["atk_per_stack"],
+    "members": ["chess_char_1_09_a","chess_char_1_17_a","chess_char_2_01_a","chess_char_3_11_a","chess_char_4_06_a","chess_char_4_14_a","chess_char_4_20_a","chess_char_5_02_a","chess_char_6_01_a","chess_char_6_05_a","chess_char_6_08_a","chess_char_6_12_a"],
+    "visibleMembers": ["chess_char_1_09_a","chess_char_1_17_a","chess_char_2_01_a","chess_char_3_11_a","chess_char_4_06_a","chess_char_4_14_a","chess_char_4_20_a","chess_char_5_02_a","chess_char_6_01_a","chess_char_6_05_a","chess_char_6_08_a","chess_char_6_12_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "Члены Точность: атака ×(1 + 0.10 + 0.012*L)."
+        },
+        {
+          "need": "3 разных",
+          "effect": "Область действия становится: члены Точность + все оперативники дальнего боя; затронутые юниты также игнорируют 30% DEF и 30% RES цели."
+        }
+      ],
+      "formulas": {
+        "atkMultiplier": "1.10 + 0.012*L",
+        "defPenetrateRatio(3)": "0.3",
+        "resPenetrateRatio(3)": "0.3"
+      },
+      "layerGain": "Убийство/навык/развёртывание в бою: Coldshot даёт оперативнику перед собой «при активации навыка +1 Точность (<=10 за бой)»; Fartooth даёт (+4 за развёртывание); Titi +1 за сон/оглушение; Lemuen, Executor; Leonhardt в конце фазы подготовки +5 своих активных альянсов; при получении: Indigo +2, Snowsant +5. Jibian «Titi's Oath» +10.",
+      "assumed": ["проникновение = игнорирование доли (как «игнорировать x% защиты»)"]
+    }
+  },
+  "swiftShip": {
+    "bondId": "swiftShip",
+    "name": "Темп",
+    "identifier": 10,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_swiftShip",
+    "activeCount": 2,
+    "thresholds": [2],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [{"layer":40,"mode":"reach","effect":"env_gbuff_new"}],
+    "desc": "【Темп】Оперативники: по завершении умения с некоторой вероятностью (зависит от числа стаков) немедленно восстанавливается 12 очков умений\n<Достижение 40 стаков>По завершении умения все оперативники с той же вероятностью дополнительно восстанавливают 15 очков умений",
+    "descRaw": "【Темп】Оперативники: по завершении умения с некоторой вероятностью<@autochess.gray> (зависит от числа стаков)</> немедленно восстанавливается <@ba.vup>12 очков</> умений\n<Достижение <@autochess.dgreen>40</> стаков>По завершении умения все оперативники с той же вероятностью дополнительно восстанавливают <@ba.vup>15 очков</> умений",
+    "effectId": "bondeffect_swift",
+    "effectName": "[Темп]",
+    "effectDesc": "【Темп】Оперативники: по завершении умения с вероятностью {0:0%} (зависит от числа стаков) немедленно восстанавливается 12 очков умений\n<Достижение 40 стаков>По завершении умения все оперативники с той же вероятностью дополнительно восстанавливают 15 очков умений",
+    "effectDescRaw": "【Темп】Оперативники: по завершении умения с вероятностью <@ba.vup>{0:0%}</><@ba.acrem> (зависит от числа стаков)</> немедленно восстанавливается <@ba.vup>12</> очков умений\n<Достижение <@ba.vup>40</> стаков>По завершении умения все оперативники с той же вероятностью дополнительно восстанавливают <@ba.vup>15</> очков умений",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_prob","perStack":"prob_per_stack"}
+    ],
+    "bb": {
+      "base_prob":0.2,
+      "prob_per_stack":0.0035,
+      "power_bond_stack_cnt":40,
+      "normal_sp":12,
+      "power_sp":15
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_swift"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_prob":0.2,
+          "prob_per_stack":0.0035,
+          "power_bond_stack_cnt":40,
+          "normal_sp":12,
+          "power_sp":15
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_swift"}
+      }
+    ],
+    "baseParams": ["base_prob"],
+    "perStackParams": ["prob_per_stack"],
+    "members": ["chess_char_1_01_a","chess_char_1_16_a","chess_char_1_19_a","chess_char_2_13_a","chess_char_2_19_a","chess_char_3_10_a","chess_char_3_18_a","chess_char_4_14_a","chess_char_5_14_a","chess_char_5_15_a","chess_char_5_22_a","chess_char_6_05_a","chess_char_6_10_a","chess_char_6_19_a"],
+    "visibleMembers": ["chess_char_1_01_a","chess_char_1_19_a","chess_char_2_13_a","chess_char_2_19_a","chess_char_3_10_a","chess_char_3_18_a","chess_char_4_14_a","chess_char_5_14_a","chess_char_5_15_a","chess_char_5_22_a","chess_char_6_05_a","chess_char_6_19_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "Когда навык члена [Темп] заканчивается: с p = min(1, 0.20 + 0.0035*L) немедленно +12 SP."
+        },
+        {
+          "need": "L >= 40",
+          "effect": "Каждый оперативник, чей навык заканчивается: с тем же p дополнительно +15 SP."
+        }
+      ],
+      "formulas": {
+        "p": "min(1, 0.20 + 0.0035*L)",
+        "reaches100%AtL": "229"
+      },
+      "layerGain": "Nif в конце фазы подготовки +2 за каждого оперативника на скамейке; Tequila при входе в фазу подготовки +2 своих активных альянсов; Leonhardt +5; Stainless +4 себе и переднему; при получении: Tin Man/Wild Mane +2, Rinshan +6, Degenbrecher +8. Jibian «SilverAsh's Oath» +8.",
+      "assumed": ["члены [Темп] бросают и 12 SP, и 15 SP независимо"]
+    }
+  },
+  "skillfulShip": {
+    "bondId": "skillfulShip",
+    "name": "Ловкость",
+    "identifier": 11,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_skillfulShip",
+    "activeCount": 2,
+    "thresholds": [2],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [{"layer":40,"mode":"reach","effect":"env_gbuff_new"}],
+    "desc": "【Ловкость】Оперативники и оперативники на 4 соседних клетках вокруг них: скорость атаки повышена (зависит от числа стаков)\n<Достижение 40 стаков>Область действия меняется на 8 клеток вокруг оперативников 【Ловкость】",
+    "descRaw": "【Ловкость】Оперативники и оперативники на 4 соседних клетках вокруг них: <@ba.vup>скорость атаки</> повышена<@autochess.gray> (зависит от числа стаков)</>\n<Достижение <@autochess.dgreen>40</> стаков>Область действия меняется на 8 клеток вокруг оперативников 【Ловкость】",
+    "effectId": "bondeffect_skillful",
+    "effectName": "Ловкость",
+    "effectDesc": "【Ловкость】Оперативники и оперативники на 4 соседних клетках вокруг них: скорость атаки +{0:0} (зависит от числа стаков)\n <Достижение 40 стаков>Область действия меняется на 8 клеток вокруг оперативников 【Ловкость】",
+    "effectDescRaw": "【Ловкость】Оперативники и оперативники на 4 соседних клетках вокруг них: скорость атаки <@ba.vup>+{0:0}</><@ba.acrem> (зависит от числа стаков)</>\n <Достижение <@ba.vup>40</> стаков>Область действия меняется на 8 клеток вокруг оперативников 【Ловкость】",
+    "effectDescParams": [
+      {"index":0,"format":"0","base":"base_attack_speed","perStack":"attack_speed_per_stack"}
+    ],
+    "bb": {
+      "base_attack_speed":10,
+      "attack_speed_per_stack":1,
+      "power_bond_stack_cnt":40
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_skillful"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_attack_speed":10,
+          "attack_speed_per_stack":1,
+          "power_bond_stack_cnt":40
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_skillful"}
+      }
+    ],
+    "baseParams": ["base_attack_speed"],
+    "perStackParams": ["attack_speed_per_stack"],
+    "members": ["chess_char_1_14_a","chess_char_2_04_a","chess_char_2_13_a","chess_char_3_02_a","chess_char_3_13_a","chess_char_3_21_a","chess_char_4_11_a","chess_char_4_13_a","chess_char_4_21_a","chess_char_5_06_a","chess_char_5_16_a","chess_char_6_16_a"],
+    "visibleMembers": ["chess_char_1_14_a","chess_char_2_04_a","chess_char_2_13_a","chess_char_3_02_a","chess_char_3_13_a","chess_char_3_21_a","chess_char_4_11_a","chess_char_4_13_a","chess_char_4_21_a","chess_char_5_06_a","chess_char_6_16_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "Члены Ловкость и оперативники на их 4 ортогонально соседних клетках: ASPD +(10 + 1*L)."
+        },
+        {
+          "need": "L >= 40",
+          "effect": "Область становится 8 окружающих клеток."
+        }
+      ],
+      "formulas": {
+        "aspd": "10 + L"
+      },
+      "layerGain": "Souseiseki в конце фазы подготовки +2 Ловкость/Искусства за каждые 3 золота, потраченные в этом раунде; Bibeak +3 себе и заднему; Archetto +3 себе и переднему; Tequila +2; при получении Gnosis +5. (в act1 у Ловкости также была награда магазина за 20 стаков; удалено в act2.)",
+      "assumed": ["юнит, накрытый несколькими аурами Ловкость, получает бонус один раз"]
+    }
+  },
+  "arcaneShip": {
+    "bondId": "arcaneShip",
+    "name": "Искусства",
+    "identifier": 12,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_arcaneShip",
+    "activeCount": 2,
+    "thresholds": [2,3],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "【Искусства】Оперативники: когда наносят урон искусствами, получаемый целью урон искусствами повышается (зависит от числа стаков), длится 3 секунды\n<3 разных оперативников 【Искусства】 на поле>Пропорция повышения урона оперативников 【Искусства】 против врагов с уровнем здоровья ниже 50% увеличена (зависит от числа стаков)",
+    "descRaw": "【Искусства】Оперативники: когда наносят урон искусствами, получаемый целью урон искусствами повышается<@autochess.gray> (зависит от числа стаков)</>, длится 3 секунды\n<На поле <@autochess.dgreen>3</> разных оперативников 【Искусства】>Пропорция повышения урона оперативников 【Искусства】 против врагов с уровнем здоровья ниже <@ba.vup>50%</> увеличена<@autochess.gray> (зависит от числа стаков)</>",
+    "effectId": "bondeffect_arcane",
+    "effectName": "Искусства",
+    "effectDesc": "【Искусства】Оперативники: когда наносят урон искусствами, получаемый целью урон искусствами повышается на {0:0%} (зависит от числа стаков), длится 3 секунды\n<3 разных оперативников 【Искусства】 на поле>Пропорция повышения урона оперативников 【Искусства】 против врагов с уровнем здоровья ниже 50% равна {1:0%} (зависит от числа стаков)",
+    "effectDescRaw": "【Искусства】Оперативники: когда наносят урон искусствами, получаемый целью урон искусствами повышается на <@ba.vup>{0:0%}</><@ba.acrem> (зависит от числа стаков)</>, длится 3 секунды\n<На поле <@ba.vup>3</> разных оперативников 【Искусства】>Пропорция повышения урона оперативников 【Искусства】 против врагов с уровнем здоровья ниже <@ba.vup>50%</> равна <@ba.vup>{1:0%}</><@ba.acrem> (зависит от числа стаков)</>",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_damage_scale_show","perStack":"damage_scale_per_stack"},
+      {"index":1,"format":"0%","base":"base_damage_scale_show_ex","perStack":"damage_scale_per_stack_show_ex"}
+    ],
+    "bb": {
+      "weak_duration":3,
+      "base_damage_scale":1.2,
+      "damage_scale_per_stack":0.01,
+      "power_bond_char_cnt":3,
+      "power_weak_scale":1.4,
+      "hp_ratio":0.5,
+      "base_damage_scale_show":0.2,
+      "base_damage_scale_show_ex":0.68,
+      "damage_scale_per_stack_show_ex":0.014
+    },
+    "bbStr": {"key":"act2autochess_bond_eff_arcane"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "weak_duration":3,
+          "base_damage_scale":1.2,
+          "damage_scale_per_stack":0.01,
+          "power_bond_char_cnt":3,
+          "power_weak_scale":1.4,
+          "hp_ratio":0.5,
+          "base_damage_scale_show":0.2,
+          "base_damage_scale_show_ex":0.68,
+          "damage_scale_per_stack_show_ex":0.014
+        },
+        "bbStr":{"key":"act2autochess_bond_eff_arcane"}
+      }
+    ],
+    "baseParams": ["base_damage_scale_show","base_damage_scale_show_ex"],
+    "perStackParams": ["damage_scale_per_stack","damage_scale_per_stack_show_ex"],
+    "members": ["chess_char_1_17_a","chess_char_2_10_a","chess_char_2_15_a","chess_char_3_09_a","chess_char_4_02_a","chess_char_4_10_a","chess_char_5_07_a","chess_char_5_12_a","chess_char_6_02_a","chess_char_6_16_a"],
+    "visibleMembers": ["chess_char_1_17_a","chess_char_2_10_a","chess_char_3_09_a","chess_char_4_02_a","chess_char_4_10_a","chess_char_5_07_a","chess_char_5_12_a","chess_char_6_02_a","chess_char_6_16_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "Когда член Искусства наносит магический урон, цель получает магический урон ×(1.20 + 0.01*L) (т.е. +(20+L)%) на 3 с. ОДИН экземпляр на цель, независимо от того, кто его наложил: побеждает сильнейшее значение, более слабое возобновляется, если переживёт его; повторное наложение обновляет (исправлено 2026-10-01: PRTS 作战机制 同名buff默认只表现出一个; Bahamut 12316 два игрока пары конкурируют за него)."
+        },
+        {
+          "need": "3 разных",
+          "effect": "Против врагов ниже 50% HP множитель равен 1.4 × (1.20 + 0.01*L) = 1.68 + 0.014*L (т.е. +(68+1.4L)%)."
+        }
+      ],
+      "formulas": {
+        "magicTakenMul": "1.20 + 0.01*L",
+        "magicTakenMulLowHp(3)": "1.4*(1.20 + 0.01*L)",
+        "hpThreshold": "0.5",
+        "durationSec": "3"
+      },
+      "layerGain": "Dusk +2 за каждого полученного оперативника; Arum +2 за обновление (<=6); Souseiseki +2 за каждые 3 золота; Highmore первое убийство +3; при получении: Indigo +2, Xielu +4 (скрыто). Jibian «Mostima's Oath» +10.",
+      "assumed": ["один экземпляр на цель, сильнейший (правило движка по умолчанию для одноимённых баффов; два игрока пары конкурируют за него) — до v2.5 ремейк хранил по одному на игрока, и они перемножались"]
+    }
+  },
+  "steadShip": {
+    "bondId": "steadShip",
+    "name": "Стойкость",
+    "identifier": 13,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_steadShip",
+    "activeCount": 2,
+    "thresholds": [2,3],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "Все оперативники: здоровье повышено (зависит от числа стаков)\n<3 разных оперативников 【Стойкость】 на поле>Когда оперативник, не входящий в 【Стойкость】, получает урон, 40% этого урона поровну распределяется между всеми оперативниками 【Стойкость】. Когда оперативник 【Стойкость】 получает урон, атакующий получает определённый урон искусствами (зависит от числа стаков, не чаще одного раза в 0.2 сек) и 40% уязвимости на 5 секунд",
+    "descRaw": "Все оперативники: <@ba.vup>здоровье</> повышено<@autochess.gray> (зависит от числа стаков)</>\n<На поле <@autochess.dgreen>3</> разных оперативников 【Стойкость】>Когда оперативник, не входящий в 【Стойкость】, получает урон, <@ba.vup>40%</> этого урона <@ba.vup>поровну распределяется</> между всеми оперативниками 【Стойкость】. Когда оперативник 【Стойкость】 получает урон, атакующий получает определённый урон искусствами<@autochess.gray> (зависит от числа стаков, не чаще одного раза в 0.2 сек)</> и <@ba.vup>40%</> хрупкости на <@ba.vup>5</> секунд",
+    "effectId": "bondeffect_stead",
+    "effectName": "Стойкость",
+    "effectDesc": "Все оперативники: здоровье +{0:0%} (зависит от числа стаков)\n<3 разных оперативников 【Стойкость】 на поле>Когда оперативник, не входящий в 【Стойкость】, получает урон, 40% этого урона поровну распределяется между оперативниками 【Стойкость】; когда оперативник 【Стойкость】 получает урон, атакующий получает {1:0} урона искусствами (зависит от числа стаков, не чаще одного раза в 0.2 сек) и 40% уязвимости на 5 секунд",
+    "effectDescRaw": "Все оперативники: здоровье<@ba.vup>+{0:0%}</><@ba.acrem> (зависит от числа стаков)</>\n<На поле <@ba.vup>3</> разных оперативников 【Стойкость】>Когда оперативник, не входящий в 【Стойкость】, получает урон, <@ba.vup>40%</> этого урона поровну распределяется между оперативниками 【Стойкость】; когда оперативник 【Стойкость】 получает урон, атакующий получает <@ba.vup>{1:0}</> урона искусствами<@ba.acrem> (зависит от числа стаков, не чаще одного раза в 0.2 сек)</> и 40% хрупкости на <@ba.vup>5</> секунд",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_max_hp","perStack":"max_hp_per_stack"},
+      {"index":1,"format":"0","base":"base_damage_value","perStack":"damage_value_per_stack"}
+    ],
+    "bb": {
+      "base_max_hp":0.25,
+      "max_hp_per_stack":0.012,
+      "damage_resistance":0.4,
+      "power_bond_char_cnt":3,
+      "cd_duration":0.2,
+      "weak[limit]":5,
+      "damage_scale":1.4,
+      "base_damage_value":850,
+      "damage_value_per_stack":10
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_stead"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_max_hp":0.25,
+          "max_hp_per_stack":0.012,
+          "damage_resistance":0.4,
+          "power_bond_char_cnt":3,
+          "cd_duration":0.2,
+          "weak[limit]":5,
+          "damage_scale":1.4,
+          "base_damage_value":850,
+          "damage_value_per_stack":10
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_stead"}
+      }
+    ],
+    "baseParams": ["base_max_hp","base_damage_value"],
+    "perStackParams": ["max_hp_per_stack","damage_value_per_stack"],
+    "members": ["chess_char_1_02_a","chess_char_1_10_a","chess_char_2_08_a","chess_char_2_17_a","chess_char_2_18_a","chess_char_3_05_a","chess_char_3_16_a","chess_char_4_01_a","chess_char_5_11_a","chess_char_6_03_a"],
+    "visibleMembers": ["chess_char_1_02_a","chess_char_1_10_a","chess_char_2_08_a","chess_char_2_17_a","chess_char_2_18_a","chess_char_3_05_a","chess_char_3_16_a","chess_char_4_01_a","chess_char_5_11_a","chess_char_6_03_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "ВСЕ оперативники: макс. здоровье ×(1 + 0.25 + 0.012*L)."
+        },
+        {
+          "need": "3 разных",
+          "effect": "Когда оперативник, не входящий в Стойкость, получает урон, 40% этого урона вместо этого принимают члены Стойкость, поровну. Когда член Стойкость получает урон, источник урона получает (850 + 10*L) безысточникового магического урона и Уязвимость (получаемый урон ×1.4) на 5 с; каждый член Стойкость может отразить не чаще одного раза в 0.2 с."
+        }
+      ],
+      "formulas": {
+        "hpMultiplier": "1.25 + 0.012*L",
+        "redirectRatio": "0.4",
+        "thornsDamage": "850 + 10*L",
+        "thornsCooldownSec": "0.2",
+        "fragile": "1.4 на 5 с"
+      },
+      "layerGain": "Zheya в конце фазы подготовки +4; Cuora +1 за каждого оперативника в том же ряду; Skadi убийства; при получении Matterhorn +2; Jibian «Skadi's Oath» +8.",
+      "notes": ["PRTS: шипы бьют по тому, что является источником урона; безысточниковый урон может израсходовать перезарядку шипов."]
+    }
+  },
+    "deputShip": {
+    "bondId": "deputShip",
+    "name": "Поддержка",
+    "identifier": 14,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_deputShip",
+    "activeCount": 2,
+    "thresholds": [2,3],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "Все оперативники: защита повышена (зависит от числа стаков), время перестановки снижено\nПо завершении фазы подготовки все активные стаки альянсов +2\n<3 разных оперативников 【Поддержка】 на поле>Стаки +4",
+    "descRaw": "Все оперативники: <@ba.vup>защита</> повышена<@autochess.gray> (зависит от числа стаков)</>, <@ba.vup>время перестановки</> снижено\nПо завершении фазы подготовки все активные стаки альянсов <@ba.vup>+2</>\n<На поле <@autochess.dgreen>3</> разных оперативников 【Поддержка】>Стаки <@ba.vup>+4</>",
+    "effectId": "bondeffect_deput",
+    "effectName": "Поддержка",
+    "effectDesc": "Все оперативники: защита +{0:0%} (зависит от числа стаков), время перестановки -30%\nПо завершении фазы подготовки все активные стаки альянсов +2\n<3 разных оперативников 【Поддержка】 на поле>Стаки +4",
+    "effectDescRaw": "Все оперативники: защита<@ba.vup>+{0:0%}</><@ba.acrem> (зависит от числа стаков)</>, время перестановки <@ba.vup>-30%</>\nПо завершении фазы подготовки все активные стаки альянсов <@ba.vup>+2</>\n<На поле <@ba.vup>3</> разных оперативников 【Поддержка】>Стаки <@ba.vup>+4</>",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_def","perStack":"def_per_stack"}
+    ],
+    "bb": {
+      "base_def":0.15,
+      "def_per_stack":0.012,
+      "respawn_time":-0.3,
+      "layer":2,
+      "count":3,
+      "more_layer":4
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_deput","bond":"deputShip"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_def":0.15,
+          "def_per_stack":0.012,
+          "respawn_time":-0.3
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_deput"}
+      },
+      {
+        "key":"bond_activated_add_layer",
+        "bb":{"layer":2,"count":3,"more_layer":4},
+        "bbStr":{"bond":"deputShip"}
+      }
+    ],
+    "baseParams": ["base_def"],
+    "perStackParams": ["def_per_stack"],
+    "members": ["chess_char_1_06_a","chess_char_1_13_a","chess_char_2_14_a","chess_char_2_15_a","chess_char_3_15_a","chess_char_3_20_a","chess_char_4_03_a","chess_char_4_05_a","chess_char_4_21_a","chess_char_4_24_a","chess_char_5_16_a","chess_char_6_14_a","chess_char_6_20_a"],
+    "visibleMembers": ["chess_char_1_06_a","chess_char_1_13_a","chess_char_2_14_a","chess_char_3_20_a","chess_char_4_21_a","chess_char_4_24_a","chess_char_6_14_a","chess_char_6_20_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "ВСЕ оперативники: DEF ×(1 + 0.15 + 0.012*L); время перезарядки -30%. В конце каждой фазы подготовки каждый активный в данный момент альянс (включая Помощь) получает +2 стака."
+        },
+        {
+          "need": "3 члена Поддержка (различное имя или элитное состояние)",
+          "effect": "+4 стака вместо +2."
+        }
+      ],
+      "formulas": {
+        "defMultiplier": "1.15 + 0.012*L",
+        "redeployTimeMul": "0.7",
+        "layersPerRound": "2 (4 при 3 членах) каждому активному альянсу"
+      },
+      "layerGain": "Podenco +1 / Perfumer +2 к альянсу с наибольшим числом стаков в конце фазы подготовки (работают со скамейки); Lumen +2 к активным альянсам каждого оперативника на скамейке; Eyjafjalla the Hvit Aska +3 к альянсу с наибольшим числом стаков за навык; её собственные +2/+4 за раунд.",
+      "howToPlay": "Дешёвый универсальный движок стаков: активируйте как можно больше альянсов, чтобы каждый получал +2/+4 каждый раунд (помогает скрытому порогу раунда)."
+    }
+  },
+  "visiShip": {
+    "bondId": "visiShip",
+    "name": "Предвидение",
+    "identifier": 15,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_visiShip",
+    "activeCount": 2,
+    "thresholds": [2],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD_AND_DECK",
+    "countsHand": true,
+    "countsGoldenOnly": false,
+    "activeType": "ALL",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [
+      {"layer":10,"mode":"every","effect":"bond_layer_gain_coin"},
+      {"layer":80,"mode":"first","effect":"bond_multi_layer_char_goods_price_bond_discount"},
+      {"layer":150,"mode":"first","effect":"bond_multi_layer_char_goods_price_bond_discount"}
+    ],
+    "desc": "<Каждые накопленные 10 стаков>Даёт 2 золота\n<Впервые достигнуто 80 стаков>Цена покупки всех оперативников 【Предвидение】 навсегда -1 золото\n<Впервые достигнуто 150 стаков>Вышеуказанный эффект меняется: цена покупки всех оперативников навсегда -1 золото (оперативники 【Предвидение】 в зоне подготовки также могут активировать альянс)",
+    "descRaw": "<Каждые накопленные <@autochess.dgreen>10</> стаков>Даёт <@ba.vup>2</> золота\n<Впервые достигнуто <@autochess.dgreen>80</> стаков>Цена покупки всех оперативников 【Предвидение】 <@ba.vup>навсегда -1</> золото\n<Впервые достигнуто <@autochess.dgreen>150</> стаков>Вышеуказанный эффект меняется: цена покупки всех оперативников <@ba.vup>навсегда -1</> золото (оперативники 【Предвидение】 в зоне подготовки также могут активировать альянс)",
+    "effectId": "bondeffect_visi",
+    "effectName": "Предвидение",
+    "effectDesc": "<Каждые накопленные 10 стаков>Даёт 2 золота\n<Впервые достигнуто 80 стаков>Цена покупки всех оперативников 【Предвидение】 навсегда -1 золото\n<Впервые достигнуто 150 стаков>Вышеуказанный эффект меняется: цена покупки всех оперативников навсегда -1 золото\nОперативники 【Предвидение】 в зоне подготовки также могут активировать альянс",
+    "effectDescRaw": "<Каждые накопленные <@ba.vup>10</> стаков>Даёт <@ba.vup>2</> золота\n<Впервые достигнуто <@ba.vup>80</> стаков>Цена покупки всех оперативников 【Предвидение】 <@ba.vup>навсегда -1</> золото\n<Впервые достигнуто <@ba.vup>150</> стаков>эффект меняется: цена покупки всех оперативников навсегда -1 золото\nОперативники 【Предвидение】 в зоне подготовки также могут активировать альянс",
+    "effectDescParams": [],
+    "bb": {
+      "layer":10,
+      "count":2,
+      "layer1":80,
+      "discount":1,
+      "layer2":150
+    },
+    "bbStr": {"bond":"visiShip"},
+    "buffs": [
+      {"key":"bond_layer_gain_coin","bb":{"layer":10,"count":2},"bbStr":{}},
+      {"key":"bond_multi_layer_char_goods_price_bond_discount","bb":{"layer1":80,"discount":1,"layer2":150},"bbStr":{"bond":"visiShip"}}
+    ],
+    "baseParams": [],
+    "perStackParams": [],
+    "members": ["chess_char_1_11_a","chess_char_2_02_a","chess_char_3_03_a","chess_char_3_14_a","chess_char_4_04_a","chess_char_4_07_a","chess_char_5_01_a","chess_char_5_21_a","chess_char_6_12_a"],
+    "visibleMembers": ["chess_char_2_02_a","chess_char_3_03_a","chess_char_3_14_a","chess_char_4_04_a","chess_char_4_07_a","chess_char_5_01_a","chess_char_5_21_a","chess_char_6_12_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных (поле + скамейка)",
+          "effect": "Каждый раз, когда накопительный L пересекает кратное 10: +2 золота."
+        },
+        {
+          "need": "первый раз L >= 80",
+          "effect": "Цена всех оперативников Предвидение в магазине навсегда -1."
+        },
+        {
+          "need": "первый раз L >= 150",
+          "effect": "Заменяет вышеуказанное: каждый оперативник в магазине навсегда -1 (переопределяет, не складывается; обновление 3/27)."
+        }
+      ],
+      "formulas": {
+        "goldPayouts": "2 * floor(L/10)"
+      },
+      "layerGain": "Cantabile при входе/окончании фазы подготовки +4 каждое; Ines +5 своих активных альянсов; Hoederer +2; Executor the Ex Foedere +3 за каждые 7 пуль (<=21 за бой); Bagpipe убийства +2; Jibian «Bagpipe's Oath» +8.",
+      "assumed": ["цена никогда не ниже 1"]
+    }
+  },
+  "miraShip": {
+    "bondId": "miraShip",
+    "name": "Чудо",
+    "identifier": 16,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_miraShip",
+    "activeCount": 2,
+    "thresholds": [2],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD_AND_DECK",
+    "countsHand": true,
+    "countsGoldenOnly": false,
+    "activeType": "ALL",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [{"layer":100,"mode":"every","effect":"bond_layer_gain_coin"}],
+    "desc": "При обновлении диспатч центра есть шанс, что следующее обновление не будет стоить золота (зависит от числа стаков)\n<Каждые накопленные 100 стаков>Даёт 20 золота (оперативники 【Чудо】 в зоне подготовки также могут активировать альянс)",
+    "descRaw": "При обновлении диспатч центра есть шанс, что следующее обновление <@ba.vup>не будет стоить золота</><@autochess.gray> (зависит от числа стаков)</>\n<Каждые накопленные <@autochess.dgreen>100</> стаков>Даёт <@ba.vup>20</> золота (оперативники 【Чудо】 в зоне подготовки также могут активировать альянс)",
+    "effectId": "bondeffect_mira",
+    "effectName": "Чудо",
+    "effectDesc": "При обновлении диспатч центра с вероятностью {0:0%} (зависит от числа стаков) следующее обновление не будет стоить золота\n<Каждые накопленные 100 стаков>Даёт 20 золота\nОперативники 【Чудо】 в зоне подготовки также могут активировать альянс",
+    "effectDescRaw": "При обновлении диспатч центра с вероятностью <@ba.vup>{0:0%}</><@ba.acrem> (зависит от числа стаков)</> следующее обновление не будет стоить золота\n<Каждые накопленные <@ba.vup>100</> стаков>Даёт <@ba.vup>20</> золота\nОперативники 【Чудо】 в зоне подготовки также могут активировать альянс",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"baseprob","perStack":"prob"}
+    ],
+    "bb": {
+      "probk":0.3,
+      "prob":0.003,
+      "baseprob":0.18,
+      "layer":100,
+      "count":20
+    },
+    "bbStr": {},
+    "buffs": [
+      {"key":"bond_refresh_shop_next_free","bb":{"probk":0.3,"prob":0.003,"baseprob":0.18},"bbStr":{}},
+      {"key":"bond_layer_gain_coin","bb":{"layer":100,"count":20},"bbStr":{}}
+    ],
+    "baseParams": ["baseprob"],
+    "perStackParams": ["prob"],
+    "members": ["chess_char_1_11_a","chess_char_2_11_a","chess_char_3_01_a","chess_char_3_19_a","chess_char_4_15_a","chess_char_4_26_a","chess_char_5_04_a","chess_char_5_15_a","chess_char_5_20_a","chess_char_5_23_a","chess_char_6_07_a"],
+    "visibleMembers": ["chess_char_2_11_a","chess_char_3_01_a","chess_char_3_19_a","chess_char_4_26_a","chess_char_5_15_a","chess_char_5_20_a","chess_char_5_23_a","chess_char_6_07_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных (поле + скамейка)",
+          "effect": "После каждого обновления магазина, если у игрока 0 бесплатных обновлений: с p = 0.18 + 0.003*L получить 1 бесплатное обновление."
+        },
+        {
+          "need": "каждые 100 стаков",
+          "effect": "+20 золота."
+        }
+      ],
+      "formulas": {
+        "p": "min(1, 0.18 + 0.003*L)",
+        "goldPayouts": "20 * floor(L/100)"
+      },
+      "layerGain": "Vina Victoria +2 за каждый различный тир Чудо; Luwuguan при получении +3; Vigil убийства +1; Stainless +4 себе и переднему; Warfarin (член Чудо) даёт оперативнику перед собой «при активации навыка +1 своих активных альянсов» (данные: <=7 за бой, элитный +2 <=14; патч PRTS 3/27 говорит, что предел поднят до 12/24).",
+      "notes": ["чёрная доска probk = 0.3: значение неизвестно (нет ни в одном описании) [UNKNOWN]."]
+    }
+  },
+  "investShip": {
+    "bondId": "investShip",
+    "name": "Инвестор",
+    "identifier": 17,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_investShip",
+    "activeCount": 3,
+    "thresholds": [3],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD_AND_DECK",
+    "countsHand": true,
+    "countsGoldenOnly": false,
+    "activeType": "ALL",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 0,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [{"layer":100,"mode":"reach","effect":"bond_layer_char_garrison_bonus"}],
+    "desc": "Трейты «при получении» оперативников срабатывают 2 раза\n<Достижение 100 стаков>Трейты «при получении» срабатывают 3 раза (оперативники 【Инвестор】 в зоне подготовки также могут активировать альянс)",
+    "descRaw": "Трейты «при получении» оперативников <@ba.vup>срабатывают 2 раза</>\n<Достижение <@autochess.dgreen>100</> стаков>Трейты «при получении» <@ba.vup>срабатывают 3 раза</> (оперативники 【Инвестор】 в зоне подготовки также могут активировать альянс)",
+    "effectId": "bondeffect_invest",
+    "effectName": "Инвестор",
+    "effectDesc": "Трейты «при получении» оперативников срабатывают 2 раза\n<Достижение 100 стаков>Трейты «при получении» срабатывают 3 раза\nОперативники 【Инвестор】 в зоне подготовки также могут активировать альянс",
+    "effectDescRaw": "Трейты «при получении» оперативников срабатывают 2 раза\n<Достижение <@ba.vup>100</> стаков>Трейты «при получении» <@ba.vup>срабатывают 3 раза</>\nОперативники 【Инвестор】 в зоне подготовки также могут активировать альянс",
+    "effectDescParams": [],
+    "bb": {"layer":0,"count":2},
+    "bbStr": {"event":"SERVER_GAIN"},
+    "buffs": [
+      {"key":"bond_layer_char_garrison_bonus","bb":{"layer":0,"count":2},"bbStr":{"event":"SERVER_GAIN"}},
+      {"key":"bond_layer_char_garrison_bonus","bb":{"layer":100,"count":3},"bbStr":{"event":"SERVER_GAIN"}}
+    ],
+    "baseParams": [],
+    "perStackParams": [],
+    "members": ["chess_char_1_16_a","chess_char_2_19_a","chess_char_3_04_a","chess_char_5_14_a","chess_char_5_17_a"],
+    "visibleMembers": ["chess_char_2_19_a","chess_char_3_04_a","chess_char_5_14_a","chess_char_5_17_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "3 разных (поле + скамейка)",
+          "effect": "Каждый трейт «при получении» (SERVER_GAIN) каждого оперативника срабатывает 2 раза."
+        },
+        {
+          "need": "L >= 100",
+          "effect": "Срабатывает 3 раза."
+        }
+      ],
+      "formulas": {
+        "gainTraitRepeat": "2 если L < 100 иначе 3"
+      },
+      "layerGain": "Mountain в конце фазы подготовки +1 за каждого оперативника, полученного в этом раунде; Jibian «Swire's Oath» +10, «SilverAsh's Oath» +8; общие источники.",
+      "howToPlay": "Сочетайте с оперативниками с высоким «при получении +N к своим альянсам» (Rinshan +6, Degenbrecher +8, Hoshiguma +8, Xuelie +5) — их стаки удваиваются/утраиваются."
+    }
+  },
+  "raidShip": {
+    "bondId": "raidShip",
+    "name": "Рейд",
+    "identifier": 18,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_raidShip",
+    "activeCount": 2,
+    "thresholds": [2],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [{"layer":50,"mode":"reach","effect":"env_gbuff_new"}],
+    "desc": "【Рейд】Оперативники: если в течение 10 секунд не атакуют или умение готово, и в радиусе нет врагов, то сохраняют очки умений и немедленно перемещаются к одному наземному врагу, пока действует умение, атака и здоровье повышены (зависит от числа стаков)\n<Достижение 50 стаков>Скорость атаки всех оперативников +50",
+    "descRaw": "【Рейд】Оперативники: если в течение <@ba.vup>10</> секунд не атакуют или умение готово, и в радиусе нет врагов, то сохраняют очки умений и немедленно <@ba.vup>перебрасываются к одному наземному врагу</>, пока действует умение, <@ba.vup>атака</> и <@ba.vup>здоровье</> повышены<@autochess.gray> (зависит от числа стаков)</>\n<Достижение <@autochess.dgreen>50</> стаков>Скорость атаки всех оперативников <@ba.vup>+50</>",
+    "effectId": "bondeffect_raid",
+    "effectName": "Рейд",
+    "effectDesc": "【Рейд】Оперативники: если в течение 10 секунд не атакуют или умение готово, и в радиусе нет врагов, то сохраняют очки умений и немедленно перебрасываются к одному наземному врагу, пока действует умение, атака и здоровье +{0:0%} (зависит от числа стаков)\n <Достижение 50 стаков>Скорость атаки всех оперативников +50",
+    "effectDescRaw": "【Рейд】Оперативники: если в течение <@ba.vup>10</> секунд не атакуют или умение готово, и в радиусе нет врагов, то сохраняют очки умений и немедленно <@ba.vup>перебрасываются к одному наземному врагу</>, пока действует умение, <@ba.vup>атака</> и <@ba.vup>здоровье</> <@ba.vup>+{0:0%}</><@ba.acrem> (зависит от числа стаков)</>\n <Достижение <@ba.vup>50</> стаков>Скорость атаки всех оперативников <@ba.vup>+50</>",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_atk","perStack":"atk_per_stack"}
+    ],
+    "bb": {
+      "base_attack_speed":0,
+      "attack_speed_per_stack":0,
+      "base_atk":0.25,
+      "atk_per_stack":0.01,
+      "base_max_hp":0.25,
+      "max_hp_per_stack":0.01,
+      "power_bond_stack_cnt":50,
+      "power_attack_speed":50,
+      "no_attack_duration":10
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_raid"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_attack_speed":0,
+          "attack_speed_per_stack":0,
+          "base_atk":0.25,
+          "atk_per_stack":0.01,
+          "base_max_hp":0.25,
+          "max_hp_per_stack":0.01,
+          "power_bond_stack_cnt":50,
+          "power_attack_speed":50,
+          "no_attack_duration":10
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_raid"}
+      }
+    ],
+    "baseParams": ["base_atk"],
+    "perStackParams": ["atk_per_stack"],
+    "members": ["chess_char_1_18_a","chess_char_2_09_a","chess_char_3_05_a","chess_char_3_12_a","chess_char_4_04_a","chess_char_4_16_a","chess_char_5_07_a","chess_char_6_15_a","chess_char_6_17_a"],
+    "visibleMembers": ["chess_char_1_18_a","chess_char_2_09_a","chess_char_3_05_a","chess_char_3_12_a","chess_char_4_04_a","chess_char_4_16_a","chess_char_5_07_a","chess_char_6_15_a","chess_char_6_17_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "Если член Рейд не атаковал 10 с, или его навык готов, и в радиусе нет врагов: он немедленно перебрасывается (сохраняя SP) на клетку рядом с наземным врагом; пока находится в этом переброшенном состоянии, его атака и макс. здоровье ×(1 + 0.25 + 0.01*L)."
+        },
+        {
+          "need": "L >= 50",
+          "effect": "ВСЕ оперативники ASPD +50."
+        }
+      ],
+      "formulas": {
+        "atkHpMultiplier": "1.25 + 0.01*L",
+        "idleSec": "10",
+        "aspdAll(L>=50)": "50"
+      },
+      "layerGain": "Surtr при развёртывании +8 (<=50 за бой); Humus каждые 2 убийства +1; Blemishine +4 за развёртывание; Skadi; Ines +5; Jibian «Skadi's Oath» +8, «Texas's Oath» +10.",
+      "assumed": [
+        "целевой враг = наземный враг, ближайший к цели игрока (его собственного поля; с другого поля только пока своего нет), до которого член может дотянуться; клетка приземления = ближайшая свободная развёртываемая клетка в пределах 2 клеток от него, с которой радиус атаки члена покрывает его. Если такой клетки нет ни у одного из 8 самых продвинутых -> нет прыжка; опрос повторяется каждые 0.25 с (GitHub issue #51 — до 0.1.1 триггер простоя приземлялся вне досягаемости и прыгал каждые 10 с; DESIGN §22.2)",
+        "бафф длится, пока оперативник не покинет поле"
+      ]
+    }
+  },
+    "indomShip": {
+    "bondId": "indomShip",
+    "name": "Несгибаемость",
+    "identifier": 19,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_indomShip",
+    "activeCount": 2,
+    "thresholds": [2,3],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": false,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "Когда наземный оперативник получает смертельный урон, с некоторой вероятностью немедленно возрождается (зависит от числа стаков)\n<3 разных оперативников 【Несгибаемость】 на поле>Когда наземный оперативник получает смертельный урон, все оперативники на поле получают +5 очков умений",
+    "descRaw": "Когда <@ba.vup>наземный оперативник</> получает смертельный урон, с некоторой вероятностью немедленно <@ba.vup>возрождается</><@autochess.gray> (зависит от числа стаков)</>\n<На поле <@autochess.dgreen>3</> разных оперативников 【Несгибаемость】>Когда <@ba.vup>наземный оперативник</> получает смертельный урон, все оперативники на поле получают <@ba.vup>+5 очков умений</>",
+    "effectId": "bondeffect_indom",
+    "effectName": "Несгибаемость",
+    "effectDesc": "Когда наземный оперативник получает смертельный урон, с вероятностью {0:0%} (зависит от числа стаков) немедленно возрождается\n<3 разных оперативников 【Несгибаемость】 на поле>Когда наземный оперативник получает смертельный урон, все оперативники на поле получают +5 очков умений",
+    "effectDescRaw": "Когда <@ba.vup>наземный оперативник</> получает смертельный урон, с вероятностью <@ba.vup>{0:0%}</><@ba.acrem> (зависит от числа стаков)</> немедленно возрождается\n<На поле <@ba.vup>3</> разных оперативников 【Несгибаемость】>Когда <@ba.vup>наземный оперативник</> получает смертельный урон, все оперативники на поле получают <@ba.vup>+5 очков умений</>",
+    "effectDescParams": [
+      {"index":0,"format":"0%","base":"base_prob","perStack":"prob_per_stack"}
+    ],
+    "bb": {
+      "base_prob":0.18,
+      "prob_per_stack":0.004,
+      "power_bond_stack_cnt":0,
+      "sp":5,
+      "power_bond_char_cnt":3
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_indom"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "base_prob":0.18,
+          "prob_per_stack":0.004,
+          "power_bond_stack_cnt":0,
+          "sp":5,
+          "power_bond_char_cnt":3
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_indom"}
+      }
+    ],
+    "baseParams": ["base_prob"],
+    "perStackParams": ["prob_per_stack"],
+    "members": ["chess_char_1_05_a","chess_char_1_20_a","chess_char_2_03_a","chess_char_2_12_a","chess_char_3_16_a","chess_char_4_07_a","chess_char_5_06_a","chess_char_5_13_a","chess_char_6_06_a"],
+    "visibleMembers": ["chess_char_1_20_a","chess_char_2_12_a","chess_char_3_16_a","chess_char_4_07_a","chess_char_5_06_a","chess_char_5_13_a","chess_char_6_06_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "Когда наземный оперативник выведен из строя / отступает / меняется заменой <-> основным телом: с p = min(1, 0.18 + 0.004*L) он немедленно переразвёртывается (следующее развёртывание имеет 0 времени перезарядки и 0 стоимости). Также расходует заряд «воскрешения», если он у него был."
+        },
+        {
+          "need": "3 разных",
+          "effect": "Когда наземный оперативник выведен из строя: каждый оперативник на поле +5 SP."
+        }
+      ],
+      "formulas": {
+        "p": "min(1, 0.18 + 0.004*L)",
+        "reaches100%AtL": "205"
+      },
+      "layerGain": "Razer в конце фазы подготовки +1; Gravel при выведении из строя +2; Specter the Unchained +5; Bagpipe убийства +2; Jibian «Bagpipe's Oath» +8."
+    }
+  },
+  "maniShip": {
+    "bondId": "maniShip",
+    "name": "Гармония",
+    "identifier": 20,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 1,
+    "powerIdList": [],
+    "iconId": "icon_maniShip",
+    "activeCount": 1,
+    "thresholds": [1],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "MANI",
+    "isActiveInDeck": false,
+    "noStack": true,
+    "weight": 0,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "При активации число активных участников основных альянсов на поле +1; оперативники 【Гармония】 получают эффекты активных основных альянсов",
+    "descRaw": "При активации число <@ba.vup>активных участников основных альянсов на поле +1</> ; оперативники 【Гармония】 получают эффекты активных основных альянсов",
+    "effectId": "bondeffect_mani",
+    "effectName": "Гармония",
+    "effectDesc": "При активации число активных участников основных альянсов на поле +1; оперативники 【Гармония】 получают эффекты активных основных альянсов",
+    "effectDescRaw": "При активации число <@ba.vup>активных участников основных альянсов +1</>; оперативники 【Гармония】 <@ba.vup>получают</> эффекты активных основных альянсов",
+    "effectDescParams": [],
+    "bb": {"count":1},
+    "bbStr": {},
+    "buffs": [
+      {"key":"other_bond_add_trigger_cnt","bb":{"count":1},"bbStr":{}}
+    ],
+    "baseParams": [],
+    "perStackParams": [],
+    "members": ["chess_char_1_15_a","chess_char_6_11_a"],
+    "visibleMembers": ["chess_char_6_11_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "1 Гармония на поле",
+          "effect": "Счётчик членов каждого основного альянса +1; оперативники Гармония получают эффекты всех активных основных альянсов."
+        }
+      ],
+      "members": "Muelsyse (T6) и 盟约·辅助干员 (T1, скрытый; выдаётся в 1-м раунде стратегией Pith «отличник»).",
+      "assumed": [
+        "+1 только для основных альянсов с >= 1 реальным членом",
+        "всего один +1 независимо от числа оперативников Гармония"
+      ]
+    }
+  },
+  "emptyShip": {
+    "bondId": "emptyShip",
+    "name": "Вспомогательные",
+    "identifier": 21,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_emptyShip",
+    "activeCount": 2,
+    "thresholds": [2],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": true,
+    "weight": 0,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "Все оперативники получают на 20% меньше физического и урона искусствами; урон 【Вспомогательных】 повышен до 120%, элитных 【Вспомогательных】 — до 140%",
+    "descRaw": "Все оперативники получают на <@ba.vup>20%</> меньше физического и урона искусствами; урон 【Вспомогательных】 повышен до <@ba.vup>120%</>, элитных 【Вспомогательных】 — до <@ba.vup>140%</>",
+    "effectId": "bondeffect_empty",
+    "effectName": "Вспомогательные",
+    "effectDesc": "Все оперативники получают на 20% меньше физического и урона искусствами; урон 【Вспомогательных】 повышен до 120%, элитных 【Вспомогательных】 — до 140%",
+    "effectDescRaw": "Все оперативники получают на <@ba.vup>20%</> меньше физического и урона искусствами; урон 【Вспомогательных】 повышен до <@ba.vup>120%</>, элитных 【Вспомогательных】 — до <@ba.vup>140%</>",
+    "effectDescParams": [],
+    "bb": {
+      "damage_resistance":0.2,
+      "damage_scale_normal":1.2,
+      "damage_scale_extra":1.4
+    },
+    "bbStr": {"key":"act1autochess_bond_eff_assis"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "damage_resistance":0.2,
+          "damage_scale_normal":1.2,
+          "damage_scale_extra":1.4
+        },
+        "bbStr":{"key":"act1autochess_bond_eff_assis"}
+      }
+    ],
+    "baseParams": [],
+    "perStackParams": [],
+    "members": ["chess_char_1_15_a","chess_char_2_14_a","chess_char_3_10_a","chess_char_4_08_a","chess_char_4_25_a","chess_char_5_09_a","chess_char_5_10_a","chess_char_6_12_a"],
+    "visibleMembers": ["chess_char_2_14_a","chess_char_3_10_a","chess_char_4_25_a","chess_char_5_10_a","chess_char_6_12_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 разных",
+          "effect": "ВСЕ оперативники получают -20% физического и магического урона; члены Вспомогательные наносят урон ×1.2 (элитные ×1.4)."
+        }
+      ],
+      "meaning": "«Вспомогательные» (assist operators) = резервный альянс (constData.fallbackBondId). Самостоятельно выбранные 6-звёздочные оперативники, чья фракция не совпадает ни с одним основным альянсом, становятся Вспомогательными; некоторые предустановленные оперативники (Perfumer, Pinecone, Гуйянь, Владыка демонов, Suzuran, Rosmontis, 盟约·辅助干员) изначально являются Вспомогательными.",
+      "formulas": {
+        "damageTakenMul": "0.8",
+        "memberDamageMul": "1.2 (элитные 1.4)"
+      },
+      "notes": ["noStack=true: эффекта, масштабируемого стаками, нет, но стаки всё равно считаются (Bahamut)."]
+    }
+  },
+  "soloShip": {
+    "bondId": "soloShip",
+    "name": "Соло",
+    "identifier": 22,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_soloShip",
+    "activeCount": 1,
+    "thresholds": [1],
+    "maxCount": 1,
+    "thresholdTemplate": "count_threshold_downward",
+    "countMode": "BOARD",
+    "countsHand": false,
+    "countsGoldenOnly": false,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": true,
+    "weight": 10,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "<На поле 1 оперативник 【Соло】>Атака и здоровье оперативников 【Соло】 +60%, начальные очки умений +15 (эффект пропадает, если на поле 2 и более оперативников 【Соло】)",
+    "descRaw": "<На поле 1 оперативник 【Соло】>Атака и здоровье оперативников 【Соло】 <@ba.vup>+60%</>, начальные очки умений <@ba.vup>+15</> (эффект пропадает, если на поле 2 и более оперативников 【Соло】)",
+    "effectId": "bondeffect_solo",
+    "effectName": "Соло",
+    "effectDesc": "<На поле 1 оперативник 【Соло】>Атака и здоровье оперативника 【Соло】 +60%, начальные очки умений +15 (эффект пропадает, если на поле 2 и более оперативников 【Соло】)",
+    "effectDescRaw": "<На поле <@ba.vup>1</> оперативник 【Соло】>Атака и здоровье оперативника 【Соло】 <@ba.vup>+60%</>, начальные очки умений <@ba.vup>+15</><@ba.acrem> (эффект пропадает, если на поле 2 и более оперативников 【Соло】)</>",
+    "effectDescParams": [],
+    "bb": {
+      "atk":0.6,
+      "max_hp":0.6,
+      "sp":15
+    },
+    "bbStr": {"key":"act2autochess_bond_eff_solo"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {"atk":0.6,"max_hp":0.6,"sp":15},
+        "bbStr":{"key":"act2autochess_bond_eff_solo"}
+      }
+    ],
+    "baseParams": [],
+    "perStackParams": [],
+    "members": ["chess_char_1_08_a","chess_char_2_17_a","chess_char_3_17_a","chess_char_4_09_a","chess_char_4_18_a","chess_char_5_11_a"],
+    "visibleMembers": ["chess_char_1_08_a","chess_char_2_17_a","chess_char_3_17_a","chess_char_4_09_a","chess_char_4_18_a","chess_char_5_11_a"],
+    "spec": {
+      "tiers": [
+        {
+          "need": "ровно 1 разный член Соло на поле",
+          "effect": "Этот оперативник: атака +60%, макс. здоровье +60%, +15 SP при развёртывании. Отключается, когда на поле 2+ разных членов Соло."
+        }
+      ],
+      "formulas": {
+        "atkMul": "1.6",
+        "hpMul": "1.6",
+        "spOnDeploy": "15"
+      },
+      "notes": ["noStack=true"]
+    }
+  },
+  "suntShip": {
+    "bondId": "suntShip",
+    "name": "Элита",
+    "identifier": 23,
+    "isCore": false,
+    "bondType": "REGULAR",
+    "bondOrder": 2,
+    "powerIdList": [],
+    "iconId": "icon_suntShip",
+    "activeCount": 2,
+    "thresholds": [2,5],
+    "maxCount": null,
+    "thresholdTemplate": "count_threshold_upward_golden",
+    "countMode": "BOARD_ALL_CHESS",
+    "countsHand": false,
+    "countsGoldenOnly": true,
+    "activeType": "BATTLE",
+    "isActiveInDeck": false,
+    "noStack": true,
+    "weight": 0,
+    "maxInactiveBondCount": -1,
+    "layerMilestones": [],
+    "desc": "<На поле 2 элитных оперативников>Атака элитных оперативников +30%\n<На поле 5 элитных оперативников>Стоимость очков умений элитных оперативников -30%\n(Элитный статус любого оперативника может активировать этот альянс)",
+    "descRaw": "<На поле <@autochess.dgreen>2</> элитных оперативников>Атака элитных оперативников <@ba.vup>+30%</>\n<На поле <@autochess.dgreen>5</> элитных оперативников>Стоимость очков умений элитных оперативников <@ba.vup>-30%</>\n<@ba.acrem>(Элитный статус любого оперативника может активировать этот альянс)</>",
+    "effectId": "bondeffect_sunt",
+    "effectName": "Элита",
+    "effectDesc": "<На поле 2 элитных оперативников>Атака элитных оперативников +30%\n<На поле 5 элитных оперативников>Стоимость очков умений элитных оперативников -30%\n(Элитный статус любого оперативника может активировать этот альянс)",
+    "effectDescRaw": "<На поле <@ba.vup>2</> элитных оперативников>Атака элитных оперативников <@ba.vup>+30%</>\n<На поле <@ba.vup>5</> элитных оперативников>Стоимость очков умений элитных оперативников <@ba.vup>-30%</>\n<@ba.acrem>(Элитный статус любого оперативника может активировать этот альянс)</>",
+    "effectDescParams": [],
+    "bb": {
+      "power_char_cnt":2,
+      "ex_char_cnt":5,
+      "power_atk":0.3,
+      "sp_ratio":0.7
+    },
+    "bbStr": {"key":"act2autochess_bond_eff_sunt"},
+    "buffs": [
+      {
+        "key":"env_gbuff_new",
+        "bb": {
+          "power_char_cnt":2,
+          "ex_char_cnt":5,
+          "power_atk":0.3,
+          "sp_ratio":0.7
+        },
+        "bbStr":{"key":"act2autochess_bond_eff_sunt"}
+      }
+    ],
+    "baseParams": [],
+    "perStackParams": [],
+    "members": [],
+    "visibleMembers": [],
+    "spec": {
+      "tiers": [
+        {
+          "need": "2 элитных (精锐) оперативника на поле (любые, дубликаты считаются)",
+          "effect": "Все элитные оперативники: атака +30%."
+        },
+        {
+          "need": "5 элитных оперативников на поле",
+          "effect": "В начале боя каждый элитный оперативник и его призывы имеют стоимость SP навыка ×0.7 (округление вниз, может стать 0)."
+        }
+      ],
+      "formulas": {
+        "atkMul": "1.3",
+        "spCostMul": "floor(sp*0.7)"
+      },
+      "notes": [
+        "isHiddenCharList=true, chessIdList пуст: оперативников-членов нет; элитные не являются «членами» Элиты (PRTS).",
+        "noStack=true"
+      ]
+    }
+  }
+}

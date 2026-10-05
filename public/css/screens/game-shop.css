@@ -73,8 +73,8 @@
 .lvcard__frame::before { left: -.06rem; top: -.06rem; border-right: 0; border-bottom: 0; }
 .lvcard__frame::after { right: -.06rem; bottom: -.06rem; border-left: 0; border-top: 0; }
 .lvcard__micro { font-family: var(--font-display); font-size: .12rem; letter-spacing: .24em; font-weight: 700; }
-.lvcard__num { font-size: .66rem; line-height: .9; font-weight: 700; }
-.lvcard__label { font-size: .2rem; font-weight: 900; letter-spacing: .3em; padding-left: .3em; }
+.lvcard__num { font-size: 0.68rem; line-height: .9; font-weight: 700; }
+.lvcard__label { font-size: .15rem; font-weight: 900; letter-spacing: .3em; padding-left: .3em; }
 .lvcard__key { position: absolute; right: .08rem; bottom: .06rem; color: var(--mint-900) !important; border-color: rgba(6, 17, 13, .35) !important; background: transparent !important; }
 .lvcard.is-disabled { background: linear-gradient(180deg, #3a4a44, #2a3531); color: #8fa59c; cursor: not-allowed; }
 .lvcard.is-disabled .lvcard__frame { border-color: rgba(143, 165, 156, .5); }
@@ -221,7 +221,7 @@
   animation: confirm-in var(--t-fast) var(--ease-out);
 }
 @keyframes confirm-in { from { transform: translateY(100%); } }
-.scard__confirm b { font-size: .18rem; font-weight: 900; letter-spacing: .22em; padding-left: .22em; }
+.scard__confirm b { font-size: .15rem; font-weight: 900; letter-spacing: .22em; padding-left: .22em; }
 .scard__confirm small { font-size: .11rem; letter-spacing: .1em; opacity: .75; }
 .scard__confirm.is-no { background: linear-gradient(0deg, #54150f, #34100c); color: var(--red-premium); }
 .scard__confirm.is-no small { opacity: 1; color: #ffb0a6; max-width: 100%; padding: 0 .06rem; text-align: center; white-space: normal; }

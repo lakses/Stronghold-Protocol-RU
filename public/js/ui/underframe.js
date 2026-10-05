@@ -2,10 +2,10 @@
 // official `act2autochess_panel_character_menu`: `util_btn` icon_sell + price "+1", funcId autochessSale; the
 // destroy variant `_underFramePanelBtnParamDestroyPos` with icon_destory).
 //
-//   board operator  → 撤退 (upper-left: back to the bench) + 出售 +N (upper-right)
-//   board summon    → 撤退
-//   bench operator  → 出售 +N
-//   item / Art      → 销毁
+//   board operator  → «Отступить» (upper-left: back to the bench) + «Продать +N» (upper-right)
+//   board summon    → «Отступить»
+//   bench operator  → «Продать +N»
+//   item / Art      → «Уничтожить»
 // The diamond frames the piece's tile; only its buttons take pointer events, so the unit under it can still be
 // dragged (moving it — or dropping it back on its own tile to re-orient it with the wheel). The game screen shows the
 // unit's range tiles (rotated to its facing) and the detail card beside it while it is selected (on the side away
@@ -14,13 +14,13 @@
 //
 // Button look (user playtest #2 item 7): the official sprites icon_sell / icon_destory are WHITE octagon plates with
 // the glyph cut out — tinted in the client. Drawn as is they read as a plain white block, so each button is a coloured
-// octagon plate: the sprite is used as a CSS mask over the plate colour (出售 amber like every money action, 销毁 /
-// 撤退 red) on a dark backing that shows through the glyph cut-out. Without the local sprites the same plate carries
+// octagon plate: the sprite is used as a CSS mask over the plate colour («Продать» amber like every money action, «Уничтожить» /
+// «Отступить» red) on a dark backing that shows through the glyph cut-out. Without the local sprites the same plate carries
 // the built-in glyph.
 //
 // TempRowNotice (user playtest #3 item 3) — the other board-anchored overlay of the prep: while the temp overflow row
-// (临时整备区, row 8, the 5 pads in front of the bench) holds pieces, a dashed red frame around that row and a label at
-// its end say that they block 准备就绪 and are destroyed when the prep ends unless moved to the bench, equipped or used.
+// (Временная зона подготовки, row 8, the 5 pads in front of the bench) holds pieces, a dashed red frame around that row and a label at
+// its end say that they block «Готов» and are destroyed when the prep ends unless moved to the bench, equipped or used.
 // Placed through view.tileScreen (useTileScreen, so it follows the camera — the Final Assault prep too); it never takes
 // the pointer, so the pieces under it stay draggable.
 
@@ -32,7 +32,7 @@ import { GEO } from '../../../shared/constants.js';
 
 const cx = (...p) => p.flat().filter(Boolean).join(' ');
 
-/** Runner glyph of 撤退 (a figure leaving through a door; original shape). */
+/** Runner glyph of «Отступить» (a figure leaving through a door; original shape). */
 function RetreatGlyph() {
   return html`<svg class="uframe__glyph" viewBox="0 0 24 24" aria-hidden="true">
     <path d="M13.5 3.2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM9.6 8.3l3.7-.6 2.2 3.3 2.7 1-.6 1.8-3.4-1.2-.9-1.3-.8 3.2 2.6 2.6V22h-2v-4.7l-2.4-2.3-.9 3.6-4.4-1 .5-1.9 2.4.5 1.6-6.6-1 .3-1.4 2.8-1.8-.9 1.9-3.6z" />
@@ -85,30 +85,30 @@ export function Underframe({ view, uid = null, row, col, actions, name = '', bus
   const half = s * 1.05;
   const stop = (e) => e.stopPropagation();
   return html`<div class="uframe" data-uid=${uid} style=${`left:${g.x}px;top:${g.y}px;width:${half * 2}px;height:${half * 2}px`} role="group"
-      aria-label=${`${name || '单位'} 操作`}>
+      aria-label=${`${name || 'Юнит'}: действия`}>
     <svg class="uframe__dia" viewBox="-110 -110 220 220" aria-hidden="true">
       <path class="uframe__outer" d="M0 -100 L100 0 L0 100 L-100 0 Z" />
       <path class="uframe__corner" d="M-100 0 L-86 -14 M-100 0 L-86 14 M100 0 L86 -14 M100 0 L86 14 M0 -100 L-14 -86 M0 -100 L14 -86 M0 100 L-14 86 M0 100 L14 86" />
     </svg>
     ${actions.retreat ? html`<button type="button" class="uframe__btn uframe__btn--retreat" disabled=${busy} onPointerDown=${stop}
-        onClick=${(e) => { stop(e); onRetreat?.(); }} title=${actions.sell != null ? '撤退至整备区（Q）' : '撤退至整备区'} aria-label="撤退" aria-keyshortcuts=${actions.sell != null ? 'Q' : undefined}>
-      <${RetreatGlyph} /><span class="uframe__label">${actions.sell != null ? '撤退[Q]' : '撤退'}</span>
+        onClick=${(e) => { stop(e); onRetreat?.(); }} title="Отступить в зону подготовки" aria-label="Отступить">
+      <${RetreatGlyph} /><span class="uframe__label">Отступить</span>
     </button>` : null}
     ${actions.sell != null ? html`<button type="button" class="uframe__btn uframe__btn--sell" disabled=${busy} onPointerDown=${stop}
-        onClick=${(e) => { stop(e); onSell?.(); }} title=${`出售（+${actions.sell} 资金，X）`} aria-label=${`出售，获得 ${actions.sell} 资金`} aria-keyshortcuts="X">
+        onClick=${(e) => { stop(e); onSell?.(); }} title=${`Продать (+${actions.sell} средств)`} aria-label=${`Продать, получить ${actions.sell} средств`}>
       <${PlateIcon} sprite="icon_sell" glyph="sell" tone="sell" />
-      <span class="uframe__label">出售[X]</span>
+      <span class="uframe__label">Продать</span>
       <${HexBadge} value=${`+${actions.sell}`} tone="gold" size="sm" class="uframe__price" />
     </button>` : null}
     ${actions.destroy ? html`<button type="button" class=${cx('uframe__btn', 'uframe__btn--destroy')} disabled=${busy} onPointerDown=${stop}
-        onClick=${(e) => { stop(e); onDestroy?.(); }} title="销毁道具" aria-label="销毁">
+        onClick=${(e) => { stop(e); onDestroy?.(); }} title="Уничтожить предмет" aria-label="Уничтожить">
       <${PlateIcon} sprite="icon_destory" glyph="trash" tone="destroy" />
-      <span class="uframe__label">销毁</span>
+      <span class="uframe__label">Уничтожить</span>
     </button>` : null}
   </div>`;
 }
 
-// ---- the temp overflow row (临时整备区) ---------------------------------------------------------------------------
+// ---- the temp overflow row (Временная зона подготовки) ------------------------------------------------------------
 
 /**
  * Screen frame of the temp row from its two end tiles (view.tileScreen of cols TEMP_C0 and TEMP_C0 + TEMP_SIZE − 1): the
@@ -137,14 +137,14 @@ export function tempRowFrame(a, b, { labelW = 0, gap = 8, vw = Infinity } = {}) 
 /**
  * What the temp row's label says will happen to its pieces (server/match/PlayerState.js tempDue): a piece is resolved
  * at the end of the first prep in which the player can act on it. Not ready (or outside PREP): at the end of this / the
- * coming prep, and 准备就绪 waits for the row to be cleared. Ready in PREP: Ready is refused while the row holds pieces,
+ * coming prep, and «Готов» waits for the row to be cleared. Ready in PREP: Ready is refused while the row holds pieces,
  * so whatever lies there arrived after it — kept through the NEXT prep (cancelling Ready makes it due at this one).
  * @param {boolean} ready m.private ready (during PREP)
  */
 export function tempRowRule(ready) {
   return ready
-    ? '已准备就绪后进入的单位保留到下个休整期，届时仍在此处的将被销毁（取消准备则在本休整期结束时销毁）'
-    : '放入整备区或战场、配发或使用后才能准备；休整期结束时仍在此处的将被销毁';
+    ? 'Юниты, попавшие сюда после готовности, сохраняются до следующей передышки; те, что останутся здесь и тогда, будут уничтожены (если отменить готовность — будут уничтожены в конце этой передышки)'
+    : 'Разместите в зоне подготовки или на поле, выдайте или используйте — только тогда можно быть готовым; те, что останутся здесь к концу передышки, будут уничтожены';
 }
 
 /**
@@ -163,11 +163,11 @@ export function TempRowNotice({ view, count, items = 0, label = true, ready = fa
   const pts = f.quad.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
   const pad = rem * 0.1;
   const style = f.side === 'left' ? `left:${(f.left - pad).toFixed(1)}px;top:${f.y.toFixed(1)}px` : `left:${(f.right + pad).toFixed(1)}px;top:${f.y.toFixed(1)}px`;
-  const what = items > 0 && items === count ? '件道具' : '个单位';
+  const what = items > 0 && items === count ? 'предм.' : 'юнит.';
   return html`<div class="tempnote" aria-hidden="false" data-testid="temp-notice">
     <svg class="tempnote__frame" aria-hidden="true"><polygon points=${pts} /></svg>
     ${label ? html`<div class=${`tempnote__label is-${f.side}`} style=${style} role="status">
-      <b class="tempnote__title"><${Icon} name="warn" />临时整备区 <span class="num">${count}</span> ${what}待处理</b>
+      <b class="tempnote__title"><${Icon} name="warn" />Временная зона подготовки: <span class="num">${count}</span> ${what} ожидают обработки</b>
       <span class="tempnote__rule">${tempRowRule(ready)}</span>
     </div>` : null}
   </div>`;

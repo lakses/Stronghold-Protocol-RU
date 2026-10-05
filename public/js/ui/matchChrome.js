@@ -1,25 +1,25 @@
 // Chrome shared by every in-match screen: the step header of the pre-game screens (exit + ping +
-// difficulty | "1/2 确认本局信息" | countdown) and the exit flow (confirm with 暂离 / 放弃, AI 托管 overlay).
+// difficulty | "1/2 Подтвердите информацию о матче" | countdown) and the exit flow (confirm with «Временно покинуть» / «Отказаться», AI 托管 overlay).
 //
-// 暂离 (co-op): turns on AI 托管 (g.autoplay on) so the seat keeps playing; the overlay's 返回模拟 turns it
-// off. 放弃模拟: g.leave then room.leave (the platform treats it as a quit), back to the lobby.
+// 暂离 (co-op): turns on AI 托管 (g.autoplay on) so the seat keeps playing; the overlay's «Вернуться в симуляцию» turns it
+// off. «Отказаться от симуляции»: g.leave then room.leave (the platform treats it as a quit), back to the lobby.
 
 import { useState } from '../../vendor/hooks.module.js';
 import { html, Button, Modal, PingPill, DifficultyTag, Countdown, MicroLabel } from './components.js';
 import { actions } from './gameActions.js';
 import { toastError } from './toasts.js';
 import { net } from '../net.js';
-import { store, useStore, shallowEqual, emptyMatch, createStore, isSpectating } from '../store.js';
+import { store, useStore, shallowEqual, emptyMatch, createStore } from '../store.js';
 import { GIcon } from './gameComponents.js';
 import { GuideButton } from './guide.js';
 
 /**
- * Exit dialog lines. 放弃模拟 (g.leave → room.leave) ends the run on the server as 'abandoned' and returns to the
+ * Exit dialog lines. «Отказаться от симуляции» (g.leave → room.leave) ends the run on the server as 'abandoned' and returns to the
  * lobby straight away — no settlement screen follows, so the solo text must not promise one.
  */
 export const EXIT_TEXT = Object.freeze({
-  soloRest: '独立模拟的休整期没有时间限制，你可以随时继续。',
-  soloQuit: '放弃模拟将立即结束本局并返回大厅，本局进度不会保留，也不会进行结算。',
+  soloRest: 'Передышка в одиночной симуляции не ограничена по времени, вы можете продолжить в любой момент.',
+  soloQuit: 'Отказ от симуляции немедленно завершит этот матч и вернёт в лобби; прогресс не сохранится и расчёт не будет проведён.',
 });
 
 /** Local "暂离 / AI 托管" flag (the server keeps no per-client autoplay view). */
@@ -58,21 +58,12 @@ export async function quitMatch() {
  */
 export function ExitModal({ open, onClose, solo, onAway }) {
   const [busy, setBusy] = useState(null);
-  // a spectator seat (community report #26) only leaves its seat: nothing of the match is given up
-  const spectator = useStore((s) => isSpectating(s.room, s.me.playerId));
   const quit = async () => {
     setBusy('quit');
     await quitMatch();
     setBusy(null);
     onClose();
   };
-  if (spectator) {
-    return html`<${Modal} open=${open} onClose=${onClose} tone="red" title="离开观战" micro="LEAVE SPECTATING" width="6.8rem"
-      actions=${html`<${Button} variant="secondary" onClick=${onClose}>取消<//>
-        <${Button} variant="danger" icon="exit" loading=${busy === 'quit'} onClick=${quit}>离开观战<//>`}>
-      <div class="exitm"><p>离开观战席并返回大厅，本局模拟不受影响；观战席空着时可以凭同盟密钥再次观战。</p></div>
-    <//>`;
-  }
   const away = async () => {
     setBusy('away');
     const ok = await actions.autoplay(true);
@@ -80,30 +71,30 @@ export function ExitModal({ open, onClose, solo, onAway }) {
     onClose();
     if (ok) { awayStore.set({ away: true }); onAway?.(); }
   };
-  return html`<${Modal} open=${open} onClose=${onClose} tone="red" title="离开模拟" micro="LEAVE SIMULATION" width="6.8rem"
+  return html`<${Modal} open=${open} onClose=${onClose} tone="red" title="Покинуть симуляцию" micro="LEAVE SIMULATION" width="6.8rem"
     actions=${html`
-      <${Button} variant="secondary" onClick=${onClose}>取消<//>
-      ${!solo ? html`<${Button} variant="ice" icon="robot" loading=${busy === 'away'} onClick=${away}>暂离（AI 托管）<//>` : null}
-      <${Button} variant="danger" icon="exit" loading=${busy === 'quit'} onClick=${quit}>放弃模拟<//>`}>
+      <${Button} variant="secondary" onClick=${onClose}>Отмена<//>
+      ${!solo ? html`<${Button} variant="ice" icon="robot" loading=${busy === 'away'} onClick=${away}>Временно покинуть (AI 托管)<//>` : null}
+      <${Button} variant="danger" icon="exit" loading=${busy === 'quit'} onClick=${quit}>Отказаться от симуляции<//>`}>
     <div class="exitm">
       ${solo
         ? html`<p>${EXIT_TEXT.soloRest}</p><p class="t-lo">${EXIT_TEXT.soloQuit}</p>`
-        : html`<p><b class="t-ice">暂离</b>：由 AI 托管你的席位（自动部署、准备与选择），随时可以返回。</p>
-               <p><b class="t-red">放弃模拟</b>：离开后无法返回本局，你的干员将回到共享卡池。</p>`}
+        : html`<p><b class="t-ice">Временно покинуть</b>: ваш слот возьмёт AI 托管 (автоматическое размещение, готовность и выбор) — вернуться можно в любой момент.</p>
+               <p><b class="t-red">Отказаться от симуляции</b>: после выхода вернуться в этот матч нельзя, ваши операторы вернутся в общий пул.</p>`}
     </div>
   <//>`;
 }
 
-/** Full-screen "AI 托管中" overlay with 返回模拟. */
+/** Full-screen "AI 托管中" overlay with «Вернуться в симуляцию». */
 export function AwayOverlay({ onBack = () => {} }) {
   const [busy, setBusy] = useState(false);
-  return html`<div class="awayov" role="dialog" aria-label="AI 托管中">
+  return html`<div class="awayov" role="dialog" aria-label="AI 托管 активен">
     <div class="awayov__box brackets">
       <${GIcon} name="robot" class="awayov__icon" />
       <${MicroLabel} tone="mint">AUTOPILOT // AI 托管</${MicroLabel}>
-      <h2>AI 托管中</h2>
-      <p class="t-lo">AI 正在代为操作你的席位</p>
-      <${Button} variant="primary" size="lg" icon="play" loading=${busy} onClick=${async () => { setBusy(true); const ok = await actions.autoplay(false); setBusy(false); if (ok) { awayStore.set({ away: false }); onBack(); } }}>返回模拟<//>
+      <h2>AI 托管 активен</h2>
+      <p class="t-lo">AI действует за ваш слот</p>
+      <${Button} variant="primary" size="lg" icon="play" loading=${busy} onClick=${async () => { setBusy(true); const ok = await actions.autoplay(false); setBusy(false); if (ok) { awayStore.set({ away: false }); onBack(); } }}>Вернуться в симуляцию<//>
     </div>
   </div>`;
 }
@@ -116,7 +107,7 @@ export function StepHeader({ step, of, title, micro, pub, total, onExit }) {
   const conn = useStore((s) => s.connection, shallowEqual);
   return html`<header class="stephead">
     <div class="stephead__left">
-      <${Button} variant="danger" size="lg" square=${true} icon="exit" onClick=${onExit} aria-label="离开" title="离开" />
+      <${Button} variant="danger" size="lg" square=${true} icon="exit" onClick=${onExit} aria-label="Выйти" title="Выйти" />
       <div class="stephead__meta">
         <${PingPill} ms=${conn.ping} online=${conn.status === 'online'} />
         ${pub?.difficulty ? html`<${DifficultyTag} difficulty=${pub.difficulty} />` : null}
@@ -132,4 +123,3 @@ export function StepHeader({ step, of, title, micro, pub, total, onExit }) {
     </div>
   </header>`;
 }
-

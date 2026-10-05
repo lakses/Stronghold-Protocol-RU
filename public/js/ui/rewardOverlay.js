@@ -1,7 +1,7 @@
 // Pick-one offer reminder (research 00 §3): the offer's cards themselves live in the shop bar (shopBar.js RewardCards —
-// after a promotion, or a special refresh such as 凯瑟琳's 定向投放, they replace the bar's operator cards, like the
-// original). When the player puts the pick off (稍后选择) this pill above the bar brings the cards back; it names the
-// offer like the bar's header (gameLogic.offerHeader: 晋升奖励待选择 / 定向投放待选择 …, player report #6 after 0.1.0), with
+// after a promotion, or a special refresh such as 凯瑟琳's «направленная поставка», they replace the bar's operator cards, like the
+// original). When the player puts the pick off («выбрать позже») this pill above the bar brings the cards back; it names the
+// offer like the bar's header (gameLogic.offerHeader: «Награда за повышение ожидает выбора» / «Направленная поставка ожидает выбора» …, player report #6 after 0.1.0), with
 // "+N" while N more offers wait behind it, and disappears once the server clears `shop.rewardOffer` (picked, or the
 // round ended).
 

@@ -1,26 +1,26 @@
 // In-match top bar (research 06 §11.1): exit + ping (left); round box, phase capsule (prep label /
 // kills n/m / boss HP bar), LP tower, match-info and enemy-preview buttons (centre, bracket frame);
-// 7-segment countdown with gauge and the 准备就绪 toggle (right).
+// 7-segment countdown with gauge and the «Готов» toggle (right).
 // The two 🔍 buttons follow the official HUD bindings (research 09 §2.1 / §6.2 item 3):
-//   left  btn_check_player  — mint [🔍] opens the 本局信息 dialog (ui/enemyDrawer.js; its 敌方情报 tab is the secondary
+//   left  btn_check_player  — mint [🔍] opens the «Информация о матче» dialog (ui/enemyDrawer.js; its «Разведданные о противнике» tab is the secondary
 //                             enemy list); in the pen view it becomes [🔍◀◀] (btn_check_player_back) and returns the camera;
-//   right btn_check_enemy   — amber [🔍▶▶] pans the camera to the enemy preview pen (休整期 only); in the pen view (and
+//   right btn_check_enemy   — amber [🔍▶▶] pans the camera to the enemy preview pen (отдых only); in the pen view (and
 //                             outside prep) it is the grey [🔍] (btn_check_enemy_unfold) — pressing it in the pen returns too.
 // Official sprites (local ui/battle extraction) when installed, CSS look-alikes otherwise.
 // Boss rounds (最终攻势 / 隐秘核心): the countdown is the level's 120 s maxPlayTime (m.public.deadline, gauge total from
 // gameLogic phaseTotalSeconds) and the red DOT overtime warning under it keys off m.public.overtimeAt (ui/matchStatus.js
-// overtimeState): "NN 秒后全队生命值开始流失" once the level time ran out, then a live "生命值 −1/秒" indicator while the
+// overtimeState): "Через NN сек. жизни всей команды начнут убывать" once the level time ran out, then a live "Жизни −1/сек" indicator while the
 // merged team LP drains (the LP tower turns red). Solo battles: a pause / resume button beside the countdown (g.pause);
 // while m.public.paused every clock here is frozen at the pause moment (`frozenAt`).
 // Normal rounds (user playtest #3 item 2): the LP tower drops live as the own battle's enemies enter the blue gate —
-// lp − min(lpCapPerRound, counted leaks) in red with a −N tick, 联防中 while a 联防 may still save part of it (liveLp;
+// lp − min(lpCapPerRound, counted leaks) in red with a −N tick, «в обороне» while a 联防 may still save part of it (liveLp;
 // the leaks come from the local battle runner, else m.public players[].pendingLp). 联防 (user playtest #6 item 7; PRTS
 // 卫戍协议/帮助 "防卫失败的玩家可通过上方信息栏确认自身所属敌人的剩余数量"): a leaker's phase capsule carries the official
 // runner tag ×N (research 09 `tag_miss`; art ui/battle bg_miss_enemy [ASSUMED]) = its enemies still standing on the 联防
 // field, uncapped and live — falling as the helpers kill them, rising when one splits or summons (the local 联防
 // replica's runner state().uniteLeft, else m.public players[].uniteLeft); the LP tower shows lp − min(lpCapPerRound, N).
 // The same MissTag sits in the leakers' team rows (ui/teamPanel.js), its tooltip naming the teammate there (missTip).
-// 准备就绪 is refused while the temp overflow row (临时整备区) holds pieces: the reason shows under the button
+// «Готов» is refused while the temp overflow row (Временная зона подготовки) holds pieces: the reason shows under the button
 // (user playtest #3 item 3; the row's own label is ui/underframe.js TempRowNotice).
 
 import { useRef } from '../../vendor/hooks.module.js';
@@ -48,9 +48,9 @@ export function PhaseCapsule({ pub, hud, miss = null }) {
     return html`<div class="capsule capsule--boss" role="status">
       <${Sprite} k="hudPanel/icon_boss" class="capsule__icon" fallback=${html`<${GIcon} name="skull" class="capsule__icon" />`} />
       ${hud?.total != null ? html`<span class="capsule__kills num"><b>${hud.killed ?? 0}</b>/${hud.total}</span>` : null}
-      <div class="bossbar" title=${boss ? `${fmtNum(boss.hp)} / ${fmtNum(boss.max)}` : '敌方领袖'}>
+      <div class="bossbar" title=${boss ? `${fmtNum(boss.hp)} / ${fmtNum(boss.max)}` : 'Вражеский лидер'}>
         <div class="bossbar__fill" style=${`width:${frac == null ? 100 : frac * 100}%`}></div>
-        <span class="bossbar__txt num">${frac == null ? '敌方领袖' : bossPctText(frac)}</span>
+        <span class="bossbar__txt num">${frac == null ? 'Вражеский лидер' : bossPctText(frac)}</span>
       </div>
     </div>`;
   }
@@ -59,7 +59,7 @@ export function PhaseCapsule({ pub, hud, miss = null }) {
       <${Sprite} k=${phase === PHASE.UNITE ? 'hudPanel/icon_coop' : 'hudPanel/icon_battle'} class="capsule__icon"
         fallback=${html`<${Icon} name="sword" class="capsule__icon" />`} />
       <span class="capsule__kills num"><b>${hud?.killed ?? 0}</b>/${hud?.total ?? '--'}</span>
-      ${phase === PHASE.UNITE ? html`<span class="capsule__tag">联防</span>` : null}
+      ${phase === PHASE.UNITE ? html`<span class="capsule__tag">Совместная оборона</span>` : null}
       ${phase === PHASE.UNITE && Number.isFinite(miss) ? html`<${MissTag} n=${miss} />` : null}
     </div>`;
   }
@@ -70,13 +70,13 @@ export function PhaseCapsule({ pub, hud, miss = null }) {
 }
 
 /**
- * Tooltip of a MissTag: the own tag speaks to the player ("你漏过的…"), a teammate's row names that teammate (the viewer
+ * Tooltip of a MissTag: the own tag speaks to the player ("пропущенные вами…"), a teammate's row names that teammate (the viewer
  * may be one of the helpers fighting those enemies).
  * @param {number} n enemies still standing @param {string|null} [name] the leaker's name (null = the viewer)
  */
 export function missTip(n, name = null) {
-  const who = name ? `${name} 漏过的敌人` : '你漏过的敌人';
-  return n > 0 ? `${who}还剩 ${n} 个（${name ? '联防中' : '队友正在迎战'}）` : `${who}已全部被击倒`;
+  const who = name ? `Прорвавшиеся у ${name}` : 'Прорвавшиеся у вас';
+  return n > 0 ? `${who}: осталось ${n} (${name ? 'совместная оборона' : 'союзники в бою'})` : `${who}: все уничтожены`;
 }
 
 /**
@@ -90,7 +90,7 @@ export function MissTag({ n, name = null }) {
   const v = Math.max(0, Math.trunc(Number(n) || 0));
   const art = localAsset('ui/battle', 'bg_miss_enemy');
   return html`<span class=${cx('misstag', art && 'has-art', v === 0 && 'is-clear')} data-testid="miss-tag"
-      title=${missTip(v, name)} aria-label=${`剩余敌人 ${v}`}
+      title=${missTip(v, name)} aria-label=${`Осталось врагов: ${v}`}
       style=${art ? `background-image:url("${art}")` : null}>
     ${art ? null : html`<span class="misstag__icon" aria-hidden="true"><${GIcon} name="skull" />×</span>`}<b class="misstag__n num">${v}</b>
   </span>`;
@@ -117,8 +117,8 @@ export function pendingLoss(leaks, cap = 10) {
  * Counted leaks of the own battle so far from its two sources: the local runner's count (state().leaks of the own
  * field — authoritative or a display replica) and the server's m.public players[].pendingLp (the authority's b.progress,
  * ~1 Hz; the recorded result in 联防). Both only grow during a round, so the further one wins: a display replica stands
- * still while the player watches a teammate's field (the server's count moves on), the server's lags the local one by
- * up to a second. Missing / invalid values count as 0.
+ * still while the player watches a teammate's field (the server's count moves on), the server's lags the local one by up
+ * to a second. Missing / invalid values count as 0.
  * @param {any} local @param {any} server
  */
 export function ownLeaks(local, server) {
@@ -149,7 +149,7 @@ export function uniteRemaining(local, server) {
  * SETTLE m.public) — or the phase leaves COMBAT / UNITE or the round changes, so the loss is never subtracted twice.
  * 联防 (UNITE): a leaker finally loses min(cap, the survivors of the 联防 battle that came from them); `uniteLeft` (its
  * enemies still standing, uniteRemaining — user playtest #6 item 7) replaces the own battle's count, so the loss falls
- * live as the helpers kill them, marked `unite` (联防中) with `left` = that uncapped number for the ×N tag. Without
+ * live as the helpers kill them, marked `unite` (в обороне) with `left` = that uncapped number for the ×N tag. Without
  * `uniteLeft` (not a leaker, or no count yet) the own battle's count stays on show. The pending part goes when the
  * settlement lands. Boss rounds are not handled here (the merged team LP moves live through b.pool / m.public.teamLp).
  * @param {{ round: any, lp: number, statsLeaks: number|null } | null} base
@@ -174,15 +174,15 @@ export function liveLp(base, { phase, round, lp, statsLeaks = null, leaks = 0, c
 export function pendingTip(lp, pending, { unite = false, cap = 10, left = null } = {}) {
   if (!(pending > 0)) return null;
   if (unite && Number.isFinite(left)) {
-    const each = left > cap ? `剩余不足 ${cap} 个后，队友每击倒一个少扣 1 点` : '队友每击倒一个就少扣 1 点';
-    return `目标生命值 ${lp}：联防中，你漏过的敌人还剩 ${left} 个，${each}；按现在结算扣除 ${pending} 点（每回合至多 ${cap} 点）`;
+    const each = left > cap ? `когда останется меньше ${cap}, каждый добитый союзниками враг снижает потерю на 1` : 'каждый добитый союзниками враг снижает потерю на 1';
+    return `Жизни цели ${lp}: совместная оборона, прорвавшихся у вас ещё ${left}, ${each}; при текущем расчёте спишется ${pending} (не более ${cap} за раунд)`;
   }
   return unite
-    ? `目标生命值 ${lp}：联防中，队友正在迎战你漏过的敌人，结算时按联防后剩余的敌人扣除（至多 ${pending} 点）`
-    : `目标生命值 ${lp}：本回合已有 ${pending >= cap ? `${cap} 个以上` : `${pending} 个`}敌人进入蓝门，结算时扣除 ${pending} 点（每回合至多 ${cap} 点）`;
+    ? `Жизни цели ${lp}: совместная оборона, союзники сражаются с прорвавшимися у вас врагами, при расчёте спишется по оставшимся после обороны (не более ${pending})`
+    : `Жизни цели ${lp}: в этом раунде в синие врата вошло ${pending >= cap ? `${cap} и более` : `${pending}`} врагов, при расчёте спишется ${pending} (не более ${cap} за раунд)`;
 }
 
-// ---- temp overflow row (临时整备区, user playtest #3 item 3) ---------------------------------------------------
+// ---- temp overflow row (Временная зона подготовки, user playtest #3 item 3) ---------------------------------------------------
 
 /**
  * Pieces waiting in the temp overflow row (m.private temp): how many, and how many are items.
@@ -195,17 +195,17 @@ export function tempInfo(priv) {
 }
 
 /** What the temp row asks of the player (the ready button's reason, the row's label). */
-export const TEMP_RULE = '放入整备区或战场、配发或使用后才能准备就绪；休整期结束时仍留在临时整备区的单位将被销毁';
+export const TEMP_RULE = 'Разместите в зоне подготовки или на поле, выдайте или используйте — только тогда можно быть готовым; юниты, оставшиеся во временной зоне подготовки к концу передышки, будут уничтожены';
 
-/** Why 准备就绪 is refused while the temp row holds pieces (null when it is empty). */
+/** Why «Готов» is refused while the temp row holds pieces (null when it is empty). */
 export function tempReadyReason(priv) {
   const t = tempInfo(priv);
-  return t.count ? `临时整备区还有 ${t.count} 个单位：${TEMP_RULE}` : null;
+  return t.count ? `Во временной зоне подготовки ещё ${t.count} юнитов: ${TEMP_RULE}` : null;
 }
 
 /**
  * Ready toggle (PREP only). Disabled while the temp row holds pieces — the reason shows under it (not only on hover):
- * "临时整备区 N 个单位待处理" (user playtest #3 item 3).
+ * "Во временной зоне подготовки N юнитов ожидают обработки" (user playtest #3 item 3).
  * @param {{ priv:any, onToggle:(ready:boolean)=>void, busy?:boolean, readyCount?:number, total?:number }} props
  */
 export function ReadyToggle({ priv, onToggle, busy, readyCount, total }) {
@@ -215,14 +215,14 @@ export function ReadyToggle({ priv, onToggle, busy, readyCount, total }) {
   const btn = html`<button type="button" class=${cx('readybtn', 'tapx', ready && 'is-on', busy && 'is-busy')} disabled=${!!reason || busy}
       aria-pressed=${ready ? 'true' : 'false'} aria-describedby=${!ready && temp.count ? 'readywrap-why' : undefined} onClick=${() => onToggle(!ready)}>
     <span class="readybtn__box">${ready ? html`<${Icon} name="check" />` : null}</span>
-    <span class="readybtn__label">${ready ? '取消准备' : '准备就绪'}</span>
+    <span class="readybtn__label">${ready ? 'Отменить готовность' : 'Готов'}</span>
     <kbd class="readybtn__key">Space</kbd>
   </button>`;
   return html`<div class="readywrap">
     ${reason ? html`<${Tooltip} text=${reason} placement="bottom">${btn}<//>` : btn}
     ${!ready && temp.count ? html`<span class="readywrap__why" id="readywrap-why" role="status" data-testid="ready-why">
-      <${Icon} name="warn" /><span>临时整备区 <b class="num">${temp.count}</b> 个单位待处理</span></span>` : null}
-    ${Number.isFinite(total) && total > 1 ? html`<span class="readywrap__count">已就绪 <b class="num">${readyCount}</b>/<span class="num">${total}</span></span>` : null}
+      <${Icon} name="warn" /><span>Во временной зоне подготовки <b class="num">${temp.count}</b> юнитов ожидают обработки</span></span>` : null}
+    ${Number.isFinite(total) && total > 1 ? html`<span class="readywrap__count">Готовы: <b class="num">${readyCount}</b>/<span class="num">${total}</span></span>` : null}
   </div>`;
 }
 
@@ -233,13 +233,13 @@ export function ReadyToggle({ priv, onToggle, busy, readyCount, total }) {
  */
 export function checkButtons({ pen, penAvail, infoOpen }) {
   const left = pen
-    ? { sprite: 'btn_check_player_back', back: true, label: '返回', tip: '返回战场' }
-    : { sprite: infoOpen ? 'btn_check_player_unfold' : 'btn_check_player_normal', back: false, label: '本局信息', tip: '本局信息（策略 / 禁用盟约 / 干员）' };
+    ? { sprite: 'btn_check_player_back', back: true, label: 'Назад', tip: 'Вернуться на поле боя' }
+    : { sprite: infoOpen ? 'btn_check_player_unfold' : 'btn_check_player_normal', back: false, label: 'Информация о матче', tip: 'Информация о матче (стратегии / отключённые альянсы / операторы)' };
   const right = pen
-    ? { sprite: 'btn_check_enemy_unfold', grey: true, label: '返回', tip: '返回' }
+    ? { sprite: 'btn_check_enemy_unfold', grey: true, label: 'Назад', tip: 'Назад' }
     : penAvail
-      ? { sprite: 'btn_check_enemy', grey: false, label: '敌方情报', tip: '查看即将迎击的敌方单位' }
-      : { sprite: 'btn_check_enemy_unfold', grey: true, label: '敌方情报', tip: '休整期可以查看即将迎击的敌方单位' };
+      ? { sprite: 'btn_check_enemy', grey: false, label: 'Разведданные о противнике', tip: 'Просмотреть врагов, с которыми предстоит бой' }
+      : { sprite: 'btn_check_enemy_unfold', grey: true, label: 'Разведданные о противнике', tip: 'В передышке можно просмотреть врагов, с которыми предстоит бой' };
   return { left, right };
 }
 
@@ -263,7 +263,7 @@ export function OvertimeWarning({ ot }) {
     return html`<div class="otwarn otwarn--pending" role="alert" data-state="pending">
       <${LocalSprite} name="icon_warn" class="otwarn__icon" fallback=${html`<${Icon} name="warn" class="otwarn__icon" />`} />
       <span class="otwarn__tag">DOT</span>
-      <span class="otwarn__txt"><b class="num">${ot.secs}</b> 秒后全队生命值开始流失</span>
+      <span class="otwarn__txt">Через <b class="num">${ot.secs}</b> сек. жизни всей команды начнут убывать</span>
     </div>`;
   }
   return html`<div class="otwarn otwarn--drain" role="alert" data-state="drain">
@@ -271,8 +271,8 @@ export function OvertimeWarning({ ot }) {
       <${LocalSprite} name="blood_icon" class="otwarn__icon" fallback=${html`<${Icon} name="rook" class="otwarn__icon" />`} />
     </span>
     <span class="otwarn__tag">DOT</span>
-    <span class="otwarn__txt">超时 · 生命值 <b class="num">−${ot.perSec}</b>/秒</span>
-    ${ot.lost > 0 ? html`<span class="otwarn__lost">已流失 <b class="num">${ot.lost}</b></span>` : null}
+    <span class="otwarn__txt">Просрочка · Жизни <b class="num">−${ot.perSec}</b>/сек</span>
+    ${ot.lost > 0 ? html`<span class="otwarn__lost">Убыло <b class="num">${ot.lost}</b></span>` : null}
     <span key=${ot.secs} class="otwarn__tick num" aria-hidden="true">−${ot.perSec}</span>
   </div>`;
 }
@@ -287,8 +287,8 @@ function PauseGlyph() {
  * @param {{ paused: boolean, busy?: boolean, onToggle: () => void }} props
  */
 export function PauseButton({ paused, busy = false, onToggle }) {
-  const label = paused ? '继续作战' : '暂停';
-  return html`<${Tooltip} text=${paused ? '继续作战（Space）' : '暂停作战（Space）'} placement="bottom">
+  const label = paused ? 'Продолжить бой' : 'Пауза';
+  return html`<${Tooltip} text=${paused ? 'Продолжить бой (Space)' : 'Приостановить бой (Space)'} placement="bottom">
     <button type="button" class=${cx('pausebtn', 'tapx', paused && 'is-on', busy && 'is-busy')} aria-pressed=${paused ? 'true' : 'false'}
         aria-label=${label} disabled=${busy} data-testid="pause" onClick=${() => onToggle?.()}>
       ${paused ? html`<${Icon} name="play" class="pausebtn__glyph" />` : html`<${PauseGlyph} />`}
@@ -304,11 +304,11 @@ export function PauseButton({ paused, busy = false, onToggle }) {
  *   pause?: { show: boolean, paused: boolean, busy?: boolean, onToggle: () => void } | null,
  *   live?: { pending: number, unite: boolean, left?: number|null } | null }} props
  *   frozenAt: the server time every clock shows while the solo match is paused (null = live)
- *   live: the own battle's pending LP loss (liveLp): the tower shows lp − pending in red with a −N tick, 联防中 during 联防;
+ *   live: the own battle's pending LP loss (liveLp): the tower shows lp − pending in red with a −N tick, «в обороне» during 联防;
  *     `left` (a leaker in 联防): its enemies still standing — the capsule's ×N tag
  */
 export function TopBar({ pub, priv, conn, hud, total, drawer, onExit, onDrawer, onReady, readyBusy, readyCount, playerCount, pen = false, penAvail = false, onPen = () => {},
-  config = null, frozenAt = null, pause = null, live = null, spectator = false }) {
+  config = null, frozenAt = null, pause = null, live = null }) {
   const phase = pub?.phase;
   const boss = isBossPhase(phase);
   const lp = boss && Number.isFinite(pub?.teamLp) ? pub.teamLp : Number.isFinite(priv?.lp) ? priv.lp : null;
@@ -316,8 +316,7 @@ export function TopBar({ pub, priv, conn, hud, total, drawer, onExit, onDrawer, 
   const pending = !boss && Number.isFinite(lp) && live && live.pending > 0 ? Math.min(lp, live.pending) : 0;
   const hidden = phase === PHASE.HIDDEN_CORE || (Number.isFinite(pub?.lastRound) && pub.round > pub.lastRound);
   const roundText = hidden ? '??' : pub?.round > 0 ? String(pub.round) : '--';
-  // a spectator seat (no m.private, community report #26) never readies
-  const showReady = phase === PHASE.PREP && !spectator && priv?.alive !== false;
+  const showReady = phase === PHASE.PREP && priv?.alive !== false;
   // boss rounds: the overtime warning follows the clock (4 Hz while live; frozen while paused)
   const otLive = boss && Number(pub?.overtimeAt) > 0;
   useTicker(otLive && frozenAt == null ? 250 : 0);
@@ -332,7 +331,7 @@ export function TopBar({ pub, priv, conn, hud, total, drawer, onExit, onDrawer, 
   const onRight = () => (pen ? onPen(false) : penAvail ? onPen(true) : null);
   return html`<header class=${cx('gtop', pen && 'is-pen')}>
     <div class="gtop__left">
-      <${Button} variant="danger" size="lg" square=${true} icon="exit" onClick=${onExit} aria-label="离开" title="离开 / 暂离" class="gtop__exit tapx" />
+      <${Button} variant="danger" size="lg" square=${true} icon="exit" onClick=${onExit} aria-label="Выйти" title="Выйти / временно покинуть" class="gtop__exit tapx" />
       <div class="gtop__meta">
         <${PingPill} ms=${conn?.ping} online=${conn?.status === 'online'} />
         ${pub?.difficulty ? html`<${DifficultyTag} difficulty=${pub.difficulty} size="sm" />` : null}
@@ -345,12 +344,12 @@ export function TopBar({ pub, priv, conn, hud, total, drawer, onExit, onDrawer, 
           chev=${btn.left.back ? '◀◀' : null} on=${!!drawer && !pen} onClick=${onLeft} testid="check-player" />
       <//>
       <div class="roundbox">
-        <span class="roundbox__label">回合</span>
+        <span class="roundbox__label">Раунд</span>
         <b class="roundbox__num num">${roundText}</b>
       </div>
       <${PhaseCapsule} pub=${pub} hud=${hud} miss=${!boss && Number.isFinite(live?.left) ? live.left : null} />
       <${LpTower} value=${lp} size="lg" tone=${lowLp ? 'danger' : boss ? 'team' : null} pending=${pending}
-        note=${pending > 0 && live?.unite ? '联防中' : null} tip=${pendingTip(lp, pending, { unite: !!live?.unite, cap, left: live?.left ?? null })} />
+        note=${pending > 0 && live?.unite ? 'В обороне' : null} tip=${pendingTip(lp, pending, { unite: !!live?.unite, cap, left: live?.left ?? null })} />
       <${Tooltip} text=${btn.right.tip} placement="bottom">
         <${CheckBtn} sprite=${btn.right.sprite} cls=${cx('enemybtn', btn.right.grey && 'is-grey')} label=${btn.right.label}
           chev=${btn.right.grey ? null : '▶▶'} disabled=${btn.right.grey && !pen} onClick=${onRight} testid="check-enemy" />
@@ -373,7 +372,7 @@ export function TopBar({ pub, priv, conn, hud, total, drawer, onExit, onDrawer, 
 /** DP counter shown at the right edge during combat. */
 export function DpCounter({ dp }) {
   if (!Number.isFinite(dp)) return null;
-  return html`<div class="dpbox" title="部署费用（再部署消耗）">
+  return html`<div class="dpbox" title="Стоимость размещения (расход при повторном размещении)">
     <${GIcon} name="dp" class="dpbox__icon" /><b class="num">${Math.floor(dp)}</b><${MicroLabel}>COST</${MicroLabel}>
   </div>`;
 }

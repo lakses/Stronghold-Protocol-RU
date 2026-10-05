@@ -1,7 +1,7 @@
 // Operator loadout state + server sync (DESIGN §16).
 //
 // `loadoutStore` holds the per-browser loadout (`entries`, persisted in localStorage through store.js savePref) and the
-// 干员调配 screen state (open / origin / selection / filters). `installLoadoutSync()` (called once by main.js) keeps the
+// «Настройка операторов» screen state (open / origin / selection / filters). `installLoadoutSync()` (called once by main.js) keeps the
 // server's copy current: after every `welcome` (new or resumed session — the server keeps it on the session and on the
 // seat, so joining a room needs no resend) and after every edit (debounced; a pending edit goes out at once when the
 // overlay closes), it sends `room.loadout { entries }` with
@@ -40,24 +40,7 @@ export function setEntries(entries) {
   loadoutStore.set({ entries: next });
 }
 
-/**
- * Apply a parsed entry map (an imported preset). Sanitised against the loaded data first, then persisted and synced
- * like any ordinary edit — so a preset from another build never sends the server an entry it would refuse. An import
- * that keeps nothing (every chess unknown, or every choice already the default) changes NOTHING: wiping the current
- * loadout over it would be a loss the player never asked for.
- * @param {Record<string, any>} entries `parseImport(...).entries`
- * @param {(id: string) => any} lookup chess lookup
- * @returns {{ applied: number, dropped: number }} entries kept / entries that were not imported
- */
-export function applyLoadoutEntries(entries, lookup) {
-  const asked = Object.keys(entries || {}).length;
-  const clean = sanitizeEntries(entries, lookup);
-  const applied = Object.keys(clean).length;
-  if (applied) setEntries(clean);
-  return { applied, dropped: Math.max(0, asked - applied) };
-}
-
-/** Open the 干員调配 screen. @param {'lobby'|'room'|'briefing'} from @param {string|null} [sel] */
+/** Open the «Настройка операторов» screen. @param {'lobby'|'room'|'briefing'} from @param {string|null} [sel] */
 export function openLoadout(from = 'lobby', sel = null) {
   data.load('chess');
   data.load('bonds');
@@ -96,13 +79,13 @@ export function installLoadoutSync({ net, getChessReady, lookupChess, timers, ta
 
   // Review fix: a send is never held back behind one still in flight. The socket is ordered and the server applies
   // room.loadout frames in order, so the newest entries always win; holding the edit until the previous reply arrived let
-  // a click right after closing the overlay (准备就绪 → INFO_CHECK ends) overtake it, and the edit silently missed the match.
+  // a click right after closing the overlay (Готов → INFO_CHECK ends) overtake it, and the edit silently missed the match.
   async function flush() {
     if (disposed) return;
     if (net.status !== 'online') { setState('idle'); return; } // the next welcome resends
     try {
       const current = target.get().entries;
-      // an empty loadout needs no data (nothing to sanitise): a player who never opened 干员调配 does not download
+      // an empty loadout needs no data (nothing to sanitise): a player who never opened «Настройка операторов» does not download
       // chess.json in the lobby just for this
       const empty = !current || Object.keys(current).length === 0;
       const loaded = empty ? true : await ready();
@@ -132,7 +115,7 @@ export function installLoadoutSync({ net, getChessReady, lookupChess, timers, ta
           // the server stored it for the next match; the running one keeps the loadout it locked
           lastSent = json;
           setState('locked');
-          if (wasEdit) tell('本局的干员调配已锁定，修改将在下一局生效');
+          if (wasEdit) tell('Настройка операторов заблокирована на этот матч, изменения вступят в силу в следующем');
         } else if (code === 'RATE' || code === 'TIMEOUT' || code === 'OFFLINE') { edited = edited || wasEdit; schedule(RETRY_MS); }
         else { console.warn('[loadout] room.loadout refused', code, err && err.detail); setState('error'); }
       }
@@ -145,8 +128,8 @@ export function installLoadoutSync({ net, getChessReady, lookupChess, timers, ta
   const offWelcome = net.on('welcome', () => { lastSent = null; pendingJson = null; seq++; schedule(50); });
   const offStore = target.subscribe((s, prev) => {
     if (s.entries !== prev.entries) { edited = true; schedule(); }
-    // closing the overlay sends a pending edit at once (review fix): the player's next click — 准备就绪 in the solo
-    // briefing, 开始模拟 in the room — must not overtake the debounced room.loadout (the match locks its loadout when
+    // closing the overlay sends a pending edit at once (review fix): the player's next click — Готов in the solo
+    // briefing, «Начать симуляцию» in the room — must not overtake the debounced room.loadout (the match locks its loadout when
     // INFO_CHECK ends, so a late edit would silently only apply to the next match). Same socket ⇒ ordered.
     if (prev.open && !s.open && timer != null) { T.clearTimeout(timer); timer = null; void flush(); }
   });

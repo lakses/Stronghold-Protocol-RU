@@ -1,19 +1,20 @@
-// shared/loadoutRecord.js — operator loadouts (DESIGN §16, DATA.md §2.2): a data/chess.json record as the selected
-// skill / module make it. Pure ESM shared by the simulation (server/sim/simdata.js re-exports it: getChess(id, loadout)
-// builds unit defs from it) and the client UI (the detail card shows the stats / 特性 / talents the unit fights with —
-// user playtest #2 integration: an elite on 不装备 showed its default module's ATK and trait; attackRangeGrid = the range
-// it is deployed with, also the board overlay and the deploy wheel — extendedGrid is the battle's own 攻击距离 growth,
-// re-exported by server/sim/targeting.js). One implementation, so the card and the battle never disagree. (Which
-// choices a player may make: shared/protocol.js loadoutOptions.)
+// shared/loadoutRecord.js — настройки оперативников (DESIGN §16, DATA.md §2.2): запись data/chess.json в том виде, в
+// каком её делают выбранный навык / модуль. Чистый ESM, общий для симуляции (server/sim/simdata.js реэкспортирует его:
+// getChess(id, loadout) строит определения юнитов из него) и клиентского UI (карточка деталей показывает характеристики /
+// 特性 / таланты, с которыми юнит сражается — интеграция playtest #2: элитный на 不装备 показывал ATK и особенность
+// своего модуля по умолчанию; attackRangeGrid = радиус, с которым он развёрнут, а также оверлей доски и колесо
+// развёртывания — extendedGrid это собственный рост 攻击距离 в бою, реэкспортируется server/sim/targeting.js). Одна
+// реализация, поэтому карточка и бой никогда не расходятся. (Какие выборы доступны игроку: shared/protocol.js
+// loadoutOptions.)
 
 import { GEO } from './constants.js';
 
 /**
- * Resolve a loadout against a chess record.
- * @param {object|null} rec data/chess.json record
+ * Разрешает настройку относительно записи оперативника.
+ * @param {object|null} rec запись data/chess.json
  * @param {{ skillIndex?: number, moduleId?: string, skill?: number, module?: string }|null} [loadout]
  * @returns {{ skillIndex: number|null, moduleId: string|null, skillIsDefault: boolean, moduleIsDefault: boolean,
- *             isDefault: boolean }|null} null without a record; `moduleId` null for chess without module choices
+ *             isDefault: boolean }|null} null без записи; `moduleId` null для оперативников без выбора модулей
  */
 export function resolveRecordLoadout(rec, loadout = null) {
   if (!rec || typeof rec !== 'object') return null;
@@ -33,7 +34,7 @@ export function resolveRecordLoadout(rec, loadout = null) {
 
 const clean6 = (v) => (typeof v !== 'number' || !Number.isFinite(v) || Number.isInteger(v) || Math.abs(v) >= 1e6 ? v : Math.round(v * 1e6) / 1e6);
 
-/** Stats with a module: the no-module `statsBase` + the module's flat `attr` (same arithmetic as tools/build-data.mjs). */
+/** Характеристики с модулем: `statsBase` без модуля + плоский `attr` модуля (та же арифметика, что в tools/build-data.mjs). */
 export function composeStats(statsBase, attr) {
   const s = { ...(statsBase || {}) };
   for (const [f, v] of Object.entries(attr || {})) s[f] = clean6((s[f] || 0) + v);
@@ -41,9 +42,9 @@ export function composeStats(statsBase, attr) {
 }
 
 /**
- * Talents with a module: apply ModuleRecord.talentChanges to the no-module talents — the merge rule of
- * tools/build-data.mjs mergeTalentChanges (override of an existing index: module values win, base keys the module does
- * not restate are kept; otherwise appended; empty placeholders dropped).
+ * Таланты с модулем: применяет ModuleRecord.talentChanges к талантам без модуля — правило слияния из
+ * tools/build-data.mjs mergeTalentChanges (переопределение существующего индекса: значения модуля побеждают,
+ * базовые ключи, которые модуль не повторяет, сохраняются; иначе добавляется; пустые заглушки отбрасываются).
  */
 export function composeTalents(base, changes) {
   const talents = (base || []).map((t) => ({ ...t }));
@@ -68,12 +69,12 @@ export function composeTalents(base, changes) {
 }
 
 /**
- * The chess record as the selected loadout makes it (a new object; the input is never mutated): `skill` = the selected
- * SkillRecord; golden chess with a non-default module choice: `stats` = statsBase + module attr, `trait` = the module's
- * traitOverride or traitBase, `talents` = talentsBase + talentChanges, `module` = the chosen module (`active:false`,
- * id null for 'none'). A talent that summons through a container token (凛御银灰) follows the selected skill's token.
- * The default loadout returns `rec` itself.
- * @param {object} rec data/chess.json record
+ * Запись оперативника в том виде, как её делает выбранная настройка (новый объект; входные данные никогда не
+ * мутируются): `skill` = выбранный SkillRecord; элитный оперативник с нестандартным выбором модуля: `stats` =
+ * statsBase + attr модуля, `trait` = traitOverride или traitBase модуля, `talents` = talentsBase + talentChanges,
+ * `module` = выбранный модуль (`active:false`, id null для 'none'). Талант, призывающий через контейнерный токен
+ * (凛御银灰), следует за токеном выбранного навыка. Настройка по умолчанию возвращает сам `rec`.
+ * @param {object} rec запись data/chess.json
  * @param {object} lo resolveRecordLoadout(rec, …)
  */
 export function loadoutRecord(rec, lo) {
@@ -103,14 +104,15 @@ export function loadoutRecord(rec, lo) {
 }
 
 /**
- * The attack range a (loadout-resolved) chess record fights with from its deployment — the detail card without a live
- * entry, the board's range overlay and the deploy wheel (DESIGN §16), the same tiles the battle unit starts with (prep
- * m.unitStats `range`): the selected skill's grid when it reads "被动效果：攻击范围扩大" (引星棘刺 S3 3-9: her own range
- * while she carries it, tier5 kit); else an elite whose equipped module reads "攻击范围扩大" uses that module's own grid
- * — its range-only talent change (talentIndex −1), e.g. SPC-X = the 3×3 caster range + the centre tile [0,3] — as the
- * kits do (tier4 moduleRangeGrid, tier5 moduleRangeUp); anything else its `rangeGrid`. Then grown by the 特性's
- * permanent 攻击距离 (traitRangeExtend: 信仰搅拌机 SPT-Y "攻击距离+1"). A running skill's range is the live entry's.
- * @param {object|null} rec loadoutRecord(…) output (or a data/chess.json record: its default module)
+ * Радиус атаки, с которым (разрешённая по настройке) запись оперативника сражается от места развёртывания — карточка
+ * деталей без живой записи, оверлей радиуса на доске и колесо развёртывания (DESIGN §16), те же клетки, с которых
+ * начинает боевой юнит (prep m.unitStats `range`): сетка выбранного навыка, когда он читается как «被动效果：攻击范围扩大»
+ * (引星棘刺 S3 3-9: её собственный радиус, пока она его несёт, tier5 kit); иначе элитный с экипированным модулем,
+ * читающимся как «攻击范围扩大», использует его собственную сетку — его изменение таланта только на радиус
+ * (talentIndex −1), например SPC-X = радиус кастера 3×3 + центральная клетка [0,3] — как это делают наборы (tier4
+ * moduleRangeGrid, tier5 moduleRangeUp); в остальных случаях его `rangeGrid`. Затем увеличенный постоянным 攻击距离
+ * из 特性 (traitRangeExtend: 信仰搅拌机 SPT-Y "攻击距离+1"). Радиус работающего навыка — это радиус живой записи.
+ * @param {object|null} rec результат loadoutRecord(…) (или запись data/chess.json: её модуль по умолчанию)
  * @returns {number[][]|null}
  */
 export function attackRangeGrid(rec) {
@@ -130,10 +132,10 @@ export function attackRangeGrid(rec) {
 }
 
 /**
- * The permanent 攻击距离 (ability_range_forward_extend) a record's 特性 grants — a module's, e.g. 信仰搅拌机 SPT-Y
- * "攻击距离+1" (tier4 rangeUp: a persistent rangeExtend buff, s.baseRangeExtend); 0 for one that works "在集成战略中" only
- * (空弦 ISW-A). The other 攻击距离 of the mode are skills' (their running range).
- * @param {object|null} rec loadoutRecord(…) output
+ * Постоянный 攻击距离 (ability_range_forward_extend), который даёт 特性 записи — модуля, например 信仰搅拌机 SPT-Y
+ * «攻击距离+1» (tier4 rangeUp: постоянный бафф rangeExtend, s.baseRangeExtend); 0 для того, что работает
+ * «в Интегрированной стратегии» (空弦 ISW-A). Остальные 攻击距离 режима — у навыков (их работающий радиус).
+ * @param {object|null} rec результат loadoutRecord(…)
  */
 export function traitRangeExtend(rec) {
   const t = rec && typeof rec === 'object' ? rec.trait : null;
@@ -143,11 +145,11 @@ export function traitRangeExtend(rec) {
 }
 
 /**
- * A range grid (`[dRow, dCol]`, facing RIGHT) grown by `extend` (rangeExtend / 攻击距离, DESIGN §3): every row gains
- * the whole tiles 1 … ⌊extend⌋ beyond its far (+dCol) end — the relative form of what server/sim/targeting.js
- * absoluteRangeKeys builds, deduplicated, junk entries dropped. One implementation for the battle (re-exported by
- * targeting.js: Battle._refreshRange keeps it as `unit.liveRangeGrid`, the card's live 攻击范围, when an extend applies)
- * and the record's attackRangeGrid.
+ * Сетка радиуса (`[dRow, dCol]`, направление ВПРАВО), выросшая на `extend` (rangeExtend / 攻击距离, DESIGN §3):
+ * каждая строка получает целые клетки 1 … ⌊extend⌋ за своим дальним (+dCol) концом — относительная форма того, что
+ * строит server/sim/targeting.js absoluteRangeKeys, дедуплицированная, мусорные элементы отброшены. Одна реализация
+ * для боя (реэкспортируется targeting.js: Battle._refreshRange хранит её как `unit.liveRangeGrid`, живой 攻击范围
+ * карточки, когда применяется extend) и для attackRangeGrid записи.
  * @param {Array<[number, number]>|null|undefined} grid
  * @param {number} [extend]
  * @returns {Array<[number, number]>}

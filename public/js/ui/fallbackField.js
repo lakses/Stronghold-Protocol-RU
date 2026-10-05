@@ -1,5 +1,5 @@
 // DOM fallback for the Pixi field view (DESIGN §9 API). Used when public/js/render/app.js is missing or
-// fails to initialise, so the match stays playable: a flat tile board + 整备区, pieces as avatars with
+// fails to initialise, so the match stays playable: a flat tile board + Зона подготовки, pieces as avatars with
 // tier chips, pointer drag & drop (same events as the render engine), and a simple battle view (units as
 // avatars with HP/SP bars, interpolated by CSS transitions, optional damage numbers).
 //
@@ -101,7 +101,7 @@ export function createFallbackView(host, opts = {}) {
     const prep = st.mode === 'prep';
     const hasTemp = prep && Array.isArray(st.priv?.temp) && st.priv.temp.some(Boolean);
     const rows = r.r1 - r.r0 + 1 + (prep ? 2.6 + (hasTemp ? 1.2 : 0) : 0); // + gap + hand (+ temp) rows
-    // keep clear of the HUD: top bar + bond strip above, shop bar (prep) / switcher (combat) below
+    // keep clear of the HUD: top bar + альянс strip above, shop bar (prep) / switcher (combat) below
     const top0 = rem * 2.0;
     const bottom0 = h - rem * (prep ? 3.3 : 1.1);
     const availW = w * (prep ? 0.58 : 0.8);
@@ -126,9 +126,9 @@ export function createFallbackView(host, opts = {}) {
     return chessAvatarUrl(mm, lookup('chess', p.id));
   }
   function pieceName(p) {
-    if (p.kind === 'item') return lookup('items', p.id)?.name || '道具';
-    if (p.kind === 'token') return lookup('tokens', p.id)?.name || '召唤物';
-    return lookup('chess', p.id)?.name || '干员';
+    if (p.kind === 'item') return lookup('items', p.id)?.name || 'Предмет';
+    if (p.kind === 'token') return lookup('tokens', p.id)?.name || 'Призыв';
+    return lookup('chess', p.id)?.name || 'Оператор';
   }
 
   function Piece({ p, x, y, L, area }) {
@@ -291,7 +291,7 @@ export function createFallbackView(host, opts = {}) {
     });
     return html`<div class="ff-board ff-board--pen" style=${`left:${left}px;top:${top}px;width:${bw}px;height:${tile * rows}px;--tile:${tile}px`}>
       ${cells}${figs}
-      ${models.length ? null : html`<p class="ff-pen__empty">暂无敌方情报</p>`}
+      ${models.length ? null : html`<p class="ff-pen__empty">Разведданные о противнике отсутствуют</p>`}
     </div>`;
   }
 
@@ -357,12 +357,12 @@ export function createFallbackView(host, opts = {}) {
       return html`<div class=${cx('ff-ghost', d.piece.golden && 'is-golden')} style=${`left:${d.x - hr.left - L.tile / 2}px;top:${d.y - hr.top - L.tile / 2}px;width:${L.tile}px;height:${L.tile}px`}>
         ${src ? html`<img src=${src} alt="" />` : null}</div>`;
     })() : null;
-    if (st.camera === 'pen') { render(html`${penView()}<div class="ff-badge">SIMPLIFIED VIEW</div>`, root); return; }
+    if (st.camera === 'pen') { render(html`${penView()}<div class="ff-badge">УПРОЩЁННЫЙ ВИД</div>`, root); return; }
     render(html`<div class=${cx('ff-board', `ff-board--${st.mode}`, `ff-cam--${st.camera}`)} style=${`left:${L.left}px;top:${L.top}px;width:${L.bw}px;height:${L.bh}px;--tile:${L.tile}px`}>
-      ${st.mode === 'prep' ? html`<div class="ff-hand-label" style=${`top:${(L.rows + 0.18) * L.tile}px`}><span>整备区</span><i></i></div>` : null}
+      ${st.mode === 'prep' ? html`<div class="ff-hand-label" style=${`top:${(L.rows + 0.18) * L.tile}px`}><span>Зона подготовки</span><i></i></div>` : null}
       ${tiles}${hand}${units}${pieces}${floats}
     </div>${ghost}
-    <div class="ff-badge">SIMPLIFIED VIEW</div>`, root);
+    <div class="ff-badge">УПРОЩЁННЫЙ ВИД</div>`, root);
     if (st.floats.length) schedule();
   }
 
@@ -474,7 +474,7 @@ export function createFallbackView(host, opts = {}) {
       const el = root.querySelector(`[data-uid="${Number(uid)}"]`);
       return el ? el.getBoundingClientRect() : null;
     },
-    /** Client geometry of a tile: centre, px per tile, corners (board tiles and 整备区 slots of the prep layout). */
+    /** Client geometry of a tile: centre, px per tile, corners (board tiles and Зона подготовки slots of the prep layout). */
     tileScreen(row, col) {
       const L = layout();
       const br = root.querySelector('.ff-board')?.getBoundingClientRect();

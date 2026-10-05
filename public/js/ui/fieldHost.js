@@ -22,7 +22,7 @@ const METHODS = ['setStage', 'setCamera', 'setPrep', 'enterBattle', 'pushSnapsho
 const OPTIONAL = ['pieceScreenRect', 'setSettings', 'off', 'tileScreen', 'holdPiece', 'setPieceDir', 'setPen', 'prepField', 'stripesUnder'];
 
 /**
- * Camera padding (px) that keeps the field clear of the DOM HUD (top bar + bond strip, team panel, shop bar /
+ * Camera padding (px) that keeps the field clear of the DOM HUD (top bar + альянс strip, team panel, shop bar /
  * combat switcher, effects column). Sizes follow the rem scale of css/theme.css.
  * The Final Assault prep ('bossPrep') has the prep HUD (shop bar below) on the boss field: prep padding; the enemy pen
  * ('pen') is viewed with the shop collapsed.
@@ -41,7 +41,7 @@ export function hudPadding(kind, size) {
 
 /**
  * HUD geometry (rem) the prep cameras keep clear (they mirror the CSS; test/ui/playtest5-ui.test.js checks the rules):
- * the bond strip's bottom edge (css/screens/game.css .gm__bonds top 1.36rem + a .bslot: disc .52rem + name ≈
+ * the альянс strip's bottom edge (css/screens/game.css .gm__bonds top 1.36rem + a .bslot: disc .52rem + name ≈
  * 2.15rem measured) and the shop bar's top edge above the viewport's bottom (css/screens/game-shop.css .shopbar
  * bottom .2rem + .shopbar__row padding .1rem ×2 + card height 2.24rem, plus its 2 px + 1 px borders). The shop bar
  * sits on the viewport's bottom edge even on a notched phone (css/devices.css, DESIGN §18.1).
@@ -56,16 +56,16 @@ export const HUD_REM = Object.freeze({
 });
 
 /**
- * CSS px of HUD along the top edge (top bar + bond strip) and the bottom edge of the viewport during prep — the own
+ * CSS px of HUD along the top edge (top bar + альянс strip) and the bottom edge of the viewport during prep — the own
  * board ('prep') or the Final Assault half ('bossPrep'); null for every other camera. The prep camera keeps the bench /
  * temp rows and the field's back row clear of them (render/projection.js clearHud; user playtest #5 item 9: the rem
  * floor of 40 px makes the HUD relatively taller on phones in landscape and the shop bar covered the bench).
  * The bottom band is the shop bar's — also for an eliminated player's own board (no shop bar: the band only costs size
  * there, while a camera following the bar's presence would have to re-frame whenever it appears, e.g. when the private
- * state arrives after the prep camera was set) — unless `opts.shop === false`: the player folded the shop (收起) and the
+ * state arrives after the prep camera was set) — unless `opts.shop === false`: the player folded the shop (Свернуть) and the
  * own prep board moved to the official shop-collapsed camera (public issue #5: the board did not grow; screens/game.js
  * asks for it only while a folded bar is shown). Its band is the higher of the folded tab (bottom right) and the corner
- * buttons' hit areas (交流 / ⚙ / 📖 / ⛶, bottom left, measured by `cornerBand`: on a narrow phone two rows of 34 px buttons
+ * buttons' hit areas (Чат / ⚙ / 📖 / ⛶, bottom left, measured by `cornerBand`: on a narrow phone two rows of 34 px buttons
  * with 44 px touch areas) — under the official collapsed camera the bench's left pads reach under the corner, and with
  * the tab alone it would cover bench pad 0 at the user's 756×366 Android and the near edge of pads 0–2 at 844×390; both
  * are 1-D bands like the bar's, so every bench pad stays fully pressable. Scouting a
@@ -105,7 +105,7 @@ export function hudBands(kind, size, opts) {
 }
 
 /**
- * CSS px from the viewport's bottom edge (`h` high) up to the top of the corner buttons' hit areas (交流 / ⚙ / 📖 / ⛶,
+ * CSS px from the viewport's bottom edge (`h` high) up to the top of the corner buttons' hit areas (Чат / ⚙ / 📖 / ⛶,
  * .gm__corner), 0 when they are not on the page. On a touch screen every one of them takes taps from an invisible area
  * of at least --tap-min (44 px) centred on it (css/devices.css touch targets), 5 px above a 34 px phone button — a bench
  * pad edge there is not pressable.

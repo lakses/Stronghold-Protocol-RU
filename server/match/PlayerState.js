@@ -1,94 +1,106 @@
-// server/match/PlayerState.js — authoritative per-player state + every prep intent handler (DESIGN §6.2).
+// server/match/PlayerState.js — авторитетное состояние каждого игрока + все обработчики намерений фазы подготовки (DESIGN §6.2).
 //
-// Handlers validate → mutate → recompute bonds → mark the private view dirty. They never throw on bad input; they
-// return `{ ok: true }` or `{ error: ERR.*, detail? }`. Rules (research 00-INDEX §3–§4, 01 A1, 04 §2):
-//   * Hand (整备区) 10 slots filled right→left, temp (临时整备区) 5 slots. A full hand refuses buys / withdrawals,
-//     except a purchase that completes a merge and a withdrawal whose own summon stack frees a slot. Passive gains (merge
-//     results, grants, returned equipment) overflow into temp; temp blocks Ready ("直到溢出情况排除才可开始进行作战").
-//     A temp piece is resolved (chess sold back to the pool, items destroyed, summon stacks removed — they come back at
-//     the next round start, grantTokensFor) at the deadline of the
-//     first prep in which the player could act on it (tempDue): a piece that overflowed during a prep before Ready
-//     expires at that prep's end; one that arrived after Ready, at the prep end (<休整期结束时> grants), in COMBAT /
-//     SETTLE (battle-result grants, merges, returned equipment) or at the next round start / 机变 stays visible and
-//     usable (move to a free hand slot, place, equip, destroy, sell) through the NEXT prep — nothing is destroyed before
-//     the player saw it in a prep ("处于临时整备区的调度资源，在进入下一回合后会自动销毁").
-//   * Board: own region rows 9–12 × cols 2–10, legality from the stage legend (board.js); deploy cap 8 (+effects);
-//     tokens (placeable summons) don't use deploy slots. Board↔hand swaps are always allowed. In a boss round the
-//     legality reads the player's half of the boss field (Match.deployFieldOf → board.js field 'bossL' / 'bossR',
-//     user playtest #5 item 7); board coordinates are unchanged. A terrain change (terrain 机变 cards, content
-//     overrides) or a change of the deploy field withdraws the pieces left on tiles they may no longer occupy (hand,
-//     overflow temp; summons back onto their stack) — see _evictIllegal.
-//   * Shop: per-level chess slots + item slot, copy-weighted rolls from the SHARED pool (pool.js); refresh 1 (free
-//     refreshes first), one toggle freezes all unsold slots until the next round start (a manual refresh while frozen
-//     rerolls everything and the new slots stay frozen), level-up price = base − rounds elapsed (floor 0).
-//   * Merge: 3 normal copies (风丸 2) on board/hand/temp → 1 elite; equipment returns to the hand; a
-//     reward offer of 3 different free chess of tier min(level+1, 6) is queued (never one operator twice — user
-//     playtest #6 item 19; a short tier tops up from the tier below; pick 1, expires at prep end; an offer earned
-//     after the prep — SETTLE / Final Assault effects — is kept for the next prep). Where the elite goes (PRTS
-//     卫戍协议/帮助 "发送1名【精锐】状态的该干员至手牌区（若消耗已部署至作战区的干员，则发送至作战区对应位置）", user
-//     playtest #6 follow-up): when a consumed copy stood on the board, onto that copy's tile with its facing (of several,
-//     the one that deploys first — board.js mergeTile, [ASSUMED]); it replaces a deployed copy, so the deploy count
-//     never grows, and it gets its own summon stack (grantTokensFor). Otherwise to the hand, overflow temp — also
-//     outside PREP (a SETTLE merge's elite waits in temp for the next prep).
-//   * Per-piece round counters (pieceRoundCount, piece.meta.round): an operator's own counts of the current round
-//     (拉普兰德: the manual refreshes she witnessed — player feedback after 0.1.0); a new piece starts at 0, an elite
-//     merged this round keeps the highest of its copies' [ASSUMED].
-//   * Transformations (transformChess, 突变细胞 — PRTS 备注 "生效时，原干员销毁，获得一名高一阶的随机初始干员"): a destroy
-//     followed by a gain. The carrier leaves wherever it stands (a board tile is freed, the deploy count drops), its
-//     equipment — the cell included — returns to the hand first (overflow temp), then the new chess is gained like any
-//     other (acquireChess: hand, overflow temp, the no-room rule; a merge it completes puts the elite on a consumed
-//     deployed copy's tile — never the carrier's —, else in the hand). Official footage: the tile is empty at the next
-//     prep and the new operator waits in the 整备区 (pointed out in PR #2).
-//   * Items: equip max 2 (a 3rd replaces the equipped item the player picks — g.equip replaceUid, the oldest when
-//     absent; equipped items are otherwise locked: g.destroy refuses them),
-//     2 identical normal items (hand/temp/equipped) merge into the golden item in the hand, items are never sold
-//     (destroy for 0). consume-on-equip items resolve through the effect registry and never take a slot.
-//   * Tokens (PRTS 卫戍协议/帮助 §战斗部署, user playtest #6): placing an owner with manually deployable summons
-//     (tokens.json `placeable`: 赫默's 医疗探机 and 巫恋's 诅咒娃娃 with their S2, 凯瑟琳's 爬行号·防护单元, 海嗣 / 狼群 /
-//     流形) sends one stack (deployLimit copies — 凯瑟琳 2) to the hand, placed by hand like any piece (no deploy slot);
-//     withdrawing/selling/merging the owner removes its tokens (an elite that takes a merged copy's tile gets a fresh
-//     stack of its own, like any deployment), moving it on the board (also when a summon dragged onto
-//     it swaps it away) sends its placed summons back onto their stack ("移动干员时，其所属召唤物全部退场并重置至手牌区");
-//     a summon stack removed from temp at a prep deadline comes back at the next round start (startRound tops every
-//     board owner's summons up to the deploy limit, "干员所属召唤物会于下一回合返还"). In battle a skill's summon takes its
-//     tile when the skill fires (sim/content/tokens.js dockSkillSummons). A summon whose text reads "只能部署在召唤者
-//     攻击范围内" (tokens.json `ownerRange`: the tacticians' 狼群 / 流形 — their tactical point; player report #9 after
-//     0.1.0) only goes on a tile of its owner's attack range (_legal / summonRange: the loadout's grid rotated by the
-//     owner's facing); a swap with its owner is checked from the owner's new tile, and one an in-place re-orientation
-//     (or a promotion) leaves outside goes back onto its stack (recompute → _liftOutOfRange) [ASSUMED: kept when still
-//     inside]. A re-orientation that would leave such a summon with no stack and no free hand / temp slot is refused
-//     (HAND_FULL); elsewhere (a promotion, an owner moved with no room) it leaves the board and its stack comes back at
-//     the next round start (grantTokensFor) — no out-of-range placement reaches the battle.
-//   * Facing (DESIGN §3, research 09 §1.2): every board piece has `dir` ∈ UP|RIGHT|DOWN|LEFT (server/sim/dir.js), set
-//     by g.move {…, dir} (absent ⇒ RIGHT) and kept across rounds. g.move onto the piece's OWN tile re-orients it in
-//     place; a swap keeps the occupant's dir; a piece put on the board by an effect (a merge elite taking a consumed
-//     copy's tile) keeps that tile's dir, anything else defaults to RIGHT (`pieceDir`). g.art {…, dir} rotates the
-//     Art's range (画卷 1-1: its tile + the tile in front).
-//   * Operator loadout (DESIGN §16): the human's checked `seat.loadout` ({ [baseChessId]: { skill, module } }, entries
-//     equal to the defaults dropped) is re-checked against this match's data (shared/protocol.js checkLoadout; a
-//     mismatch falls back to the defaults) and kept frozen; bots always use the defaults. Match.setLoadout may replace
-//     it during INFO_CHECK only. battleInput() resolves every chess unit to `skillIndex` + `moduleId` (resolveLoadout:
-//     normal chess → moduleId null, elite → uniEquipId | 'none'); m.private exposes `loadout`.
+// Обработчики валидируют → мутируют → пересчитывают альянсы → помечают приватный вид грязным. Они никогда не бросают
+// исключение на некорректный ввод; они возвращают `{ ok: true }` или `{ error: ERR.*, detail? }`. Правила (research 00-INDEX
+// §3–§4, 01 A1, 04 §2):
+//   * Рука (整备区) — 10 слотов, заполняется справа налево; временная зона (临时整备区) — 5 слотов. Полная рука отказывает
+//     в покупках / выводах, кроме покупки, которая завершает слияние, и вывода, чей собственный стек призыва освобождает
+//     слот. Пассивные приобретения (результаты слияния, выдачи, возвращённое снаряжение) уходят во временную зону; она
+//     блокирует готовность («пока переполнение не устранено, нельзя начать операцию»). Фигура во временной зоне
+//     разрешается (оперативник продаётся обратно в пул, предметы уничтожаются, стеки призывов удаляются — они
+//     возвращаются в начале следующего раунда, grantTokensFor) в дедлайн первой подготовки, в которой игрок мог с ней
+//     что-то сделать (tempDue): фигура, попавшая туда во время подготовки до готовности, истекает в конце той же
+//     подготовки; попавшая после готовности, в конце подготовки (выдачи <в конце фазы отдыха>), в бою / расчёте
+//     (выдачи из результата боя, слияния, возвращённое снаряжение) или в начале следующего раунда / 机变 — остаётся
+//     видимой и доступной (перемещение в свободный слот руки, размещение, экипировка, уничтожение, продажа) всю
+//     СЛЕДУЮЩУЮ подготовку — ничего не уничтожается до того, как игрок увидел это в подготовке («ресурсы во временной
+//     зоне подготовки автоматически уничтожаются после перехода к следующему раунду»).
+//   * Доска: своя область, ряды 9–12 × столбцы 2–10, легальность из легенды стадии (board.js); лимит развёртывания 8
+//     (+эффекты); токены (размещаемые призывы) не занимают слоты развёртывания. Обмен между доской и рукой разрешён
+//     всегда. В раунде с лидером легальность читает половину поля лидера, принадлежащую игроку (Match.deployFieldOf →
+//     board.js field 'bossL' / 'bossR', user playtest #5 item 7); координаты доски не меняются. Изменение рельефа
+//     (карты 机变, переопределения контента) или смена поля развёртывания отзывает фигуры, оставшиеся на клетках, которые
+//     они больше не могут занимать (в руку, при переполнении — во временную зону; призывы обратно в стек) — см. _evictIllegal.
+//   * Магазин: слоты оперативников по уровню + слот предмета, взвешенные по копиям броски из ОБЩЕГО пула (pool.js);
+//     обновление — 1 (сначала бесплатные), один переключатель замораживает все нераспроданные слоты до начала
+//     следующего раунда (ручное обновление при заморозке перебрасывает всё, и новые слоты остаются замороженными),
+//     цена повышения уровня = базовая − прошедшие раунды (минимум 0).
+//   * Слияние: 3 обычные копии (у 风丸 — 2) на доске / в руке / во временной зоне → 1 элитный; снаряжение
+//     возвращается в руку; предлагается выбор из 3 разных бесплатных оперативников ранга min(уровень+1, 6) (никогда
+//     дважды один оперативник — user playtest #6 item 19; при нехватке ранга добирается из ранга ниже; выбрать 1,
+//     истекает в конце подготовки; предложение, полученное после подготовки — эффекты РАСЧЁТА / Финального штурма —
+//     сохраняется на следующую подготовку). Куда идёт элитный (PRTS 卫戍协议/帮助 «отправить 1 оперативника в состоянии
+//     【Элитный】 в руку (если расходуется развёрнутый в боевой зоне оперативник, то отправить в соответствующую позицию
+//     боевой зоны)», user playtest #6 follow-up): когда одна из израсходованных копий стояла на доске — на клетку этой
+//     копии с её направлением (если их несколько — та, что разворачивается первой — board.js mergeTile, [ASSUMED]);
+//     он заменяет развёрнутую копию, поэтому число развёрнутых не растёт, и он получает свой стек призывов
+//     (grantTokensFor). Иначе — в руку, при переполнении во временную зону — в том числе вне фазы подготовки (элитный
+//     из слияния в РАСЧЁТЕ ждёт в временной зоне следующей подготовки).
+//   * Покомпонентные счётчики раунда (pieceRoundCount, piece.meta.round): собственные счётчики оперативника за текущий
+//     раунд (у 拉普兰德 — ручные обновления, свидетелем которых она была — обратная связь игрока после 0.1.0); новая
+//     фигура начинается с 0, элитный, слитый в этом раунде, сохраняет наибольшее из копий [ASSUMED].
+//   * Трансформации (transformChess, 突变细胞 — PRTS прим.: «при срабатывании исходный оперативник уничтожается,
+//     получается случайный начальный оперативник на один ранг выше»): уничтожение, за которым следует получение. Носитель
+//     покидает место, где стоит (клетка доски освобождается, счёт развёртывания уменьшается), его снаряжение — включая
+//     саму клетку — сначала возвращается в руку (при переполнении во временную зону), затем новый оперативник получается
+//     как любой другой (acquireChess: рука, при переполнении временная зона, правило «нет места»; слияние, которое он
+//     завершает, размещает элитного на клетке израсходованной развёрнутой копии — никогда на клетке носителя — иначе
+//     в руке). Официальные кадры: на следующей подготовке клетка пуста, и новый оперативник ждёт в 整备区 (указано в PR #2).
+//   * Предметы: экипировать максимум 2 (третий заменяет экипированный предмет, который выбирает игрок — g.equip
+//     replaceUid, без него — самый старый; экипированные предметы в остальном заблокированы: g.destroy отказывает),
+//     2 одинаковых нормальных предмета (рука / временная зона / экипировано) сливаются в золотой предмет в руке,
+//     предметы никогда не продаются (уничтожение за 0). Предметы consume-on-equip разрешаются через реестр эффектов
+//     и никогда не занимают слот.
+//   * Токены (PRTS 卫戍协议/帮助 §战斗部署, user playtest #6): размещение владельца с ручными размещаемыми призывами
+//     (tokens.json `placeable`: 医疗探机 у 赫默 и 诅咒娃娃 у 巫恋 на их S2, 爬行号·防护单元 у 凯瑟琳, 海嗣 / 狼群 /
+//     流形) отправляет один стек (deployLimit копий — у 凯瑟琳 2) в руку, размещается рукой как любая фигура (без слота
+//     развёртывания); отзыв / продажа / слияние владельца удаляет его токены (элитный, получивший клетку слитой копии,
+//     получает собственный стек, как при любом размещении), перемещение его по доске (в том числе когда призыв, перетащенный
+//     на него, меняет его местами) возвращает размещённые призывы обратно в их стек («при перемещении оперативника все
+//     его призывы уходят с поля и сбрасываются в руку»); стек призыва, убранный из временной зоны в дедлайн подготовки,
+//     возвращается в начале следующего раунда (startRound добавляет каждому владельцу на доске его призывы до deployLimit,
+//     «призывы оперативника возвращаются в следующем раунде»). В бою призыв навыка занимает клетку, когда срабатывает
+//     навык (sim/content/tokens.js dockSkillSummons). Призыв, чей текст читается как «развёртывается только в радиусе
+//     атаки призывателя» (tokens.json `ownerRange`: 狼群 / 流形 тактиков — их тактическая точка; player report #9 после
+//     0.1.0), размещается только на клетке радиуса атаки своего владельца (_legal / summonRange: сетка с учётом
+//     настройки оперативника, повёрнутая по направлению владельца); обмен с владельцем проверяется с новой клетки
+//     владельца, и призыв, оставшийся снаружи после поворота на месте (или повышения), возвращается в стек (recompute →
+//     _liftOutOfRange) [ASSUMED: сохраняется, если ещё внутри]. Поворот, после которого у такого призыва не будет ни
+//     стека, ни свободного слота в руке / временной зоне, отклоняется (HAND_FULL); в остальных случаях (повышение,
+//     владелец сдвинут без места) он уходит с доски, а его стек возвращается в начале следующего раунда (grantTokensFor) —
+//     ни одно размещение вне радиуса не доходит до боя.
+//   * Направление (DESIGN §3, research 09 §1.2): у каждой фигуры на доске есть `dir` ∈ UP|RIGHT|DOWN|LEFT
+//     (server/sim/dir.js), устанавливается через g.move {…, dir} (без него ⇒ RIGHT) и сохраняется между раундами. g.move
+//     на СОБСТВЕННУЮ клетку фигуры разворачивает её на месте; обмен сохраняет dir занявшего; фигура, поставленная на доску
+//     эффектом (элитный из слияния, занимающий клетку израсходованной копии), сохраняет dir этой клетки, всё остальное
+//     по умолчанию — RIGHT (`pieceDir`). g.art {…, dir} поворачивает радиус применения (画卷 1-1: своя клетка + клетка
+//     впереди).
+//   * Настройка оперативников (DESIGN §16): проверенная `seat.loadout` человека ({ [baseChessId]: { skill, module } },
+//     записи, равные значениям по умолчанию, отбрасываются) перепроверяется по данным этого матча (shared/protocol.js
+//     checkLoadout; при несоответствии откатывается к значениям по умолчанию) и остаётся замороженной; боты всегда
+//     используют значения по умолчанию. Match.setLoadout может заменить её только во время INFO_CHECK. battleInput()
+//     разрешает каждого оперативника в `skillIndex` + `moduleId` (resolveLoadout: обычный оперативник → moduleId null,
+//     элитный → uniEquipId | 'none'); m.private публикует `loadout`.
 
 import { ERR, GEO, PHASE, layerGainRoom } from '../../shared/constants.js';
 import { checkLoadout, resolveLoadout } from '../../shared/protocol.js';
-import { FIELD, tileKey, parseKey, inField, canPlace, placeClass, boardOrder, freeSlot, pieceDir, parseDir, mergeTile, ownerRangeKeys } from './board.js';
+import { FIELD, tileKey, parseKey, inField, canPlace, positionClass, boardOrder, freeSlot, pieceDir, parseDir, mergeTile, ownerRangeKeys } from './board.js';
 import { attackRangeGrid, loadoutRecord, resolveRecordLoadout } from '../../shared/loadoutRecord.js';
 import { offsetTile } from '../sim/dir.js';
-import { computeBonds, bondList, bondSnapshot, activatedLayers, bondsWithGains, offBondCounts } from './bondsMeta.js';
+import { computeBonds, bondList, bondSnapshot, activatedLayers, bondsWithGains } from './bondsMeta.js';
 import { itemKey } from './gamedata.js';
 import { bountyText } from './choices.js';
 
 const HAND_SIZE = GEO.HAND_SIZE;
 const TEMP_SIZE = GEO.TEMP_SIZE;
-/** g.reward accepts idx 0..5 (shared/protocol.js) */
+/** g.reward принимает idx 0..5 (shared/protocol.js) */
 const MAX_OFFER_SLOTS = 6;
 const OK = Object.freeze({ ok: true });
 const fail = (error, detail) => (detail ? { error, detail } : { error });
 
 export class PlayerState {
   /**
-   * @param {import('./Match.js').Match} m owning match
+   * @param {import('./Match.js').Match} m матч-владелец
    * @param {{ seat: number, playerId: string, name: string, isBot: boolean, connected: boolean }} seat
    */
   constructor(m, seat) {
@@ -109,40 +121,40 @@ export class PlayerState {
     this.ready = false;
     this.infoReady = this.isBot;
     this.lastEmoteAt = -Infinity;
-    /** operator loadout (DESIGN §16): frozen { [baseChessId]: { skill, module } }, {} = every chess on its defaults */
+    /** настройка оперативников (DESIGN §16): замороженная { [baseChessId]: { skill, module } }, {} = все на значениях по умолчанию */
     this.loadout = Object.freeze({});
     if (!this.isBot && seat.loadout) this.setLoadout(seat.loadout);
     this.shop = { level: 1, upgradePrice: this.gd.upgradeBase(1) ?? 0, slots: [], frozen: false, freeRefreshes: 0 };
-    /** reward offers queue (merge rewards, special refreshes): { tier, source, label, slots: [{ kind, id, price, sold }] } */
+    /** очередь предложений награды (награды за слияние, специальные обновления): { tier, source, label, slots: [{ kind, id, price, sold }] } */
     this.offers = [];
     /** @type {Array<any>} */
     this.hand = new Array(HAND_SIZE).fill(null);
     /** @type {Array<any>} */
     this.temp = new Array(TEMP_SIZE).fill(null);
-    /** preps of this player that ended so far (endPrep) = index of the current (or next) prep */
+    /** сколько подготовок этого игрока уже закончилось (endPrep) = индекс текущей (или следующей) подготовки */
     this.prepsEnded = 0;
-    /** @type {Map<number, number>} temp piece uid → index of the prep whose deadline resolves it (see tempDue) */
+    /** @type {Map<number, number>} uid фигуры во временной зоне → индекс подготовки, в дедлайн которой она разрешается (см. tempDue) */
     this._tempDue = new Map();
-    /** @type {Map<string, any>} 'r,c' → piece */
+    /** @type {Map<string, any>} 'r,c' → фигура */
     this.board = new Map();
-    /** persistent bond layers */
+    /** постоянные слои альянсов */
     this.layers = {};
-    /** computed bond states */
+    /** вычисленные состояния альянсов */
     this.bonds = {};
     /**
-     * this round's IN_BATTLE layer gains of the finished normal battle ({ [bondId]: n }, Match._finishCombat) until
-     * settle() makes them persistent — the views add them (bondsView, DESIGN §20.15); null otherwise
+     * слои, полученные в бою в этом раунде, из завершённого обычного боя ({ [bondId]: n }, Match._finishCombat), пока
+     * settle() не сделает их постоянными — виды их добавляют (bondsView, DESIGN §20.15); иначе null
      */
     this.pendingLayerGains = null;
-    /** optional per-bond count bonus written by effects */
+    /** опциональный бонус к счётчику конкретного альянса, записанный эффектами */
     this.bondCountBonus = {};
-    /** EffectRef list: { id, key, name, desc, iconKind, iconId, counter?, battle, params, data } */
+    /** список EffectRef: { id, key, name, desc, iconKind, iconId, counter?, battle, params, data } */
     this.effects = [];
-    /** active bounties: { id, card, roundsLeft, chooser } */
+    /** активные контракты: { id, card, roundsLeft, chooser } */
     this.bounties = [];
-    /** free-form counters for content (ctx.counter / setCounter) */
+    /** произвольные счётчики для контента (ctx.counter / setCounter) */
     this.counters = {};
-    /** per-round counters (reset at round start) */
+    /** счётчики за раунд (сбрасываются в начале раунда) */
     this.round = { refreshes: 0, buys: 0, sells: 0, spent: 0, gainedChess: 0, arts: 0 };
     this.deployCapBonus = 0;
     this.deployCapMin = 0;
@@ -154,23 +166,23 @@ export class PlayerState {
     };
     this.eliminatedRound = null;
     this.lpAtFinal = null;
-    /** last combat result for this player (unite carry state, bounties) */
+    /** последний боевой результат игрока (состояние переноса в совместной обороне, контракты) */
     this.lastResult = null;
     this._deployMap = null;
-    /** the deploy field of `_deployMap` ('normal' | 'bossL' | 'bossR', Match.deployFieldOf) */
+    /** поле развёртывания для `_deployMap` ('normal' | 'bossL' | 'bossR', Match.deployFieldOf) */
     this._deployField = undefined;
-    /** the deploy map changed since the board's legality was last checked (invalidateDeployMap) */
+    /** карта развёртывания изменилась с момента последней проверки легальности доски (invalidateDeployMap) */
     this._legalityStale = false;
-    /** Match.scheduleBotPrep: the latest bot prep of this seat (older sliced rehearsals drop out) */
+    /** Match.scheduleBotPrep: последняя подготовка бота этого места (старые нарезанные репетиции отпадают) */
     this._botPrepToken = 0;
     this.bonds = computeBonds(this.gd, this);
   }
 
   // =================================================================================================
-  // basics
+  // основы
 
   get isHumanActive() { return !this.isBot && !this.left; }
-  /** The engine acts for this seat (AI teammate or "AI 托管"; a departed human is eliminated, so nothing is left to do). */
+  /** Движок действует за это место (ИИ-союзник или «AI 托管»; ушедший человек выбывает, так что делать нечего). */
   get botControlled() { return this.isBot || this.left || this.autoplay; }
 
   get deployCap() { return Math.max(1, this.gd.deployCap + this.deployCapBonus, this.deployCapMin); }
@@ -178,8 +190,9 @@ export class PlayerState {
   get tempEmpty() { return this.temp.every((x) => x == null); }
 
   /**
-   * Index of the prep whose deadline resolves a temp piece (compare with `prepsEnded`): recorded when the piece entered
-   * temp (_putTemp); a piece put there by other means counts as due at the current (or next) prep.
+   * Индекс подготовки, в дедлайн которой разрешается фигура во временной зоне (сравните с `prepsEnded`): записывается,
+   * когда фигура попадает во временную зону (_putTemp); фигура, попавшая туда иным способом, считается должной в
+   * текущей (или следующей) подготовке.
    */
   tempDue(piece) {
     const due = piece ? this._tempDue.get(piece.uid) : undefined;
@@ -187,24 +200,24 @@ export class PlayerState {
   }
 
   /**
-   * Due prep of a piece entering temp now: the current prep while the player can still act on it (PREP, not ready);
-   * after Ready or at the prep end (onPrepEnd grants) the next one; outside PREP (COMBAT, SETTLE, ROUND_START, 机变)
-   * the next prep to end — `prepsEnded` then already names it.
+   * Должная подготовка для фигуры, попадающей во временную зону сейчас: текущая подготовка, пока игрок ещё может с ней
+   * что-то сделать (PREP, не готов); после готовности или в конце подготовки (выдачи onPrepEnd) — следующая; вне
+   * PREP (COMBAT, SETTLE, ROUND_START, 机变) — следующая подготовка, которая закончится — `prepsEnded` уже её называет.
    */
   _tempDueNow() {
     return this.prepsEnded + (this.m.phase === PHASE.PREP && this.ready ? 1 : 0);
   }
 
-  /** Every write of a piece into a temp slot goes through here (records its due prep). */
+  /** Каждая запись фигуры в слот временной зоны идёт через это (записывает её должную подготовку). */
   _putTemp(i, piece) {
     this.temp[i] = piece;
     this._tempDue.set(piece.uid, this._tempDueNow());
   }
 
   /**
-   * Replace the operator loadout (DESIGN §16) after re-checking it against this match's data. Accepts the checked
-   * form `{ id: { skill, module|null } }` or raw `room.loadout` entries. Returns false (loadout unchanged) when it does
-   * not fit the data; bots keep the defaults.
+   * Заменяет настройку оперативников (DESIGN §16) после перепроверки по данным этого матча. Принимает проверенную
+   * форму `{ id: { skill, module|null } }` или сырые записи `room.loadout`. Возвращает false (настройка не изменена),
+   * если она не соответствует данным; боты сохраняют значения по умолчанию.
    * @param {any} loadout
    * @returns {boolean}
    */
@@ -231,15 +244,15 @@ export class PlayerState {
     return true;
   }
 
-  /** The skill index / module a chess record fights with under this player's loadout (DESIGN §16). */
+  /** Индекс навыка / модуль, с которым оперативник сражается под настройкой игрока (DESIGN §16). */
   loadoutFor(chessRecord) {
     return resolveLoadout(this.loadout, chessRecord, (id) => this.gd.chess(id));
   }
 
   /**
-   * Deploy classes of the board tiles (server/match/board.js buildDeployMap) on the field the player deploys on now
-   * (Match.deployFieldOf: the own board, or its half of the boss field in a boss round — user playtest #5 item 7).
-   * A change of that field (the boss round begins, a re-pairing) re-checks the board's legality like a terrain change.
+   * Классы развёртывания клеток доски (server/match/board.js buildDeployMap) на поле, где игрок разворачивается сейчас
+   * (Match.deployFieldOf: собственная доска или её половина поля лидера в раунде с лидером — user playtest #5 item 7).
+   * Смена этого поля (начало раунда с лидером, перепаривание) перепроверяет легальность доски, как изменение рельефа.
    */
   deployMap() {
     const field = typeof this.m.deployFieldOf === 'function' ? this.m.deployFieldOf(this) : 'normal';
@@ -252,18 +265,19 @@ export class PlayerState {
     return this._deployMap;
   }
   /**
-   * The board's terrain changed (terrain 机变 cards, content device / tile overrides): legality is re-checked at the
-   * next recompute() / battleInput() — after the whole change, so an intermediate state of a card that toggles several
-   * devices never moves a piece.
+   * Рельеф доски изменился (карты 机变, переопределения устройств / клеток контентом): легальность перепроверяется в
+   * следующем recompute() / battleInput() — после всего изменения, так что промежуточное состояние карты, которая
+   * переключает несколько устройств, никогда не перемещает фигуру.
    */
   invalidateDeployMap() { this._deployMap = null; this._legalityStale = true; }
 
   /**
-   * After a terrain change, pieces standing on tiles they may no longer occupy (a melee operator on a tile that became
-   * a 射击台, anything on a tile that became undeployable) are withdrawn like 撤退: an operator goes to the hand
-   * (overflow temp — a passive move; the player re-places it during the prep), its summons leave the board with it; a
-   * summon returns to its owner's stack. Nothing is lost: with the hand and temp both full a piece stays put.
-   * @returns {number} pieces moved
+   * После изменения рельефа фигуры, стоящие на клетках, которые они больше не могут занимать (ближний оперативник на
+   * клетке, ставшей 射击台; что угодно на клетке, ставшей недоступной для развёртывания), отзываются как при 撤退:
+   * оперативник идёт в руку (при переполнении во временную зону — пассивное перемещение; игрок переразмещает его во
+   * время подготовки), его призывы уходят с доски вместе с ним; призыв возвращается в стек владельца. Ничего не теряется:
+   * если и рука, и временная зона полны, фигура остаётся на месте.
+   * @returns {number} сколько фигур перемещено
    */
   _evictIllegal() {
     this._legalityStale = false;
@@ -284,21 +298,21 @@ export class PlayerState {
         }
       }
     }
-    if (names.length) this.m.toast(this, 'warn', `地形变化：${names.join('、')}无法停留在原位置，已撤回整备区`);
+    if (names.length) this.m.toast(this, 'warn', `Изменение рельефа: ${names.join(', ')} не могут оставаться на месте и отозваны в зону подготовки`);
     return moved;
   }
 
   dirty() { this.m.markPrivate(this); }
 
   // =================================================================================================
-  // piece bookkeeping
+  // учёт фигур
 
   newPiece(kind, id, extra = {}) {
     return { uid: this.m.nextUid(), kind, id, items: kind === 'chess' ? [] : undefined, count: kind === 'token' ? 1 : undefined, ownerUid: undefined, poolCopies: 0, boughtRound: this.m.round, meta: {}, ...extra };
   }
 
   /**
-   * Locate a piece by uid. Returns { piece, area: 'board'|'hand'|'temp'|'equipped', idx?, key?, holder? } or null.
+   * Находит фигуру по uid. Возвращает { piece, area: 'board'|'hand'|'temp'|'equipped', idx?, key?, holder? } или null.
    */
   find(uid) {
     if (!Number.isInteger(uid)) return null;
@@ -321,7 +335,7 @@ export class PlayerState {
     return null;
   }
 
-  /** Every owned chess piece: board (reading order, board.js boardOrder) then hand then temp. */
+  /** Все принадлежащие оперативники: доска (в порядке развёртывания), затем рука, затем временная зона. */
   allChess() {
     const out = [];
     for (const { piece } of boardOrder(this.board)) if (piece.kind === 'chess') out.push(piece);
@@ -330,7 +344,7 @@ export class PlayerState {
     return out;
   }
 
-  /** Locations of owned pieces, in merge-consumption preference order: temp, hand (left→right), board (reading order). */
+  /** Расположения принадлежащих фигур в порядке предпочтения при слиянии: временная зона, рука (слева→направо), доска (порядок чтения). */
   _chessLocations() {
     const out = [];
     for (let i = 0; i < this.temp.length; i++) if (this.temp[i] && this.temp[i].kind === 'chess') out.push({ piece: this.temp[i], area: 'temp', idx: i });
@@ -339,7 +353,7 @@ export class PlayerState {
     return out;
   }
 
-  /** Remove a located piece from its container (no side effects). */
+  /** Убирает найденную фигуру из её контейнера (без побочных эффектов). */
   _detach(loc) {
     if (!loc) return;
     if (loc.area === 'hand') this.hand[loc.idx] = null;
@@ -352,8 +366,8 @@ export class PlayerState {
   }
 
   /**
-   * Put a piece into the hand (right→left) or, when `allowTemp`, the temp slots (due at the deadline of the first prep
-   * in which the player can act on it, _tempDueNow). Returns 'hand' | 'temp' | null.
+   * Помещает фигуру в руку (справа налево) или, если `allowTemp`, в слоты временной зоны (должна в дедлайн первой
+   * подготовки, в которой игрок может с ней что-то сделать, _tempDueNow). Возвращает 'hand' | 'temp' | null.
    */
   stow(piece, { allowTemp = true, toTemp = false, preferIdx = null } = {}) {
     if (!toTemp) {
@@ -371,17 +385,18 @@ export class PlayerState {
   }
 
   /**
-   * Per-piece counter of the current round (`piece.meta.round` = { r, n: { key: count } }): 0 for a key not counted yet
-   * this round. The counters belong to the operator: a move keeps them, a new piece (bought, granted, transformed)
-   * starts at 0, and an elite merged this round keeps the highest count of its copies (_mergeChess) — 拉普兰德's
-   * "本回合首次主动刷新" is the first manual refresh she witnesses (player feedback after 0.1.0, garrisons/meta.js).
+   * Покомпонентный счётчик текущего раунда (`piece.meta.round` = { r, n: { key: count } }): 0 для ключа, который в этом
+   * раунде ещё не считался. Счётчики принадлежат оперативнику: перемещение их сохраняет, новая фигура (купленная,
+   * выданная, полученная трансформацией) начинается с 0, а элитный, слитый в этом раунде, сохраняет наибольший счётчик
+   * своих копий (_mergeChess) — «первое активное обновление в этом раунде» у 拉普兰德 это первое ручное обновление,
+   * свидетелем которого она была (обратная связь игрока после 0.1.0, garrisons/meta.js).
    */
   pieceRoundCount(piece, key) {
     const rc = piece && piece.meta && piece.meta.round;
     return rc && rc.r === this.m.round && Number.isFinite(rc.n[key]) ? rc.n[key] : 0;
   }
 
-  /** Add `n` to a piece's counter of the current round (pieceRoundCount); returns the new count. */
+  /** Добавляет `n` к счётчику фигуры за текущий раунд (pieceRoundCount); возвращает новое значение. */
   bumpPieceRoundCount(piece, key, n = 1) {
     if (!piece || typeof key !== 'string' || !Number.isFinite(n)) return 0;
     if (!piece.meta || typeof piece.meta !== 'object') piece.meta = {};
@@ -391,7 +406,7 @@ export class PlayerState {
     return v;
   }
 
-  /** Return a piece's pool copies (and its equipped items are handled by the caller). */
+  /** Возвращает копии фигуры в пул (её экипированные предметы обрабатывает вызывающий). */
   returnCopies(piece) {
     if (piece && piece.kind === 'chess' && piece.poolCopies > 0) {
       this.m.pool.give(this.gd.baseIdOf(piece.id), piece.poolCopies);
@@ -399,7 +414,7 @@ export class PlayerState {
     }
   }
 
-  /** Remove every token owned by a chess piece (board, hand, temp). */
+  /** Удаляет все токены, принадлежащие оперативнику (доска, рука, временная зона). */
   removeTokensOf(ownerUid) {
     for (const [k, p] of [...this.board]) if (p.kind === 'token' && p.ownerUid === ownerUid) this.board.delete(k);
     for (let i = 0; i < this.hand.length; i++) if (this.hand[i] && this.hand[i].kind === 'token' && this.hand[i].ownerUid === ownerUid) this.hand[i] = null;
@@ -407,20 +422,21 @@ export class PlayerState {
   }
 
   /**
-   * An owner that changes its board tile (moved, swapped): its summons on the board go back onto its stack (PRTS
-   * 卫戍协议/帮助 "移动干员时，其所属召唤物全部退场并重置至手牌区"); overflow temp when no stack or slot is left (a
-   * stack lost there comes back at the next round start). `keep`: a summon the player just placed (the one dragged
-   * onto its owner, which swapped the owner away) stays where it was put.
+   * Владелец, меняющий свою клетку на доске (перемещён, поменян): его призывы на доске возвращаются в стек (PRTS
+   * 卫戍协议/帮助 «при перемещении оперативника все его призывы уходят с поля и сбрасываются в руку»); при переполнении —
+   * во временную зону, если нет стека или слота (потерянный там стек вернётся в начале следующего раунда). `keep`:
+   * призыв, только что размещённый игроком (тот, что перетащен на своего владельца и поменял владельца местами),
+   * остаётся там, где был поставлен.
    */
   _liftTokensOf(ownerUid, keep = null) {
     for (const [k, p] of [...this.board]) {
       if (p.kind !== 'token' || p.ownerUid !== ownerUid || p === keep) continue;
       this.board.delete(k);
-      if (!this._returnToken(p, null, { allowTemp: true })) this.board.set(k, p); // nowhere to go: it stays put
+      if (!this._returnToken(p, null, { allowTemp: true })) this.board.set(k, p); // некуда деть: остаётся на месте
     }
   }
 
-  /** Copies of one summon type an owner has (placed pieces + stacks in the hand / temp). */
+  /** Сколько копий одного типа призыва есть у владельца (размещённые фигуры + стеки в руке / временной зоне). */
   _tokenCountOf(ownerUid, tokenId) {
     const mine = (p) => !!p && p.kind === 'token' && p.ownerUid === ownerUid && p.id === tokenId;
     let n = 0;
@@ -431,11 +447,12 @@ export class PlayerState {
   }
 
   /**
-   * Owner on the board: send its placeable summons to the hand (one stack per token type, topped up to the deploy limit;
-   * gamedata.placeableTokens / tokens.json `placeable`, user playtest #6) — those its equipped skill / module makes
-   * (DESIGN §16: 赫默 S2 医疗无人机 a drone, 赫默 S1 none). Called when the owner is placed and at every round start, which
-   * returns a stack removed from temp at the last prep deadline (PRTS 卫戍协议/帮助 §手牌区 "干员所属召唤物会于下一回合
-   * 返还"); copies the owner still has (placed or stacked) are not granted again.
+   * Владелец на доске: отправляет свои размещаемые призывы в руку (один стек на тип токена, добитый до лимита
+   * развёртывания; gamedata.placeableTokens / tokens.json `placeable`, user playtest #6) — те, что делает его
+   * экипированный навык / модуль (DESIGN §16: у 赫默 S2 — дрон 医疗无人机, у 赫默 S1 — ни одного). Вызывается, когда
+   * владелец размещён, и в начале каждого раунда, что возвращает стек, убранный из временной зоны в дедлайн последней
+   * подготовки (PRTS 卫戍协议/帮助 §手牌区 «призывы оперативника возвращаются в следующем раунде»); копии, которые у
+   * владельца уже есть (размещённые или в стеке), повторно не выдаются.
    */
   grantTokensFor(owner) {
     const rec = owner && owner.kind === 'chess' ? this.gd.chess(owner.id) : null;
@@ -451,9 +468,9 @@ export class PlayerState {
   }
 
   // =================================================================================================
-  // acquisition, merges, promotion
+  // приобретение, слияния, повышение
 
-  /** Normal copies of a base chess currently owned (board/hand/temp). */
+  /** Обычные копии базового оперативника, которыми владеет игрок сейчас (доска / рука / временная зона). */
   countCopies(baseId) {
     let n = 0;
     for (const loc of this._chessLocations()) {
@@ -463,7 +480,7 @@ export class PlayerState {
     return n;
   }
 
-  /** Would acquiring one more normal copy of `chessId` complete a merge? */
+  /** Завершит ли приобретение ещё одной обычной копии `chessId` слияние? */
   completesChessMerge(chessId) {
     const rec = this.gd.chess(chessId);
     if (!rec || rec.isGolden) return false;
@@ -473,9 +490,10 @@ export class PlayerState {
   }
 
   /**
-   * Acquire a chess (buy, reward, effect grant). Takes pool copies (normal 1, elite goldenCopies) when available,
-   * merges immediately when it completes a set, otherwise stows it (hand, overflow temp). Fires onGain (for the
-   * elite when a merge happened, research 01 §7 "1+1+2"). Returns the owned piece (the elite after a merge) or null.
+   * Приобретает оперативника (покупка, награда, выдача эффекта). Забирает копии из пула (обычный 1, элитный
+   * goldenCopies), если доступны, немедленно сливает, если это завершает набор, иначе кладёт его (рука, при
+   * переполнении временная зона). Запускает onGain (для элитного, когда произошло слияние, research 01 §7 «1+1+2»).
+   * Возвращает принадлежащую фигуру (элитного после слияния) или null.
    * @param {string} chessId
    * @param {{ source?: string, toTemp?: boolean, fromPool?: boolean, silent?: boolean }} [opts]
    */
@@ -495,7 +513,7 @@ export class PlayerState {
       const where = this.stow(piece, { allowTemp: true, toTemp });
       if (!where) {
         this.returnCopies(piece);
-        this.m.toast(this, 'warn', '整备区已满，获得的干员已返还');
+        this.m.toast(this, 'warn', 'Зона подготовки заполнена, полученный оперативник возвращён');
         return null;
       }
     }
@@ -506,21 +524,23 @@ export class PlayerState {
   }
 
   /**
-   * Merge `need` normal copies of `baseId` (the incoming, not yet stowed piece first, then temp, hand, board) into
-   * the elite — PRTS 卫戍协议/帮助 §干员的获得与精锐化: "发送1名【精锐】状态的该干员至手牌区（若消耗已部署至作战区的干员，
-   * 则发送至作战区对应位置）" (the user's playtest #6 follow-up confirms it). The tile (`mergeTile`): when a consumed copy
-   * stood on the board the elite takes its tile and facing — of several, the one that deploys first (the left board
-   * column first, top to bottom within a column — Battle.start's order) [ASSUMED]. The incoming copy is never deployed (a 突变细胞 transformation
-   * destroyed its carrier before the gain: that tile is no copy's). It replaces a deployed copy, so the deploy count
-   * never grows. Otherwise the elite goes to the hand, overflow temp — outside PREP too (a SETTLE merge's elite waits in
-   * temp through the next prep, tempDue). The copies' equipment returns to the hand ("干员晋级后已配发装备会回收至整备区";
-   * overflow temp; with both full it stays on the elite, up to its equipPerChess (2) slots — any further item is
-   * destroyed with a log warning, as before the official rule) and an identical normal pair among it merges like any gain
-   * (checkItemMerges); their summons are removed, and an elite on the board
-   * gets its own summon stack (grantTokensFor: its loadout, like any deployment). Returns the elite piece (or null if
-   * the elite could not be stored).
+   * Сливает `need` обычных копий `baseId` (сначала входящая ещё не уложенная фигура, затем временная зона, рука,
+   * доска) в элитного — PRTS 卫戍协议/帮助 §干员的获得与精锐化: «отправить 1 оперативника в состоянии 【Элитный】 в руку
+   * (если расходуется развёрнутый в боевой зоне оперативник, то отправить в соответствующую позицию боевой зоны)»
+   * (это подтвердил follow-up user playtest #6). Клетка (`mergeTile`): когда одна из израсходованных копий стояла на
+   * доске, элитный занимает её клетку и направление — если их несколько, та, что разворачивается первой (порядок чтения
+   * доски: сверху → вниз, затем слева → направо) [ASSUMED]. Входящая копия никогда не разворачивается (трансформация
+   * 突变细胞 уничтожила своего носителя до получения: эта клетка не принадлежит ни одной копии). Он заменяет развёрнутую
+   * копию, так что число развёрнутых не растёт. Иначе элитный идёт в руку, при переполнении во временную зону — в том
+   * числе вне фазы подготовки (элитный из слияния в РАСЧЁТЕ ждёт во временной зоне до следующей подготовки, tempDue).
+   * Снаряжение копий возвращается в руку («после повышения оперативника выданное снаряжение возвращается в зону
+   * подготовки»; при переполнении — во временную зону; если обе полны, оно остаётся на элитном, до его equipPerChess
+   * (2) слотов — любой дальнейший предмет уничтожается с предупреждением в лог, как и до официального правила), а
+   * пара одинаковых нормальных предметов среди него сливается, как любое приобретение (checkItemMerges); их призывы
+   * удаляются, а элитный на доске получает собственный стек призывов (grantTokensFor: его настройка, как при любом
+   * размещении). Возвращает фигуру элитного (или null, если элитного не удалось сохранить).
    * @param {string} baseId
-   * @param {any} incoming the acquired, not yet stowed copy (null: only owned copies)
+   * @param {any} incoming приобретённая ещё не уложенная копия (null: только принадлежащие копии)
    */
   _mergeChess(baseId, incoming) {
     const need = this.gd.mergeCount(baseId);
@@ -541,8 +561,8 @@ export class PlayerState {
       l.piece.items = [];
     }
     const elite = this.newPiece('chess', goldenId, { poolCopies: copies });
-    // this round's per-piece counters: the highest of the copies' (an elite made from 拉普兰德 that already saw their
-    // first refresh this round does not fire again this round — [ASSUMED] conservative, pieceRoundCount)
+    // покомпонентные счётчики этого раунда: наибольшее из копий (элитный, собранный из 拉普兰德, которые уже увидели
+    // своё первое обновление в этом раунде, не срабатывает снова — [ASSUMED] консервативно, pieceRoundCount)
     for (const l of consumed) {
       const rc = l.piece.meta && l.piece.meta.round;
       if (rc && rc.r === this.m.round) for (const [k, v] of Object.entries(rc.n)) this.bumpPieceRoundCount(elite, k, Math.max(0, v - this.pieceRoundCount(elite, k)));
@@ -551,22 +571,25 @@ export class PlayerState {
     const toTile = (t) => { elite.dir = parseDir(t.dir) || 'RIGHT'; this.board.set(t.key, elite); return 'board'; };
     const tile = mergeTile(deployed, (r, c) => this._legal(elite, r, c));
     let where = tile ? toTile(tile) : this.stow(elite, { allowTemp: true });
-    // hand and temp full and no deployed tile legal for it (a terrain change not re-checked yet): it stays on the first
-    // deployed copy's tile rather than being lost, like a piece _evictIllegal finds no room for
+    // рука и временная зона полны, и ни одна развёрнутая клетка не легальна для него (изменение рельефа ещё не
+    // перепроверено): он остаётся на клетке первой развёрнутой копии, а не теряется, как фигура, для которой
+    // _evictIllegal не нашёл места
     if (!where && deployed.length) where = toTile(mergeTile(deployed));
     for (const it of items) {
       if (this.stow(it, { allowTemp: true })) continue;
       if (where && elite.items.length < this.gd.equipPerChess) { elite.items.push(it); continue; }
       this.m.log.warn?.(`[match ${this.m.roomCode}] ${this.playerId}: returned item ${it.id} destroyed (no space)`);
     }
-    // the returned equipment follows the auto-merge rule like any other gain ("已拥有2件同一初始装备时…自动合并")
+    // возвращённое снаряжение следует правилу автослияния, как и любое другое приобретение («при наличии 2 одинаковых
+    // начальных предметов… они автоматически сливаются»)
     this.checkItemMerges();
-    // deployed like any operator placed by hand: its manually deployable summons join the hand (after the returned
-    // equipment, which would be lost in temp — a summon stack removed there comes back at the next round start)
+    // развёрнут как любой оперативник, поставленный рукой: его ручные размещаемые призывы идут в руку (после
+    // возвращённого снаряжения, которое во временной зоне было бы потеряно — стек призыва, убранный там, вернётся
+    // в начале следующего раунда)
     if (where === 'board') this.grantTokensFor(elite);
     if (!where) {
       this.m.pool.give(baseId, copies);
-      this.m.toast(this, 'warn', '整备区已满，晋升的精锐干员无法放入');
+      this.m.toast(this, 'warn', 'Зона подготовки заполнена, повышенный элитный оперативник не помещается');
       this.m.log.warn?.(`[match ${this.m.roomCode}] ${this.playerId}: merge result dropped (hand+temp full)`);
       this.recompute();
       return null;
@@ -579,7 +602,7 @@ export class PlayerState {
     return elite;
   }
 
-  /** Promote a normal chess piece to its elite in place (升华, 博士投影). Takes extra pool copies when available. */
+  /** Повышает обычного оперативника до его элитного на месте (升华, 博士投影). Забирает дополнительные копии из пула, если доступны. */
   promote(piece) {
     if (!piece || piece.kind !== 'chess' || this.gd.isGolden(piece.id)) return false;
     const goldenId = this.gd.goldenIdOf(piece.id);
@@ -593,35 +616,39 @@ export class PlayerState {
   }
 
   /**
-   * Transformation (突变细胞 "战斗结束后，装备者替换为高一阶的随机干员"; PRTS 卫戍协议：盟约 下半/PRTS盟约记录 备注 "生效时，原
-   * 干员销毁，获得一名高一阶的随机初始干员（最高六阶）"): a destroy followed by a gain. The carrier is destroyed wherever it
-   * stands — a board tile is freed (the deploy count drops), its summons are removed, its pool copies return. Its
-   * equipment, the cell included, comes off first (PRTS 卫戍协议/帮助 "在失去该干员（干员出售、销毁、合并等）…时自动卸除"): to
-   * the hand, overflowing into temp, auto-merging like any gain. Then `newId` is gained like any other gained operator
-   * (acquireChess, onGain source 'transform'): the hand, overflow temp ("被发送至手牌区的物资优先从右到左填充空位"), and with
-   * both full it goes back to the pool ("整备区已满，获得的干员已返还"); it gets no summon card in the hand (only a deployment
-   * brings one), and a merge it completes follows the ordinary rule (_mergeChess: the elite on a consumed deployed copy's
-   * tile, else the hand — the carrier's freed tile is no copy's). An item that found no slot takes one the gain freed (a
-   * merge consumes copies), else stays on the gained operator up to its equipPerChess slots, else it is destroyed with a
-   * log warning (as in a merge). Official footage (bilibili BV1vzyVBuEN9, BV1Qkw1zMEoR; pointed out in PR #2): at the
-   * next prep the carrier's tile is empty, one more deployment is left and the new operator waits in the 整备区.
-   * @param {any} piece the carrier (an owned chess piece)
-   * @param {string} newId chess id gained in its place
-   * @returns {any} the gained piece (the elite when it completed a merge) or null
+   * Трансформация (突变细胞 «после боя носитель заменяется случайным оперативником на один ранг выше»; PRTS 卫戍协议：
+   * 盟约 нижняя половина / PRTS盟约记录 прим.: «при срабатывании исходный оперативник уничтожается, получается случайный
+   * начальный оперативник на один ранг выше (максимум шестой)»): уничтожение, за которым следует получение. Носитель
+   * уничтожается там, где стоит — клетка доски освобождается (счёт развёртывания уменьшается), его призывы удаляются,
+   * его копии возвращаются в пул. Его снаряжение, включая саму клетку, снимается первым (PRTS 卫戍协议/帮助 «при потере
+   * этого оперативника (продажа, уничтожение, слияние и т. п.)… снимается автоматически»): в руку, при переполнении во
+   * временную зону, автослияние, как при любом приобретении. Затем `newId` получается как любой другой приобретённый
+   * оперативник (acquireChess, onGain source 'transform'): рука, при переполнении временная зона («при отправке в руку
+   * ресурсы сначала заполняют пустые слоты справа налево»), а если обе полны — возвращается в пул («зона подготовки
+   * заполнена, полученный оперативник возвращён»); он не получает карту призыва в руку (только размещение её приносит), и
+   * слияние, которое он завершает, следует обычному правилу (_mergeChess: элитный на клетке израсходованной развёрнутой
+   * копии, иначе в руке — освобождённая клетка носителя ничьей копией не является). Предмет, для которого не нашлось
+   * слота, занимает освободившийся при приобретении (слияние расходует копии), иначе остаётся на полученном оперативнике
+   * до его equipPerChess слотов, иначе уничтожается с предупреждением в лог (как при слиянии). Официальные кадры (bilibili
+   * BV1vzyVBuEN9, BV1Qkw1zMEoR; указано в PR #2): на следующей подготовке клетка носителя пуста, на одно развёртывание
+   * больше, а новый оперативник ждёт в 整备区.
+   * @param {any} piece носитель (принадлежащая фигура оперативника)
+   * @param {string} newId id оперативника, полученного вместо него
+   * @returns {any} полученная фигура (элитный, если он завершил слияние) или null
    */
   transformChess(piece, newId) {
     const loc = this.find(piece.uid);
     if (!loc || loc.piece.kind !== 'chess' || !this.gd.chess(newId)) return null;
-    // 原干员销毁: off its tile / slot, its summons removed, its copies back to the pool
+    // 原干员销毁: с клетки / слота, его призывы удалены, его копии возвращаются в пул
     this._detach(loc);
     this.removeTokensOf(piece.uid);
     const items = piece.items || [];
     piece.items = [];
     this.returnCopies(piece);
-    // its equipment comes off first (the returned pair auto-merges, which may free a slot for the gain)
+    // его снаряжение снимается первым (возвращённая пара автосливается, что может освободить слот для приобретения)
     const left = items.filter((it) => !this.stow(it, { allowTemp: true }));
     this.checkItemMerges();
-    // 获得一名…干员: gained like any other gained operator
+    // 获得一名…干员: получается как любой другой приобретённый оперативник
     const np = this.acquireChess(newId, { source: 'transform' });
     for (const it of left) {
       if (this.stow(it, { allowTemp: true })) continue;
@@ -633,7 +660,7 @@ export class PlayerState {
     return np;
   }
 
-  /** Normal item → golden version in place (整备). */
+  /** Обычный предмет → золотая версия на месте (整备). */
   upgradeItem(piece) {
     const rec = this.gd.item(piece.id);
     if (!rec || rec.isGolden) return false;
@@ -645,15 +672,16 @@ export class PlayerState {
   }
 
   /**
-   * Queue a reward offer: `count` DIFFERENT chess of tier min(level + offset, maxTier) at price 0 (pick 1). Each is a
-   * copy-weighted roll from the shared pool excluding the ones already drawn; a tier left without another chess tops
-   * up from the tier below (user playtest #6 item 19: the official promotion reward never offers one operator twice —
-   * the user's first-hand report; the normal shop's slots may repeat). The offer reserves no copies (the pick takes one).
+   * Ставит в очередь предложение награды: `count` РАЗНЫХ оперативников ранга min(уровень + смещение, maxTier) по
+   * цене 0 (выбрать 1). Каждый — взвешенный по копиям бросок из общего пула, исключая уже выбранных; ранг, оставшийся
+   * без другого оперативника, добирается из ранга ниже (user playtest #6 item 19: официальная награда за повышение
+   * никогда не предлагает одного оперативника дважды — отчёт пользователя из первых рук; слоты обычного магазина
+   * могут повторяться). Предложение не резервирует копии (выбор забирает одну).
    */
   pushRewardOffer(source = 'merge', { tier = null, ids = null, label = null } = {}) {
     const ro = this.gd.rewardOffer();
     const t = Number.isInteger(tier) ? tier : Math.min(this.shop.level + ro.tierOffset, ro.maxTier);
-    // an offer never shows one operator twice, whoever built the list (user playtest #6 item 19)
+    // предложение никогда не показывает одного оперативника дважды, кто бы ни строил список (user playtest #6 item 19)
     let list = Array.isArray(ids) ? [...new Set(ids)].filter((id) => this.gd.chess(id)) : null;
     if (!list) {
       list = [];
@@ -672,8 +700,8 @@ export class PlayerState {
   }
 
   /**
-   * Queue a free pick-one offer of items (凯瑟琳 定向投放, 娜仁图亚 见者有份); shown as shop.rewardOffer with slots of kind
-   * 'item' under its `label` (the effect's name; player report #6 after 0.1.0).
+   * Ставит в очередь бесплатное предложение выбора одного предмета (凯瑟琳 定向投放, 娜仁图亚 见者有份); показывается
+   * как shop.rewardOffer со слотами вида 'item' под его `label` (имя эффекта; player report #6 после 0.1.0).
    */
   pushItemOffer(ids, { source = 'effect', tier = null, label = null } = {}) {
     const list = [...new Set(Array.isArray(ids) ? ids : [])].filter((id) => this.gd.item(id)).slice(0, MAX_OFFER_SLOTS);
@@ -684,7 +712,7 @@ export class PlayerState {
     return offer;
   }
 
-  /** Item merge candidates: normal, mergeable, with a golden version. */
+  /** Кандидаты на слияние предметов: обычные, сливаемые, с золотой версией. */
   _itemMergeable(id) {
     const rec = this.gd.item(id);
     if (!rec || rec.isGolden || rec.itemType !== 'EQUIP' || !rec.mergeable) return false;
@@ -710,25 +738,18 @@ export class PlayerState {
   }
 
   /**
-   * Acquire an item (buy, supply card, grant). Merges with an identical normal copy (hand/temp/equipped) into the
-   * golden item (to the hand). Returns the owned piece or null.
-   * `deferMerge` (effectsMeta, while onPrepEnd is on the stack): stow it — hand, else temp — and do not merge in this
-   * call, even when an identical normal copy is already owned. The next prep's start runs checkItemMerges. Nothing
-   * already equipped is taken off for the fight about to start. Hand and temp both full keeps the 「整备区已满，获得的装备已销毁」
-   * outcome. [ASSUMED] every item granted at 休整期结束, not only 维多利亚's 战栗维式重锤 (owner's decision 2026-10-04).
+   * Приобретает предмет (покупка, карта поставки, выдача). Сливается с идентичной обычной копией (рука / временная
+   * зона / экипировано) в золотой предмет (в руку). Возвращает принадлежащую фигуру или null.
    */
-  acquireItem(itemId, { source = 'grant', toTemp = false, silent = false, deferMerge = false } = {}) {
+  acquireItem(itemId, { source = 'grant', toTemp = false, silent = false } = {}) {
     const rec = this.gd.item(itemId);
     if (!rec) return null;
     let piece = this.newPiece('item', itemId);
-    // A prep-end grant may sit beside an identical copy until the next prep. The invariant counts only copies
-    // without this mark, so the fight that is about to start is not reported as a missed merge.
-    if (deferMerge) piece.deferMerge = true;
-    if (!deferMerge && this.completesItemMerge(itemId)) {
+    if (this.completesItemMerge(itemId)) {
       piece = this._mergeItem(itemId, piece);
       if (!piece) return null;
     } else if (!this.stow(piece, { allowTemp: true, toTemp })) {
-      this.m.toast(this, 'warn', '整备区已满，获得的装备已销毁');
+      this.m.toast(this, 'warn', 'Зона подготовки заполнена, полученное снаряжение уничтожено');
       return null;
     }
     this.recompute();
@@ -743,14 +764,15 @@ export class PlayerState {
     const consumed = incoming ? [{ piece: incoming, area: 'new' }] : [];
     for (const l of locs) { if (consumed.length >= need) break; consumed.push(l); }
     if (consumed.length < need) return null;
-    // remember where equipped twins sat: with a full hand AND a full temp the golden item takes the first one's slot
+    // запоминаем, где стояли экипированные близнецы: при полной руке И полной временной зоне золотой предмет занимает
+    // слот первого из них
     const slotOf = consumed.filter((l) => l.area === 'equipped').map((l) => ({ holder: l.holder, idx: l.holder.items.indexOf(l.piece) }));
     for (const l of consumed) if (l.area !== 'new') this._detach(l);
     const golden = this.newPiece('item', rec.upgradeChessId || rec.goldenId);
     if (!this.stow(golden, { allowTemp: true })) {
       const at = slotOf[0];
       if (!at || !this.find(at.holder.uid)) {
-        this.m.toast(this, 'warn', '整备区已满，合成的装备已销毁');
+        this.m.toast(this, 'warn', 'Зона подготовки заполнена, синтезированное снаряжение уничтожено');
         return null;
       }
       at.holder.items.splice(Math.max(0, Math.min(at.idx, at.holder.items.length)), 0, golden);
@@ -760,7 +782,7 @@ export class PlayerState {
     return golden;
   }
 
-  /** Merge every identical normal item pair currently owned (after equips / returns). */
+  /** Сливает каждую пару одинаковых нормальных предметов, которыми владеет игрок сейчас (после экипировок / возвратов). */
   checkItemMerges() {
     for (let guard = 0; guard < 20; guard++) {
       const counts = new Map();
@@ -779,7 +801,7 @@ export class PlayerState {
   }
 
   // =================================================================================================
-  // economy
+  // экономика
 
   addFunds(n, { reason = '' } = {}) {
     if (!Number.isFinite(n) || n === 0) return 0;
@@ -801,15 +823,16 @@ export class PlayerState {
     return true;
   }
 
-  /** onSpend, dispatched once a payment's action is complete (buy / refresh / levelUp / reward / effect). */
+  /** onSpend, запускается один раз, когда действие платежа завершено (покупка / обновление / levelUp / награда / эффект). */
   _afterSpend(amount, reason) {
     if (!(amount > 0)) return;
     this.m.dispatch(this, 'onSpend', { amount, reason, total: this.stats.gold });
   }
 
   /**
-   * Bond layer gain (prep-side). `requireActive` = "使已激活的【X】层数+N". Returns layers added: at most the room left
-   * under BOND_LAYER_CAP (999, shared/constants.js) — a gain at the cap adds 0 and dispatches nothing.
+   * Прирост стаков альянса (на стороне подготовки). `requireActive` = «дать уже активированному 【X】 +N стаков».
+   * Возвращает добавленные слои: не больше оставшегося места под BOND_LAYER_CAP (999, shared/constants.js) — прирост
+   * на пределе даёт 0 и ничего не запускает.
    */
   addLayers(bondId, n, { requireActive = false, reason = '' } = {}) {
     if (!this.gd.bond(bondId) || !Number.isFinite(n) || n <= 0) return 0;
@@ -824,9 +847,9 @@ export class PlayerState {
   }
 
   // =================================================================================================
-  // shop
+  // магазин
 
-  /** Effective price of a shop slot after onPrice modifiers (never negative). */
+  /** Действующая цена слота магазина после модификаторов onPrice (никогда не отрицательная). */
   priceOf(slot) {
     if (!slot) return 0;
     const ev = { slot, kind: slot.kind, id: slot.id, price: slot.basePrice };
@@ -846,8 +869,8 @@ export class PlayerState {
   }
 
   /**
-   * Reroll the shop. keepFrozen → frozen unsold slots survive (round start); otherwise everything is rerolled
-   * (manual refresh). Slot counts follow the current level.
+   * Перебрасывает магазин. keepFrozen → замороженные нераспроданные слоты выживают (начало раунда); иначе
+   * перебрасывается всё (ручное обновление). Количество слотов следует текущему уровню.
    */
   rollShop({ keepFrozen = false } = {}) {
     const { chess: nChess, item: nItem } = this.gd.shopSlots(this.shop.level);
@@ -856,7 +879,7 @@ export class PlayerState {
     const oldChess = old.slice(0, layout.chess);
     const oldItems = old.slice(layout.chess);
     const keep = (s, kind) => (keepFrozen && s && s.kind === kind && !s.sold && s.frozen ? { ...s } : null);
-    // frozen slots keep their position; sold / empty / unfrozen positions are rerolled
+    // замороженные слоты сохраняют позицию; проданные / пустые / незамороженные перебрасываются
     const slots = [];
     for (let i = 0; i < nChess; i++) slots.push(keep(oldChess[i], 'chess') ?? this._rollChessSlot());
     for (let i = 0; i < nItem; i++) slots.push(keep(oldItems[i], 'item') ?? this._rollItemSlot());
@@ -866,14 +889,14 @@ export class PlayerState {
     this.dirty();
   }
 
-  /** Combat start: unfrozen slots are emptied (research 01 A1). */
+  /** Начало боя: незамороженные слоты опустошаются (research 01 A1). */
   clearUnfrozenShop() {
     this.shop.slots = this.shop.slots.map((s) => (s && s.frozen && !s.sold ? s : null));
     this.dirty();
   }
 
   // =================================================================================================
-  // gating
+  // гейтинг
 
   _gate({ allowWhenReady = false } = {}) {
     if (!this.alive) return fail(ERR.ELIMINATED);
@@ -883,7 +906,7 @@ export class PlayerState {
   }
 
   // =================================================================================================
-  // intent handlers
+  // обработчики намерений
 
   buy(slotIdx) {
     const g = this._gate(); if (g) return g;
@@ -965,7 +988,7 @@ export class PlayerState {
     if (!loc) return fail(ERR.BAD_TARGET);
     if (loc.piece.kind !== 'chess') return fail(ERR.BAD_TARGET, loc.piece.kind === 'item' ? 'items cannot be sold' : 'tokens cannot be sold');
     const piece = loc.piece;
-    // its equipment returns to the hand (overflow temp): refuse rather than destroy it when there is no room
+    // его снаряжение возвращается в руку (при переполнении во временную зону): отказать, а не уничтожать, если места нет
     const room = this.hand.filter((x) => x == null).length + this.temp.filter((x) => x == null).length + (loc.area === 'hand' || loc.area === 'temp' ? 1 : 0);
     if ((piece.items || []).length > room) return fail(ERR.HAND_FULL, 'no room for the equipment');
     this._detach(loc);
@@ -987,9 +1010,9 @@ export class PlayerState {
   }
 
   /**
-   * g.move {uid, to, dir?}. Pieces: chess / token between board, hand and temp; items only within the hand. `dir`
-   * (UP|RIGHT|DOWN|LEFT, absent ⇒ RIGHT; `to.dir` is read when the top-level one is absent) is the facing of a piece
-   * moved onto the board — onto its own tile it re-orients the piece in place.
+   * g.move {uid, to, dir?}. Фигуры: оперативник / токен между доской, рукой и временной зоной; предметы только в
+   * пределах руки. `dir` (UP|RIGHT|DOWN|LEFT, без него ⇒ RIGHT; `to.dir` читается, когда верхнеуровневый отсутствует) —
+   * направление фигуры, перемещённой на доску — на её собственную клетку это разворот фигуры на месте.
    */
   move(uid, to, dir) {
     const g = this._gate(); if (g) return g;
@@ -1012,15 +1035,14 @@ export class PlayerState {
 
   _placementOf(piece) {
     const rec = piece.kind === 'token' ? this.gd.token(piece.id) : this.gd.chess(piece.id);
-    // elite 歌蕾蒂娅 + HOK-Y may use a 高台; the module is this player's loadout (owner's decision 2026-10-04)
-    return placeClass(this, rec);
+    return positionClass(rec);
   }
 
   /**
-   * Where piece may stand on (r, c): the deploy map of its position class (board.js canPlace) and, for a summon whose
-   * text reads "只能部署在召唤者攻击范围内" (tokens.json `ownerRange`: 伺夜's 狼群, 缪尔赛思's 流形), a tile of its owner's
-   * attack range (summonRange). `owner` = the owner's position after the move being checked ({ key, piece, dir }: a
-   * summon swapped with its own owner).
+   * Где фигура может стоять на (r, c): карта развёртывания её класса позиции (board.js canPlace) и, для призыва, чей
+   * текст читается как «развёртывается только в радиусе атаки призывателя» (tokens.json `ownerRange`: 狼群 у 伺夜,
+   * 流形 у 缪尔赛思), клетка радиуса атаки её владельца (summonRange). `owner` = позиция владельца после проверяемого
+   * хода ({ key, piece, dir }: призыв, поменявшийся местами со своим владельцем).
    */
   _legal(piece, r, c, owner = null) {
     if (!canPlace(this.deployMap(), this._placementOf(piece), r, c)) return false;
@@ -1029,13 +1051,14 @@ export class PlayerState {
   }
 
   /**
-   * The 'r,c' keys of the attack range of a range-bound summon's owner (player report #9 after 0.1.0: 伺夜's tactical
-   * point could be placed anywhere; PRTS 狼群 特性 "只能部署在召唤者攻击范围内"): the owner's loadout-resolved range grid
-   * (shared/loadoutRecord.js attackRangeGrid — what the deploy wheel previews) rotated by its facing around its board
-   * tile (board.js ownerRangeKeys). Null when the piece is not range-bound or its owner is not on the board (the other
-   * rules refuse such a placement).
+   * Ключи 'r,c' радиуса атаки владельца привязанного к радиусу призыва (player report #9 после 0.1.0: тактическую точку
+   * 伺夜 можно было разместить где угодно; PRTS 狼群 特性 «развёртывается только в радиусе атаки призывателя»):
+   * разрешённая с учётом настройки сетка радиуса владельца (shared/loadoutRecord.js attackRangeGrid — то, что
+   * предпросматривает колесо развёртывания), повёрнутая по его направлению вокруг его клетки на доске (board.js
+   * ownerRangeKeys). Null, когда фигура не привязана к радиусу или её владельца нет на доске (остальные правила
+   * отказывают в таком размещении).
    * @param {any} piece
-   * @param {{ key: string, piece: any, dir: string } | null} [owner] the owner's position to use instead of its current one
+   * @param {{ key: string, piece: any, dir: string } | null} [owner] позиция владельца, которую использовать вместо текущей
    * @returns {Set<string> | null}
    */
   summonRange(piece, owner = null) {
@@ -1050,13 +1073,14 @@ export class PlayerState {
   }
 
   /**
-   * Range-bound summons left outside their owner's attack range (the owner re-oriented in place, promoted, its loadout
-   * changed, moved with no room to take its summons back) go back onto their stack — a summon still inside stays
-   * [ASSUMED: the official moves every summon of a MOVED owner back, PRTS 卫戍协议/帮助 "移动干员时，其所属召唤物全部退场
-   * 并重置至手牌区"; an in-place re-orientation keeps the ones it can]. One with no stack and no free hand / temp slot
-   * leaves the board: its stack comes back at the next round start like a summon stack removed from temp at a prep
-   * deadline (startRound → grantTokensFor, "干员所属召唤物会于下一回合返还"), so no illegal placement reaches the
-   * battle. Returns the number taken off the board; a toast names them.
+   * Привязанные к радиусу призывы, оставшиеся вне радиуса атаки их владельца (владелец развёрнут на месте, повышен,
+   * его настройка изменилась, перемещён без места, чтобы забрать свои призывы), возвращаются в стек — призыв, всё ещё
+   * внутри, остаётся [ASSUMED: официально возвращает каждый призыв ПЕРЕМЕЩЁННОГО владельца, PRTS 卫戍协议/帮助 «при
+   * перемещении оперативника все его призывы уходят с поля и сбрасываются в руку»; разворот на месте сохраняет те,
+   * что может]. Тот, у которого нет ни стека, ни свободного слота в руке / временной зоне, уходит с доски: его стек
+   * вернётся в начале следующего раунда, как стек призыва, убранный из временной зоны в дедлайн подготовки
+   * (startRound → grantTokensFor, «призывы оперативника возвращаются в следующем раунде»), поэтому ни одно
+   * нелегальное размещение не доходит до боя. Возвращает количество снятых с доски; тост называет их.
    */
   _liftOutOfRange() {
     const back = [], gone = [];
@@ -1067,15 +1091,15 @@ export class PlayerState {
       this.board.delete(k);
       (this._returnToken(p, null, { allowTemp: true }) ? back : gone).push(this.gd.token(p.id)?.name || p.id);
     }
-    if (back.length) this.m.toast(this, 'warn', `${back.join('、')}只能部署在召唤者攻击范围内，已退回整备区`);
-    if (gone.length) this.m.toast(this, 'warn', `${gone.join('、')}只能部署在召唤者攻击范围内，整备区已满，下回合返还`);
+    if (back.length) this.m.toast(this, 'warn', `${back.join(', ')} могут быть развёрнуты только в радиусе атаки призывателя, возвращены в зону подготовки`);
+    if (gone.length) this.m.toast(this, 'warn', `${gone.join(', ')} могут быть развёрнуты только в радиусе атаки призывателя; зона подготовки полна, будут возвращены в следующем раунде`);
     return back.length + gone.length;
   }
 
   /**
-   * Whether every range-bound summon of `owner` that the range from (ownerKey, dir) leaves out can go back onto its
-   * stack or into a free hand / temp slot (_reorient refuses otherwise: the player's own re-orientation never costs a
-   * summon, like withdrawing one into a full hand gives HAND_FULL).
+   * Может ли каждый привязанный к радиусу призыв `owner`, оставшийся за пределами радиуса из (ownerKey, dir),
+   * вернуться в свой стек или в свободный слот руки / временной зоны (_reorient иначе отказывает: собственный разворот
+   * игрока никогда не стоит призыва, как и вывод в полную руку даёт HAND_FULL).
    */
   _roomForOutOfRange(owner, ownerKey, dir) {
     const at = { key: ownerKey, piece: owner, dir };
@@ -1096,9 +1120,9 @@ export class PlayerState {
     const occ = this.board.get(key) || null;
     if (occ === piece) return this._reorient(piece, dir);
     if (loc.area === 'board') {
-      // board → board: move or swap (the occupant must be legal on the source tile and keeps its own facing); an
-      // operator that changes its tile takes its summons off the board (back onto their stacks, _liftTokensOf) — its
-      // own summon swapped onto its old tile included, so that one needs no tile check
+      // доска → доска: ход или обмен (занявший должен быть легален на исходной клетке и сохраняет своё направление);
+      // оперативник, меняющий свою клетку, уносит свои призывы с доски (обратно в стеки, _liftTokensOf) — включая его
+      // собственный призыв, поменявшийся на его старой клетке, так что этому проверка клетки не нужна
       if (occ) {
         const [sr, sc] = parseKey(loc.key);
         const ownSummon = occ.kind === 'token' && occ.ownerUid === piece.uid;
@@ -1114,7 +1138,7 @@ export class PlayerState {
       this.recompute();
       return OK;
     }
-    // hand/temp → board
+    // рука / временная зона → доска
     if (!occ || occ.kind !== 'chess') {
       if (this.deployCount >= this.deployCap) return fail(ERR.BOARD_FULL);
     }
@@ -1136,9 +1160,9 @@ export class PlayerState {
   }
 
   /**
-   * In-place re-orientation (g.move onto the piece's own tile with a new direction). An owner's range-bound summons the
-   * new range leaves out go back onto their stack (recompute → _liftOutOfRange); HAND_FULL (nothing changes) when one
-   * of them would have nowhere to go.
+   * Разворот на месте (g.move на собственную клетку фигуры с новым направлением). Привязанные к радиусу призывы
+   * владельца, оставшиеся за пределами нового радиуса, возвращаются в стек (recompute → _liftOutOfRange); HAND_FULL
+   * (ничего не меняется), когда одному из них некуда деться.
    */
   _reorient(piece, dir) {
     if (pieceDir(piece) === dir) return OK;
@@ -1151,7 +1175,7 @@ export class PlayerState {
     return OK;
   }
 
-  /** Put a piece into the container slot described by `loc` (hand/temp idx), or anywhere free. */
+  /** Кладёт фигуру в слот контейнера, описанный `loc` (idx руки / временной зоны), или в любое свободное место. */
   _putBack(loc, piece) {
     if (loc.area === 'hand' && this.hand[loc.idx] == null) { this.hand[loc.idx] = piece; return true; }
     if (loc.area === 'temp' && this.temp[loc.idx] == null) { this._putTemp(loc.idx, piece); return true; }
@@ -1159,9 +1183,9 @@ export class PlayerState {
   }
 
   /**
-   * A board token goes back to the hand: merge into its owner's stack, else occupy a free slot. `allowTemp: false`
-   * (the player's own withdrawal): a summon stack is a card, so with a full hand and no stack to join it is refused
-   * like any other card (research 01 A1) instead of overflowing into temp.
+   * Токен с доски возвращается в руку: сливается в стек владельца, иначе занимает свободный слот. `allowTemp: false`
+   * (собственный вывод игрока): стек призыва — это карта, поэтому при полной руке и отсутствии стека, куда влиться,
+   * отказывается, как любая другая карта (research 01 A1), вместо переполнения во временную зону.
    */
   _returnToken(tok, preferLoc = null, { allowTemp = true } = {}) {
     const stack = [...this.hand, ...this.temp].find((p) => p && p.kind === 'token' && p.ownerUid === tok.ownerUid && p.id === tok.id);
@@ -1176,14 +1200,15 @@ export class PlayerState {
     if (!inField(r, c)) return fail(ERR.BAD_TILE);
     const key = tileKey(r, c);
     const occ = this.board.get(key) || null;
-    // a summon dragged onto its own owner swaps with it: a range-bound one must be inside the owner's range from the
-    // tile the owner takes (the summon's, with the owner's facing)
+    // призыв, перетащенный на своего владельца, меняется с ним местами: привязанный к радиусу должен быть внутри
+    // радиуса владельца от клетки, которую владелец занимает (клетки призыва, с направлением владельца)
     const ownerAfter = loc.area === 'board' && occ && occ !== piece && occ.uid === piece.ownerUid ? { key: loc.key, piece: occ, dir: pieceDir(occ) } : null;
     if (!this._legal(piece, r, c, ownerAfter)) return fail(ERR.BAD_TILE);
     if (occ === piece) return this._reorient(piece, dir);
     if (loc.area === 'board') {
-      // board → board: move or swap; an operator swapped onto the summon's old tile changed its tile, so its other
-      // summons go back onto their stacks like any moved operator (_liftTokensOf; the summon just placed stays)
+      // доска → доска: ход или обмен; оперативник, поменявшийся на старую клетку призыва, сменил свою клетку, поэтому
+      // его другие призывы возвращаются в стеки, как у любого перемещённого оперативника (_liftTokensOf; только что
+      // размещённый призыв остаётся)
       if (occ) {
         const [sr, sc] = parseKey(loc.key);
         if (!this._legal(occ, sr, sc)) return fail(ERR.BAD_TILE);
@@ -1198,7 +1223,7 @@ export class PlayerState {
       return OK;
     }
     if (occ) return fail(ERR.BAD_TILE, 'occupied');
-    // owner must be on the board for its summons to be deployable
+    // владелец должен быть на доске, чтобы его призывы можно было развернуть
     const owner = [...this.board.values()].find((p) => p.uid === piece.ownerUid);
     if (!owner) return fail(ERR.BAD_TARGET, 'owner not deployed');
     if ((piece.count || 1) > 1) {
@@ -1221,7 +1246,7 @@ export class PlayerState {
     if (occ === piece) return OK;
     if (piece.kind === 'token') {
       if (loc.area !== 'board') {
-        // hand/temp token stack: plain slot move / swap inside the containers
+        // стек токена в руке / временной зоне: обычный сдвиг / обмен слотами внутри контейнеров
         return this._swapContainers(loc, idx);
       }
       this.board.delete(loc.key);
@@ -1233,8 +1258,9 @@ export class PlayerState {
       return OK;
     }
     if (loc.area === 'board') {
-      // withdraw (撤退): to an empty slot, or swap with a chess occupant (which takes the board tile). The piece's own
-      // summon stacks leave the hand with it, so a slot holding one counts as free (a full hand nets zero cards)
+      // вывод (撤退): в пустой слот или обмен с оперативником-занявшим (который занимает клетку доски). Стеки
+      // собственных призывов фигуры уходят из руки вместе с ней, поэтому слот, занятый одним из них, считается
+      // свободным (полная рука даёт ноль карт в итоге)
       const ownStack = (p) => !!p && p.kind === 'token' && p.ownerUid === piece.uid;
       if (occ == null || ownStack(occ)) {
         this.board.delete(loc.key);
@@ -1243,7 +1269,7 @@ export class PlayerState {
       } else if (occ.kind === 'chess') {
         const [sr, sc] = parseKey(loc.key);
         if (!this._legal(occ, sr, sc)) return fail(ERR.BAD_TILE);
-        // the bench card takes the withdrawn piece's tile with that tile's facing
+        // карта со скамейки занимает клетку выводимой фигуры с направлением этой клетки
         occ.dir = pieceDir(piece);
         this.board.set(loc.key, occ);
         this.hand[idx] = piece;
@@ -1263,7 +1289,7 @@ export class PlayerState {
     return this._swapContainers(loc, idx);
   }
 
-  /** hand/temp → hand slot: move into an empty slot or swap with the occupant. */
+  /** рука / временная зона → слот руки: сдвиг в пустой слот или обмен с занявшим. */
   _swapContainers(loc, idx) {
     const piece = loc.piece;
     const occ = this.hand[idx];
@@ -1278,9 +1304,10 @@ export class PlayerState {
   }
 
   /**
-   * g.equip {itemUid, targetUid, replaceUid?}. A third item on a carrier with both slots used replaces the equipped item
-   * the player picked in the replace dialog (`replaceUid`, research 09 §1.2 UseEquipUp.unloadInstId; absent ⇒ the
-   * oldest); the replaced item is destroyed. A `replaceUid` that is not one of the target's equipped items is refused.
+   * g.equip {itemUid, targetUid, replaceUid?}. Третий предмет на носителе с обоими занятыми слотами заменяет
+   * экипированный предмет, который игрок выбрал в диалоге замены (`replaceUid`, research 09 §1.2 UseEquipUp.unloadInstId;
+   * без него — самый старый); заменённый предмет уничтожается. `replaceUid`, не являющийся одним из экипированных
+   * предметов цели, отклоняется.
    */
   equip(itemUid, targetUid, replaceUid = null) {
     const g = this._gate(); if (g) return g;
@@ -1300,7 +1327,7 @@ export class PlayerState {
       const ev = { item, target, golden: !!rec.isGolden, keep: false, error: null, consumed: true };
       this.m.dispatchItem(this, item, target, 'onEquip', ev);
       if (ev.error) return fail(ERR[ev.error] ? ev.error : ERR.BAD_TARGET, typeof ev.detail === 'string' ? ev.detail : undefined);
-      // the handler may have destroyed the target (信标) — resolve the item again
+      // обработчик мог уничтожить цель (信标) — ищем предмет заново
       const again = this.find(item.uid);
       if (again && again.area !== 'equipped') this._detach(again);
       if (ev.keep) {
@@ -1314,8 +1341,8 @@ export class PlayerState {
     }
     this._detach(iloc);
     if (this.completesItemMerge(item.id)) {
-      // an identical normal copy is already owned (equipped somewhere): merge instead of equipping — the golden
-      // item goes to the hand (research 04 §2 "copies in hand and on operators both count")
+      // идентичная обычная копия уже есть (экипирована где-то): сливать вместо экипировки — золотой предмет идёт
+      // в руку (research 04 §2 «копии в руке и на оперативниках обе считаются»)
       if (this._mergeItem(item.id, item)) { this.recompute(); return OK; }
       if (!this.find(item.uid)) this.stow(item, { allowTemp: true });
     }
@@ -1328,8 +1355,8 @@ export class PlayerState {
   }
 
   /**
-   * Attach an item. With both slots used the item `replaceUid` names (the player's pick) is replaced, else the oldest;
-   * the replaced item is destroyed.
+   * Прикрепляет предмет. При обоих занятых слотах заменяется предмет, названный `replaceUid` (выбор игрока), иначе
+   * самый старый; заменённый предмет уничтожается.
    */
   _attach(target, item, replaceUid = null) {
     target.items = target.items || [];
@@ -1342,7 +1369,7 @@ export class PlayerState {
     target.items.push(item);
   }
 
-  /** g.art {itemUid, row, col, dir?}: the Art's range grid is rotated by `dir` (absent ⇒ RIGHT). */
+  /** g.art {itemUid, row, col, dir?}: сетка радиуса применения поворачивается на `dir` (без него ⇒ RIGHT). */
   useArt(itemUid, row, col, dir) {
     const g = this._gate(); if (g) return g;
     const d = parseDir(dir);
@@ -1375,8 +1402,9 @@ export class PlayerState {
   }
 
   /**
-   * g.destroy {uid}: an item in the hand / temp (Arts included). Equipped items are locked (research 04 §2 / addendum:
-   * they leave the operator only on promotion, merge or sale); replacing one is g.equip's `replaceUid`.
+   * g.destroy {uid}: предмет в руке / временной зоне (применения тоже). Экипированные предметы заблокированы
+   * (research 04 §2 / дополнение: они покидают оперативника только при повышении, слиянии или продаже); замена одного
+   * из них — это `replaceUid` из g.equip.
    */
   destroy(uid) {
     const g = this._gate(); if (g) return g;
@@ -1426,7 +1454,8 @@ export class PlayerState {
     if (on && !this.tempEmpty) return fail(ERR.TEMP_NOT_EMPTY);
     if (this.ready === !!on) return OK;
     this.ready = !!on;
-    // un-ready: the player can act again, so what overflowed while it was ready is due at this prep's deadline
+    // снятие готовности: игрок снова может действовать, поэтому то, что переполнилось, пока он был готов, должно
+    // быть разрешено в дедлайн этой подготовки
     if (!on) for (const p of this.temp) if (p && this.tempDue(p) > this.prepsEnded) this._tempDue.set(p.uid, this.prepsEnded);
     this.dirty();
     this.m.onReadyChanged(this);
@@ -1434,11 +1463,12 @@ export class PlayerState {
   }
 
   /**
-   * Prep deadline: every temp piece due at this prep (tempDue ≤ prepsEnded) is resolved — a chess is sold back (its
-   * pool copies return, its summons are removed), items are destroyed, the summon stack of an owner still on the board
-   * is removed and comes back at the next round start (startRound → grantTokensFor; PRTS "干员所属召唤物会于下一回合
-   * 返还"). Pieces that overflowed after the player could no longer act on them (after Ready, at the prep end) are kept
-   * for the next prep.
+   * Дедлайн подготовки: каждая фигура во временной зоне, должная в этой подготовке (tempDue ≤ prepsEnded),
+   * разрешается — оперативник продаётся обратно (его копии из пула возвращаются, его призывы удаляются), предметы
+   * уничтожаются, стек призыва владельца, всё ещё находящегося на доске, удаляется и возвращается в начале следующего
+   * раунда (startRound → grantTokensFor; PRTS «призывы оперативника возвращаются в следующем раунде»). Фигуры,
+   * переполнившиеся после того, как игрок уже не мог действовать (после готовности, в конце подготовки), сохраняются
+   * на следующую подготовку.
    */
   resolveTemp() {
     let changed = false;
@@ -1457,24 +1487,26 @@ export class PlayerState {
   }
 
   // =================================================================================================
-  // round lifecycle helpers (called by Match)
+  // вспомогательные функции жизненного цикла раунда (вызывает Match)
 
   startRound(r) {
     this.round = { refreshes: 0, buys: 0, sells: 0, spent: 0, gainedChess: 0, arts: 0 };
-    this.pendingLayerGains = null; // settled (or lapsed) at the last SETTLE
+    this.pendingLayerGains = null; // разрешено (или истекло) в последнем РАСЧЁТЕ
     if (r > 1) this.shop.upgradePrice = Math.max(0, this.shop.upgradePrice - 1);
-    // onIncome handlers may rewrite ev.income / ev.pending (e.g. 老鲤 withholds R1–R2 income until R3)
+    // обработчики onIncome могут перезаписать ev.income / ev.pending (например, 老鲤 удерживает доход R1–R2 до R3)
     const ev = { round: r, income: this.gd.income(r), pending: this.pendingFunds };
     this.pendingFunds = 0;
     this.m.dispatch(this, 'onIncome', ev);
     const nonNeg = (v) => (Number.isFinite(v) && v > 0 ? Math.trunc(v) : 0);
     this.addFunds(nonNeg(ev.income) + nonNeg(ev.pending), { reason: 'income' });
-    // temp is NOT wiped here: the last prep's deadline resolved what the player could act on (endPrep); what overflowed
-    // after it (battle-result grants, SETTLE merges, returned equipment) is shown and usable in this prep (tempDue).
-    // Likewise reward offers of the last prep already expired at its end; what is still queued was earned after it —
-    // a merge completed during SETTLE / the Final Assault (突变细胞, battle-result grants) — and is shown in this prep
+    // временная зона НЕ очищается здесь: дедлайн последней подготовки разрешил то, с чем игрок мог действовать
+    // (endPrep); то, что переполнилось после него (выдачи из результата боя, слияния в РАСЧЁТЕ, возвращённое
+    // снаряжение), показывается и доступно в этой подготовке (tempDue). Так же предложения награды прошлой подготовки
+    // уже истекли в её конце; то, что всё ещё в очереди, было получено после неё — слияние, завершённое во время
+    // РАСЧЁТА / Финального штурма (突变细胞, выдачи из результата боя) — и показывается в этой подготовке
     this.ready = false;
-    // summon stacks removed from temp at the last prep deadline come back (PRTS 卫戍协议/帮助 §手牌区); full hand ⇒ temp
+    // стеки призывов, убранные из временной зоны в дедлайн последней подготовки, возвращаются (PRTS 卫戍协议/帮助
+    // §手牌区); полная рука ⇒ временная зона
     for (const p of [...this.board.values()]) if (p.kind === 'chess') this.grantTokensFor(p);
     this.rollShop({ keepFrozen: true });
     this.shop.frozen = false;
@@ -1483,8 +1515,9 @@ export class PlayerState {
   }
 
   /**
-   * Prep deadline (Match.endPrep, after the <休整期结束时> onPrepEnd effects): the temp pieces due at this prep are
-   * resolved; what overflowed after Ready or during onPrepEnd stays for the next prep, which `prepsEnded` now names.
+   * Дедлайн подготовки (Match.endPrep, после эффектов onPrepEnd <в конце фазы отдыха>): фигуры во временной зоне,
+   * должные в этой подготовке, разрешаются; то, что переполнилось после готовности или во время onPrepEnd, остаётся
+   * на следующую подготовку, которую `prepsEnded` теперь называет.
    */
   endPrep() {
     this.resolveTemp();
@@ -1497,8 +1530,6 @@ export class PlayerState {
     this.dirty();
   }
 
-  // `effects` are kept: a 信标 gift still pending is delivered to the teammate at the next round start (builtin_gift is
-  // flagged afterElimination — GitHub #86); nothing else of an eliminated player is dispatched.
   eliminate(round) {
     this.alive = false;
     this.ready = false;
@@ -1521,7 +1552,7 @@ export class PlayerState {
   }
 
   recompute() {
-    this.deployMap(); // a change of the deploy field (a boss round's prep) marks the legality stale
+    this.deployMap(); // смена поля развёртывания (подготовка раунда с лидером) помечает легальность устаревшей
     if (this._legalityStale) this._evictIllegal();
     this._liftOutOfRange();
     this.bonds = computeBonds(this.gd, this);
@@ -1531,38 +1562,32 @@ export class PlayerState {
   activatedLayers() { return activatedLayers(this.bonds); }
 
   /**
-   * The bond states the views show (m.private bonds, m.public players[].bonds): the computed states plus the pending
-   * in-battle gains of this round's finished normal battle (bondsMeta.bondsWithGains). The 联防 field fights with them too
-   * (battleInput `reached`); no other rule reads them.
+   * Состояния альянсов, которые показывают виды (m.private bonds, m.public players[].bonds): вычисленные состояния
+   * плюс незавершённые боевые приросты этого раунда из завершённого обычного боя (bondsMeta.bondsWithGains). Никогда
+   * не используется правилами.
    */
   bondsView() { return bondsWithGains(this.bonds, this.pendingLayerGains); }
 
   // =================================================================================================
-  // battle input
+  // вход в бой
 
-  /**
-   * `reached`: the bonds carry the layers this round's own combat reached (bondsView: the pending in-battle gains, capped
-   * like settle()) — the 联防 field (unite.js; PRTS 卫戍协议/帮助 §联防阶段 "将以其阵地当前的状态", [ASSUMED] the current
-   * state includes those layers, as the strip shows them). The gains stay pending: settle() adds them once.
-   */
-  battleInput({ side = 'L', colOffset = 0, carry = null, reached = false } = {}) {
-    // a terrain change not yet followed by a recompute (a content hook at the prep end) never fields an illegal board
+  battleInput({ side = 'L', colOffset = 0, carry = null } = {}) {
+    // изменение рельефа, за которым ещё не последовало recompute (хук контента в конце подготовки), никогда не
+    // выставляет нелегальную доску
     this.deployMap();
     if (this._legalityStale) this.recompute();
     const units = [];
     for (const { r, c, piece } of boardOrder(this.board)) {
       if (piece.kind === 'chess') {
         const u = { uid: piece.uid, kind: 'chess', chessId: piece.id, row: r, col: c, dir: pieceDir(piece), items: (piece.items || []).map((i) => i.id) };
-        // DESIGN §16: the equipped skill / module (elite only) from the loadout (defaults when absent)
+        // DESIGN §16: экипированный навык / модуль (только элитный) из настройки (при отсутствии — значения по умолчанию)
         const lo = this.loadoutFor(this.gd.chess(piece.id));
         u.skillIndex = lo.skillIndex;
         u.moduleId = lo.moduleId;
         if (carry && carry.has(piece.uid)) u.carryState = carry.get(piece.uid);
         units.push(u);
       } else if (piece.kind === 'token') {
-        const u = { uid: piece.uid, kind: 'token', tokenId: piece.id, row: r, col: c, dir: pieceDir(piece), ownerUid: piece.ownerUid };
-        if (carry && carry.has(piece.uid)) u.carryState = carry.get(piece.uid); // 联防: { sp } (unite.js)
-        units.push(u);
+        units.push({ uid: piece.uid, kind: 'token', tokenId: piece.id, row: r, col: c, dir: pieceDir(piece), ownerUid: piece.ownerUid });
       }
     }
     return {
@@ -1571,7 +1596,7 @@ export class PlayerState {
       side,
       colOffset,
       units,
-      bonds: bondSnapshot(reached ? this.bondsView() : this.bonds),
+      bonds: bondSnapshot(this.bonds),
       bandId: this.bandId,
       playerEffects: this.effects.filter((e) => e.battle !== false).map((e) => ({
         id: e.id, key: e.key ?? null, source: e.iconKind ?? null, params: e.params ?? null, counter: e.counter ?? null, data: e.data ?? null,
@@ -1581,7 +1606,7 @@ export class PlayerState {
   }
 
   // =================================================================================================
-  // views
+  // виды
 
   pieceView(p, rc = null) {
     const rec = p.kind === 'item' ? this.gd.item(p.id) : p.kind === 'token' ? this.gd.token(p.id) : this.gd.chess(p.id);
@@ -1610,14 +1635,14 @@ export class PlayerState {
       out.push(v);
     }
     for (const b of this.bounties) {
-      // the battles the bounty's enemies still come for (an official multi-round card: every battle, no counter) and
-      // the card's official rich text (blue "下场作战" / "两场作战", red "每场"; a multi-round card reads as long as it
-      // lasts — choices.js bountyText, MULTI_ROUND_BOUNTY_BATTLES) — user playtest #6 item 4
+      // бои, за которыми ещё придут враги контракта (официальная многораундовая карта: каждый бой, без счётчика), и
+      // официальный rich-text карточки (синие «следующий бой» / «два боя», красное «каждый бой»; многораундовая карта
+      // читается так, пока длится — choices.js bountyText, MULTI_ROUND_BOUNTY_BATTLES) — user playtest #6 item 4
       const left = b.roundsLeft >= 90 ? null : b.roundsLeft;
       const eff = b.card.effectId ? this.gd.effect(b.card.effectId) : null;
       out.push({
-        id: b.id, name: b.card.name || '悬赏', desc: bountyText((eff && eff.descRaw) || b.card.desc || '', b.card), iconKind: 'choice', iconId: b.card.effectId || 'bounty',
-        counter: left, counterText: left == null ? '之后的每场作战' : `还剩 ${left} 场作战`,
+        id: b.id, name: b.card.name || 'Контракт', desc: bountyText((eff && eff.descRaw) || b.card.desc || '', b.card), iconKind: 'choice', iconId: b.card.effectId || 'bounty',
+        counter: left, counterText: left == null ? 'В каждом последующем бою' : `Осталось боёв: ${left}`,
       });
     }
     return out;
@@ -1647,8 +1672,8 @@ export class PlayerState {
         freeRefreshes: this.shop.freeRefreshes,
         frozen: this.shop.frozen,
         slots,
-        // `source` 'merge' = the promotion reward (晋升奖励); any other offer (a strategy, an item, a 特质) carries the
-        // `label` the bar shows instead; `queued` = offers waiting behind it (player report #6 after 0.1.0)
+        // `source` 'merge' = награда за повышение (晋升奖励); любое другое предложение (стратегия, предмет, 特质)
+        // несёт `label`, который показывает панель; `queued` = предложения, ждущие за ним (player report #6 после 0.1.0)
         rewardOffer: offer ? { tier: offer.tier, source: offer.source === 'merge' ? 'merge' : 'special', label: offer.label || null, queued: this.offers.length - 1, slots: offer.slots.map((s) => ({ kind: s.kind === 'item' ? 'item' : 'chess', id: s.id, price: s.price, sold: !!s.sold })) } : null,
       },
       hand: this.hand.map((p) => (p ? this.pieceView(p) : null)),
@@ -1656,11 +1681,10 @@ export class PlayerState {
       board,
       deployCap: this.deployCap,
       deployCount: this.deployCount,
-      // + the mode-off bonds it has members of (`off: true`, the strip's grey 本局禁用 discs — bondsMeta.offBondCounts)
-      bonds: bondList(this.gd, this.bondsView(), { full: true, off: offBondCounts(this.gd, this) }),
+      bonds: bondList(this.gd, this.bondsView(), { full: true }),
       effects: this.effectsView(),
       nextEnemies: this.m.nextEnemiesFor(this),
-      // DESIGN §16: the effective operator loadout ({ [baseChessId]: { skill, module } }; chess not listed use defaults)
+      // DESIGN §16: действующая настройка оперативников ({ [baseChessId]: { skill, module } }; не перечисленные — значения по умолчанию)
       loadout: this.loadout,
       stats: {
         dmgDealt: Math.round(this.stats.dmgDealt), kills: this.stats.kills, leaks: this.stats.leaks, gold: this.stats.gold,

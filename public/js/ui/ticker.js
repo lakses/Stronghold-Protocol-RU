@@ -1,10 +1,10 @@
 // Broadcast ticker (m.ticker): a strip under the top bar; each line slides in from the right, stays
 // TICKER_MS and leaves; queued lines play by their broadcast priority, first in first out among equals (QUEUE_MAX kept;
 // enqueueTickerLines).
-// A leader-damage line (BOSS_HIT "{0}博士对敌方领袖造成的伤害超过X%!") is news about the leader in play: it is dropped,
+// A leader-damage line (BOSS_HIT "{0}Доктор нанёс вражескому лидеру более X% урона!") is news about the leader in play: it is dropped,
 // queued or on screen, once the round it came in is over — the queue can lag a line by up to QUEUE_MAX × TICKER_MS, and
-// a Final Assault line must never play over the Hidden Core's fresh leader (player report after 0.1.0: "隐藏boss还没打
-// 就出了造成50%伤害播报"). A player's newer BOSS_HIT line of the same round supersedes their older one, queued or on
+// a Final Assault line must never play over the Hidden Core's fresh leader (player report after 0.1.0: «о скрытом боссе
+// ещё ни слова, а уже сыплются сообщения о 50 % урона»). A player's newer BOSS_HIT line of the same round supersedes their older one, queued or on
 // screen (it names a higher threshold: the server announces each player's thresholds once each, rising), so a burst
 // finish shows its highest milestone before the round ends. Lines carry `type`, `playerId` and `round` from main.js
 // (the m.ticker handler). The queue rules are the pure helpers below (test/ui/bosshit-ticker.test.js).
@@ -49,7 +49,7 @@ const prio = (t) => (t && typeof t.priority === 'number' && Number.isFinite(t.pr
 
 /**
  * Takes `fresh` lines in: a line that supersedes the one on screen replaces it there, one that supersedes a queued line
- * replaces that line; every other line queues by priority — research 06 §9.2 "The highest priority wins": BOSS_HIT 30 >
+ * replaces that line; every other line queues by priority — research 06 §9.2 «The highest priority wins»: BOSS_HIT 30 >
  * CHAR_DAMAGE 20 > SHOP_LEVEL 11 > GOLDEN_CHAR 2 > CHAR_GIFT 1, the remake's own notices between (server Match
  * FLOW_TICKER_PRIORITY) or 0 — behind the queued lines of its priority or higher (first in, first out among equals). The
  * line on screen is never cut short. Past `max` queued lines the lowest priority's oldest goes. Until 0.1.1 the queue
