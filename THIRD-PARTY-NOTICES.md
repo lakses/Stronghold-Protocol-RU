@@ -1,256 +1,223 @@
-# Third-party notices（第三方组件声明）
+# Уведомления о сторонних компонентах (Third-party notices)
 
-Stronghold Protocol's own code is licensed under **GPL-3.0-or-later** (see [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md)).
-The components below are **not** part of that grant: each stays under its own licence, reproduced at the end of this
-file. Nothing here is committed to the repository except `tools/local-extract/aklz4.py`; the client libraries are
-installed by npm and copied into `public/vendor/` by `tools/vendor.mjs` (postinstall), and the release bundle carries
-them (with `node_modules/`, which keeps each package's own licence file).
+Собственный код Stronghold Protocol распространяется под лицензией **GPL-3.0-or-later** (см. [LICENSE](LICENSE) и [NOTICE.md](NOTICE.md)).
+Приведенные ниже компоненты **не** входят в это разрешение: каждый из них остается под своей собственной лицензией, текст которой воспроизведен в конце этого файла. В репозиторий ничего из этого не коммитится, за исключением `tools/local-extract/aklz4.py`; клиентские библиотеки устанавливаются через npm и копируются в `public/vendor/` с помощью `tools/vendor.mjs` (postinstall), а релизный пакет содержит их (вместе с `node_modules/`, что сохраняет файлы лицензий каждого пакета).
 
-本项目自己的代码采用 GPL-3.0-or-later；下列第三方组件各自保留原许可证，不受 GPL 约束。
+Собственный код этого проекта распространяется под лицензией GPL-3.0-or-later; следующие сторонние компоненты сохраняют свои оригинальные лицензии и не подпадают под действие GPL.
 
-## Software
+## Программное обеспечение
 
-| Component | Version | Licence | Where it is used | In the repository | In the release bundle |
+| Компонент | Версия | Лицензия | Где используется | В репозитории | В релизном пакете |
 |---|---|---|---|---|---|
-| [PixiJS](https://github.com/pixijs/pixijs) | 7.4.2 | MIT | browser renderer — `public/vendor/pixi.min.js` | no (npm) | yes |
-| [pixi-spine](https://github.com/pixijs/spine) | 4.0.6 | MIT banner; contains the **Spine Runtimes**, under the **Spine Runtimes License Agreement** (package licence "SEE SPINE-LICENSE") | Spine model playback — `public/vendor/pixi-spine.js` | no (npm) | yes |
-| [Preact](https://github.com/preactjs/preact) | 10.29.8 | MIT | UI — `public/vendor/preact.module.js`, `hooks.module.js` | no (npm) | yes |
-| [htm](https://github.com/developit/htm) | 3.1.1 | Apache-2.0 | UI templates — `public/vendor/htm.module.js` | no (npm) | yes |
-| [three.js](https://github.com/mrdoob/three.js) | 0.186.1 | MIT | official 3D board — `public/vendor/three.core.js`, `three.module.js` | no (npm) | yes |
-| [ws](https://github.com/websockets/ws) | 8.22.0 | MIT | WebSocket server (`server/`) | no (npm) | yes (`node_modules/`) |
-| [puppeteer-core](https://github.com/puppeteer/puppeteer) | 25.12.0 | Apache-2.0 | optional browser tests (dev dependency) | no (npm) | no |
-| [Ark-Unpacker](https://github.com/isHarryh/Ark-Unpacker) LZ4AK decoder | — | BSD-3-Clause | `tools/local-extract/aklz4.py` (optional local extraction) | **yes** — keeps its notice; full text also in `tools/local-extract/LICENSE-Ark-Unpacker.txt` | yes |
-| [UnityPy](https://github.com/K0lb3/UnityPy) (via MooncellWiki/UnityPy), [lz4](https://github.com/python-lz4/python-lz4), [Pillow](https://github.com/python-pillow/Pillow) | see `tools/local-extract/requirements.txt` | MIT / BSD-3-Clause / MIT-CMU | optional local extraction; installed by pip into `.venv-extract` only when the host opts in | no | no |
+| [PixiJS](https://github.com/pixijs/pixijs) | 7.4.2 | MIT | Браузерный рендерер — `public/vendor/pixi.min.js` | нет (npm) | да |
+| [pixi-spine](https://github.com/pixijs/spine) | 4.0.6 | Баннер MIT; содержит **Spine Runtimes** под **Spine Runtimes License Agreement** (лицензия пакета "SEE SPINE-LICENSE") | Воспроизведение моделей Spine — `public/vendor/pixi-spine.js` | нет (npm) | да |
+| [Preact](https://github.com/preactjs/preact) | 10.29.8 | MIT | Интерфейс — `public/vendor/preact.module.js`, `hooks.module.js` | нет (npm) | да |
+| [htm](https://github.com/developit/htm) | 3.1.1 | Apache-2.0 | Шаблоны интерфейса — `public/vendor/htm.module.js` | нет (npm) | да |
+| [three.js](https://github.com/mrdoob/three.js) | 0.186.1 | MIT | Официальная 3D-доска — `public/vendor/three.core.js`, `three.module.js` | нет (npm) | да |
+| [ws](https://github.com/websockets/ws) | 8.22.0 | MIT | Сервер WebSocket (`server/`) | нет (npm) | да (`node_modules/`) |
+| [puppeteer-core](https://github.com/puppeteer/puppeteer) | 25.12.0 | Apache-2.0 | Опциональные браузерные тесты (dev-зависимость) | нет (npm) | нет |
+| [Ark-Unpacker](https://github.com/isHarryh/Ark-Unpacker) декодер LZ4AK | — | BSD-3-Clause | `tools/local-extract/aklz4.py` (опциональное локальное извлечение) | **да** — сохраняет свое уведомление; полный текст также в `tools/local-extract/LICENSE-Ark-Unpacker.txt` | да |
+| [UnityPy](https://github.com/K0lb3/UnityPy) (через MooncellWiki/UnityPy), [lz4](https://github.com/python-lz4/python-lz4), [Pillow](https://github.com/python-pillow/Pillow) | см. `tools/local-extract/requirements.txt` | MIT / BSD-3-Clause / MIT-CMU | Опциональное локальное извлечение; устанавливается через pip в `.venv-extract` только при согласии хоста | нет | нет |
 
-The Spine Runtimes License requires, among other things, that redistributions include its licence and copyright notice
-(reproduced below) and that "each user of the Products must obtain their own Spine Editor license" unless the
-integration is covered by the Spine Editor License Agreement — read it before redistributing. To allow the combination
-at all, this project grants an additional permission under GPL-3.0 section 7 for linking with the Spine Runtimes (see
-[NOTICE.md](NOTICE.md)).
+Лицензия Spine Runtimes требует, среди прочего, чтобы при распространении включались ее лицензия и уведомление об авторских правах (воспроизведены ниже), а также чтобы «каждый пользователь Продуктов получил свою собственную лицензию на Spine Editor», если интеграция не покрывается Лицензионным соглашением Spine Editor — прочтите его перед распространением. Чтобы вообще допустить такое сочетание, этот проект предоставляет дополнительное разрешение в соответствии с разделом 7 GPL-3.0 на связывание с Spine Runtimes (см. [NOTICE.md](NOTICE.md)).
 
-## Fonts
+## Шрифты
 
-| Font | Licence | How it gets here |
+| Шрифт | Лицензия | Как он здесь оказался |
 |---|---|---|
-| Bender (Jovanny Lemonad / Oleg Zhuravlev, Gladkikh Ivan) | the authors' free-font terms (not GPL) | downloaded by `tools/fetch-assets.mjs` from [TimWangZi/The-font-of-Arknights](https://github.com/TimWangZi/The-font-of-Arknights) into `public/fonts/` (included in the release bundle) |
-| Novecento Wide (Jan Tonellato / Synthview) | the authors' free-font terms (not GPL) | as above |
-| Noto Sans SC, Oxanium, Rajdhani | SIL Open Font License 1.1 | loaded by the browser from Google Fonts at runtime; not distributed |
+| Bender (Jovanny Lemonad / Oleg Zhuravlev, Gladkikh Ivan) | условия свободного использования шрифта от авторов (не GPL) | загружается `tools/fetch-assets.mjs` из [TimWangZi/The-font-of-Arknights](https://github.com/TimWangZi/The-font-of-Arknights) в `public/fonts/` (включен в релизный пакет) |
+| Novecento Wide (Jan Tonellato / Synthview) | условия свободного использования шрифта от авторов (не GPL) | как указано выше |
+| Noto Sans SC, Oxanium, Rajdhani | SIL Open Font License 1.1 | загружается браузером из Google Fonts во время выполнения; не распространяется |
 
-## Game data, art and audio
+## Игровые данные, графика и аудио
 
-All names, characters, artwork, Spine models, UI graphics, music, sound effects and game data of *Arknights* /
-「卫戍协议：盟约」 are © Shanghai Hypergryph Network Technology Co., Ltd. (上海鹰角网络科技有限公司) and its licensors
-(Yostar and others). They are **not** licensed under the GPL and this project grants no rights to them; see
-[NOTICE.md](NOTICE.md) for the non-commercial terms. Community mirrors used by `tools/fetch-assets.mjs` /
-`tools/build-data.mjs`: [Kengxxiao/ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData),
-[yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource),
-[fexli/ArknightsResource](https://github.com/fexli/ArknightsResource),
-[isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models),
-[ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2) — thanks to their maintainers.
-Quotations of PRTS Wiki, BWIKI, NGA, 巴哈姆特 and other community pages in `docs/` stay under the terms of their
-sources (the wikis' texts are CC BY-NC-SA).
+Все названия, персонажи, иллюстрации, модели Spine, графика интерфейса, музыка, звуковые эффекты и игровые данные *Arknights* / 「卫戍协议：盟约」 являются © Shanghai Hypergryph Network Technology Co., Ltd. (上海鹰角网络科技有限公司) и его лицензиарами (Yostar и другие). Они **не** лицензированы под GPL, и этот проект не предоставляет никаких прав на них; см. [NOTICE.md](NOTICE.md) для ознакомления с условиями некоммерческого использования. Зеркала сообщества, используемые `tools/fetch-assets.mjs` / `tools/build-data.mjs`: [Kengxxiao/ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData), [yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource), [fexli/ArknightsResource](https://github.com/fexli/ArknightsResource), [isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models), [ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2) — спасибо их сопровождающим. Цитаты из PRTS Wiki, BWIKI, NGA, 巴哈姆特 и других страниц сообщества в `docs/` остаются под условиями их источников (тексты вики распространяются по лицензии CC BY-NC-SA).
 
 ---
 
-## Licence texts
+## Тексты лицензий
 
 ### PixiJS — MIT
 
 ```text
-The MIT License
+Лицензия MIT
 
 Copyright (c) 2013-2023 Mathew Groves, Chad Engler
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Настоящим предоставляется бесплатное разрешение любому лицу, получившему копию
+данного программного обеспечения и связанных с ним файлов документации (далее —
+«Программное обеспечение»), безвозмездно распоряжаться Программным обеспечением
+без ограничений, включая, помимо прочего, права на использование, копирование,
+изменение, объединение, публикацию, распространение, сублицензирование и/или
+продажу копий Программного обеспечения, а также разрешать лицам, которым
+предоставляется Программное обеспечение, делать то же самое при соблюдении
+следующих условий:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+Указанное выше уведомление об авторских правах и данное уведомление о разрешении
+должны быть включены во все копии или существенные части Программного обеспечения.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-```
+ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ,
+ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ГАРАНТИИ ТОВАРНОЙ
+ПРИГОДНОСТИ, СООТВЕТСТВИЯ ОПРЕДЕЛЕННОМУ НАЗНАЧЕНИЮ И ОТСУТСТВИЯ НАРУШЕНИЙ ПРАВ.
+НИ В КОЕМ СЛУЧАЕ АВТОРЫ ИЛИ ПРАВООБЛАДАТЕЛИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ПО ЛЮБЫМ
+ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
+ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
+ИНЫХ ДЕЙСТВИЙ С НИМ.
 
-### pixi-spine — Spine Runtimes License Agreement (node_modules/pixi-spine/SPINE-LICENSE)
-
-```text
-Spine Runtimes License Agreement
-Last updated January 1, 2020. Replaces all prior versions.
+Лицензионное соглашение Spine Runtimes
+Последнее обновление: 1 января 2020 г. Заменяет все предыдущие версии.
 
 Copyright (c) 2013-2020, Esoteric Software LLC
 
-Integration of the Spine Runtimes into software or otherwise creating
-derivative works of the Spine Runtimes is permitted under the terms and
-conditions of Section 2 of the Spine Editor License Agreement:
+Интеграция Spine Runtimes в программное обеспечение или иное создание
+производных произведений Spine Runtimes разрешено на условиях раздела 2
+Лицензионного соглашения Spine Editor:
 http://esotericsoftware.com/spine-editor-license
 
-Otherwise, it is permitted to integrate the Spine Runtimes into software
-or otherwise create derivative works of the Spine Runtimes (collectively,
-"Products"), provided that each user of the Products must obtain their own
-Spine Editor license and redistribution of the Products in any form must
-include this license and copyright notice.
+В противном случае разрешается интегрировать Spine Runtimes в программное
+обеспечение или иным образом создавать производные произведения Spine Runtimes
+(совместно именуемые «Продукты») при условии, что каждый пользователь Продуктов
+должен получить свою собственную лицензию Spine Editor, а распространение
+Продуктов в любой форме должно включать данную лицензию и уведомление об
+авторских правах.
 
-THE SPINE RUNTIMES ARE PROVIDED BY ESOTERIC SOFTWARE LLC "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL ESOTERIC SOFTWARE LLC BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES,
-BUSINESS INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-```
+SPINE RUNTIMES ПРЕДОСТАВЛЯЮТСЯ КОМПАНИЕЙ ESOTERIC SOFTWARE LLC «КАК ЕСТЬ», И ЛЮБЫЕ
+ЯВНЫЕ ИЛИ ПОДРАЗУМЕВАЕМЫЕ ГАРАНТИИ, ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ПОДРАЗУМЕВАЕМЫЕ
+ГАРАНТИИ ТОВАРНОЙ ПРИГОДНОСТИ И СООТВЕТСТВИЯ ОПРЕДЕЛЕННОМУ НАЗНАЧЕНИЮ,
+ИСКЛЮЧАЮТСЯ. НИ В КОЕМ СЛУЧАЕ ESOTERIC SOFTWARE LLC НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА
+ЛЮБЫЕ ПРЯМЫЕ, КОСВЕННЫЕ, СЛУЧАЙНЫЕ, ОСОБЫЕ, ШТРАФНЫЕ ИЛИ КОСВЕННЫЕ УБЫТКИ
+(ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ПРИОБРЕТЕНИЕ ЗАМЕНЯЮЩИХ ТОВАРОВ ИЛИ УСЛУГ, ПОТЕРЮ
+ДАННЫХ ИЛИ ПРИБЫЛИ, ПРЕРЫВАНИЕ ДЕЯТЕЛЬНОСТИ), ВОЗНИКШИЕ ЛЮБЫМ ОБРАЗОМ ИЗ
+ИСПОЛЬЗОВАНИЯ SPINE RUNTIMES, ДАЖЕ ЕСЛИ БЫЛО СООБЩЕНО О ВОЗМОЖНОСТИ ТАКОГО УЩЕРБА.
 
-### Preact — MIT
-
-```text
-The MIT License (MIT)
+Лицензия MIT
 
 Copyright (c) 2015-present Jason Miller
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Настоящим предоставляется бесплатное разрешение любому лицу, получившему копию
+данного программного обеспечения и связанных с ним файлов документации (далее —
+«Программное обеспечение»), безвозмездно распоряжаться Программным обеспечением
+без ограничений, включая, помимо прочего, права на использование, копирование,
+изменение, объединение, публикацию, распространение, сублицензирование и/или
+продажу копий Программного обеспечения, а также разрешать лицам, которым
+предоставляется Программное обеспечение, делать то же самое при соблюдении
+следующих условий:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Указанное выше уведомление об авторских правах и данное уведомление о разрешении
+должны быть включены во все копии или существенные части Программного обеспечения.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ,
+ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ГАРАНТИИ ТОВАРНОЙ
+ПРИГОДНОСТИ, СООТВЕТСТВИЯ ОПРЕДЕЛЕННОМУ НАЗНАЧЕНИЮ И ОТСУТСТВИЯ НАРУШЕНИЙ ПРАВ.
+НИ В КОЕМ СЛУЧАЕ АВТОРЫ ИЛИ ПРАВООБЛАДАТЕЛИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ПО ЛЮБЫМ
+ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
+ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
+ИНЫХ ДЕЙСТВИЙ С НИМ.
 
-### three.js — MIT
-
-```text
-The MIT License
+Лицензия MIT
 
 Copyright © 2010-2026 three.js authors
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Настоящим предоставляется бесплатное разрешение любому лицу, получившему копию
+данного программного обеспечения и связанных с ним файлов документации (далее —
+«Программное обеспечение»), безвозмездно распоряжаться Программным обеспечением
+без ограничений, включая, помимо прочего, права на использование, копирование,
+изменение, объединение, публикацию, распространение, сублицензирование и/или
+продажу копий Программного обеспечения, а также разрешать лицам, которым
+предоставляется Программное обеспечение, делать то же самое при соблюдении
+следующих условий:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+Указанное выше уведомление об авторских правах и данное уведомление о разрешении
+должны быть включены во все копии или существенные части Программного обеспечения.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-```
+ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ,
+ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ГАРАНТИИ ТОВАРНОЙ
+ПРИГОДНОСТИ, СООТВЕТСТВИЯ ОПРЕДЕЛЕННОМУ НАЗНАЧЕНИЮ И ОТСУТСТВИЯ НАРУШЕНИЙ ПРАВ.
+НИ В КОЕМ СЛУЧАЕ АВТОРЫ ИЛИ ПРАВООБЛАДАТЕЛИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ПО ЛЮБЫМ
+ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
+ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
+ИНЫХ ДЕЙСТВИЙ С НИМ.
 
-### ws — MIT
-
-```text
 Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>
 Copyright (c) 2013 Arnout Kazemier and contributors
 Copyright (c) 2016 Luigi Pinca and contributors
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
+Настоящим предоставляется бесплатное разрешение любому лицу, получившему копию
+данного программного обеспечения и связанных с ним файлов документации (далее —
+«Программное обеспечение»), безвозмездно распоряжаться Программным обеспечением
+без ограничений, включая, помимо прочего, права на использование, копирование,
+изменение, объединение, публикацию, распространение, сублицензирование и/или
+продажу копий Программного обеспечения, а также разрешать лицам, которым
+предоставляется Программное обеспечение, делать то же самое при соблюдении
+следующих условий:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Указанное выше уведомление об авторских правах и данное уведомление о разрешении
+должны быть включены во все копии или существенные части Программного обеспечения.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-```
+ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ,
+ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ГАРАНТИИ ТОВАРНОЙ
+ПРИГОДНОСТИ, СООТВЕТСТВИЯ ОПРЕДЕЛЕННОМУ НАЗНАЧЕНИЮ И ОТСУТСТВИЯ НАРУШЕНИЙ ПРАВ.
+НИ В КОЕМ СЛУЧАЕ АВТОРЫ ИЛИ ПРАВООБЛАДАТЕЛИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ПО ЛЮБЫМ
+ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
+ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
+ИНЫХ ДЕЙСТВИЙ С НИМ.
 
-### Ark-Unpacker (tools/local-extract/aklz4.py) — BSD-3-Clause
-
-```text
-BSD 3-Clause License
+Лицензия BSD 3-Clause
 
 Copyright (c) 2022, Harry Huang
-All rights reserved.
+Все права защищены.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+Распространение и использование в исходной и бинарной формах, с изменениями или
+без них, разрешены при соблюдении следующих условий:
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
+1. При распространении исходного кода должны сохраняться вышеуказанное
+   уведомление об авторских правах, данный список условий и следующий отказ от
+   ответственности.
 
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+2. При распространении в бинарной форме должны воспроизводиться вышеуказанное
+   уведомление об авторских правах, данный список условий и следующий отказ от
+   ответственности в документации и/или других материалах, поставляемых с
+   распространением.
 
-3. Neither the name of the copyright holder nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
+3. Ни название правообладателя, ни имена его участников не могут быть
+   использованы для подтверждения или продвижения продуктов, созданных на
+   основе данного программного обеспечения, без специального предварительного
+   письменного разрешения.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-```
+ДАННОЕ ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ ПРАВООБЛАДАТЕЛЯМИ И УЧАСТНИКАМИ
+«КАК ЕСТЬ», И ЛЮБЫЕ ЯВНЫЕ ИЛИ ПОДРАЗУМЕВАЕМЫЕ ГАРАНТИИ, ВКЛЮЧАЯ, ПОМИМО
+ПРОЧЕГО, ПОДРАЗУМЕВАЕМЫЕ ГАРАНТИИ ТОВАРНОЙ ПРИГОДНОСТИ И СООТВЕТСТВИЯ
+ОПРЕДЕЛЕННОМУ НАЗНАЧЕНИЮ, ИСКЛЮЧАЮТСЯ. НИ В КОЕМ СЛУЧАЕ ПРАВООБЛАДАТЕЛЬ ИЛИ
+УЧАСТНИКИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ЗА ЛЮБЫЕ ПРЯМЫЕ, КОСВЕННЫЕ, СЛУЧАЙНЫЕ,
+ОСОБЫЕ, ШТРАФНЫЕ ИЛИ КОСВЕННЫЕ УБЫТКИ (ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ПРИОБРЕТЕНИЕ
+ЗАМЕНЯЮЩИХ ТОВАРОВ ИЛИ УСЛУГ; ПОТЕРЮ ДАННЫХ ИЛИ ПРИБЫЛИ; ПРЕРЫВАНИЕ
+ДЕЯТЕЛЬНОСТИ), ВОЗНИКШИЕ ЛЮБЫМ ОБРАЗОМ ИЗ ИСПОЛЬЗОВАНИЯ ДАННОГО ПРОГРАММНОГО
+ОБЕСПЕЧЕНИЯ, ДАЖЕ ЕСЛИ БЫЛО СООБЩЕНО О ВОЗМОЖНОСТИ ТАКОГО УЩЕРБА.
 
-### UnityPy (MooncellWiki/UnityPy) — MIT
-
-```text
-MIT License
+Лицензия MIT
 
 Copyright (c) 2019-2021 K0lb3
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Настоящим предоставляется бесплатное разрешение любому лицу, получившему копию
+данного программного обеспечения и связанных с ним файлов документации (далее —
+«Программное обеспечение»), безвозмездно распоряжаться Программным обеспечением
+без ограничений, включая, помимо прочего, права на использование, копирование,
+изменение, объединение, публикацию, распространение, сублицензирование и/или
+продажу копий Программного обеспечения, а также разрешать лицам, которым
+предоставляется Программное обеспечение, делать то же самое при соблюдении
+следующих условий:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Указанное выше уведомление об авторских правах и данное уведомление о разрешении
+должны быть включены во все копии или существенные части Программного обеспечения.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ,
+ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ГАРАНТИИ ТОВАРНОЙ
+ПРИГОДНОСТИ, СООТВЕТСТВИЯ ОПРЕДЕЛЕННОМУ НАЗНАЧЕНИЮ И ОТСУТСТВИЯ НАРУШЕНИЙ ПРАВ.
+НИ В КОЕМ СЛУЧАЕ АВТОРЫ ИЛИ ПРАВООБЛАДАТЕЛИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ПО ЛЮБЫМ
+ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
+ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
+ИНЫХ ДЕЙСТВИЙ С НИМ.
 
-### htm (and puppeteer-core) — Apache License 2.0
-
-```text
 
                                  Apache License
                            Version 2.0, January 2004
@@ -453,4 +420,3 @@ SOFTWARE.
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-```
