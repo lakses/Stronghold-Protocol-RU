@@ -411,7 +411,7 @@ export function ChessDetail({ chess, piece, unit, snapHp, editable, onSell, bond
           <div class="dskill__tags">
             <span class="dsp dsp--${sk.spType === 'INCREASE_WHEN_ATTACK' ? 'atk' : sk.spType === 'INCREASE_WHEN_TAKEN_DAMAGE' ? 'def' : 'time'}">${SP_TYPE[sk.spType] || 'SP'}</span>
             <span class="dsp dsp--trig">${SKILL_TYPE[sk.skillType] || 'Автосрабатывание'}</span>
-            ${sk.spType !== 'ON_DEPLOY' && sk.skillType !== 'PASSIVE' ? html`<span class="dsp__num"><${GIcon} name="bolt" />Начальные <b class="num">${sk.initSp ?? 0}</b> · Затраты <b class="num">${sk.spCost ?? 0}</b></span>` : null}
+            ${sk.spType !== 'ON_DEPLOY' && sk.skillType !== 'PASSIVE' ? html`<span class="dsp__num"><${GIcon} name="bolt" />Начальные <b class="num">${sk.initSp ?? 0}</b> · Стоимость <b class="num">${sk.spCost ?? 0}</b></span>` : null}
             ${sk.duration > 0 ? html`<span class="dsp__num">Длит. <b class="num">${sk.duration}</b> с</span>` : null}
             ${sk.maxChargeTime > 1 ? html`<span class="dsp__num">Заряды <b class="num">${sk.maxChargeTime}</b></span>` : null}
           </div>
@@ -463,7 +463,7 @@ export function ItemDetail({ item, piece, editable, onDestroy, offBonds = null }
       <div class=${cx('dhead__icon', item.isGolden && 'is-golden')}><${Img} src=${itemIconUrl(m, item)} fallback=${html`<${GIcon} name="bolt" />`} /></div>
       <div class="dhead__info">
         <div class="dhead__chips"><${TierChip} tier=${item.tier} golden=${item.isGolden} size="lg" />${item.isGolden ? html`<span class="dtag-elite">Улучшено</span>` : null}
-          <span class="dtag-kind">${item.itemType === 'MAGIC' ? 'Магия' : 'Снаряжение'}</span></div>
+          <span class="dtag-kind">${item.itemType === 'MAGIC' ? 'искусства' : 'Снаряжение'}</span></div>
         <h3 class="dhead__name">${item.name}</h3>
         ${item.flavor ? html`<span class="dhead__flavor">${item.flavor}</span>` : null}
       </div>
