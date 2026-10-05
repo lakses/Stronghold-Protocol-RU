@@ -343,7 +343,7 @@ export function chessStatsBlock({ rec, chess, live = null }) {
         <${Stat} k="Макс. HP" ...${st.maxHp} />
         <${Stat} k="Атака" ...${st.atk} />
         <${Stat} k="Защита" ...${st.def} />
-        <${Stat} k="Сопр. магии" ...${st.res} />
+        <${Stat} k="Сопр. урону искусств" ...${st.res} />
         <${Stat} k="Интервал атаки" ...${st.interval} />
         <${Stat} k="Блок" ...${st.blockCnt} />
         <${Stat} k="Стоимость размещения" v=${s.cost ?? '—'} />
@@ -514,7 +514,7 @@ function EnemyDetail({ enemy, snapHp, count, live = null }) {
       <${Stat} k="Макс. HP" ...${st.maxHp} />
       <${Stat} k="Атака" ...${st.atk} sub=${st.atk.sub || DMG[s.dmgType] || ''} />
       <${Stat} k="Защита" ...${st.def} />
-      <${Stat} k="Сопр. магии" ...${st.res} />
+      <${Stat} k="Сопр. урону искусств" ...${st.res} />
       <${Stat} k="Скорость" ...${st.moveSpeed} />
       <${Stat} k="Интервал атаки" ...${st.interval} />
       <${Stat} k="Дальность атаки" v=${s.rangeRadius > 0 ? s.rangeRadius : 'Ближний бой'} />
