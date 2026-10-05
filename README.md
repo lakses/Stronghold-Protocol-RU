@@ -1,5 +1,4 @@
 # Протокол Крепости: Альянс
-![version](https://img.shields.io/badge/version-0.1.3-2ea44f)
 ![license](https://img.shields.io/badge/code%20license-GPL--3.0--or--later-blue)
 ![node](https://img.shields.io/badge/node-22%20%7C%2024-339933)
 
