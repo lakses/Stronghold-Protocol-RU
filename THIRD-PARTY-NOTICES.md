@@ -63,7 +63,9 @@ Copyright (c) 2013-2023 Mathew Groves, Chad Engler
 ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
 ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
 ИНЫХ ДЕЙСТВИЙ С НИМ.
-
+```
+### pixi-spine — Spine Runtimes License Agreement (node_modules/pixi-spine/SPINE-LICENSE)
+```text
 Лицензионное соглашение Spine Runtimes
 Последнее обновление: 1 января 2020 г. Заменяет все предыдущие версии.
 
@@ -89,7 +91,9 @@ SPINE RUNTIMES ПРЕДОСТАВЛЯЮТСЯ КОМПАНИЕЙ ESOTERIC SOFTWA
 (ВКЛЮЧАЯ, ПОМИМО ПРОЧЕГО, ПРИОБРЕТЕНИЕ ЗАМЕНЯЮЩИХ ТОВАРОВ ИЛИ УСЛУГ, ПОТЕРЮ
 ДАННЫХ ИЛИ ПРИБЫЛИ, ПРЕРЫВАНИЕ ДЕЯТЕЛЬНОСТИ), ВОЗНИКШИЕ ЛЮБЫМ ОБРАЗОМ ИЗ
 ИСПОЛЬЗОВАНИЯ SPINE RUNTIMES, ДАЖЕ ЕСЛИ БЫЛО СООБЩЕНО О ВОЗМОЖНОСТИ ТАКОГО УЩЕРБА.
-
+```
+### Preact — MIT
+```text
 Лицензия MIT
 
 Copyright (c) 2015-present Jason Miller
@@ -113,7 +117,9 @@ Copyright (c) 2015-present Jason Miller
 ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
 ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
 ИНЫХ ДЕЙСТВИЙ С НИМ.
-
+```
+### three.js — MIT
+```text
 Лицензия MIT
 
 Copyright © 2010-2026 three.js authors
@@ -137,7 +143,9 @@ Copyright © 2010-2026 three.js authors
 ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
 ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
 ИНЫХ ДЕЙСТВИЙ С НИМ.
-
+```
+### ws — MIT
+```text
 Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>
 Copyright (c) 2013 Arnout Kazemier and contributors
 Copyright (c) 2016 Luigi Pinca and contributors
@@ -161,7 +169,9 @@ Copyright (c) 2016 Luigi Pinca and contributors
 ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
 ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
 ИНЫХ ДЕЙСТВИЙ С НИМ.
-
+```
+### Ark-Unpacker (tools/local-extract/aklz4.py) — BSD-3-Clause
+```text
 Лицензия BSD 3-Clause
 
 Copyright (c) 2022, Harry Huang
@@ -193,7 +203,9 @@ Copyright (c) 2022, Harry Huang
 ЗАМЕНЯЮЩИХ ТОВАРОВ ИЛИ УСЛУГ; ПОТЕРЮ ДАННЫХ ИЛИ ПРИБЫЛИ; ПРЕРЫВАНИЕ
 ДЕЯТЕЛЬНОСТИ), ВОЗНИКШИЕ ЛЮБЫМ ОБРАЗОМ ИЗ ИСПОЛЬЗОВАНИЯ ДАННОГО ПРОГРАММНОГО
 ОБЕСПЕЧЕНИЯ, ДАЖЕ ЕСЛИ БЫЛО СООБЩЕНО О ВОЗМОЖНОСТИ ТАКОГО УЩЕРБА.
-
+```
+### UnityPy (MooncellWiki/UnityPy) — MIT
+```text
 Лицензия MIT
 
 Copyright (c) 2019-2021 K0lb3
@@ -217,7 +229,9 @@ Copyright (c) 2019-2021 K0lb3
 ИСКАМ, УЩЕРБУ ИЛИ ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНЫМ
 ОСНОВАНИЯМ, ВОЗНИКАЮЩИМ ИЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ЕГО ИСПОЛЬЗОВАНИЯ ИЛИ
 ИНЫХ ДЕЙСТВИЙ С НИМ.
-
+```
+### htm (and puppeteer-core) — Apache License 2.0
+```text
 
                                  Apache License
                            Version 2.0, January 2004
@@ -416,6 +430,7 @@ Copyright (c) 2019-2021 K0lb3
        http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
+```
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
